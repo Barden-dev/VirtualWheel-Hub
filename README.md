@@ -25,6 +25,12 @@ It translates real-time mouse movement into ultra-smooth virtual wheel angles an
 > 🏎️ **Telemetry & Auto-Detection:** Telemetry features (ABS/TC Helpers, Speed-Sensitive Steering, Trail Braking, Audio Slip Cues) and automatic game detection are currently supported for:
 > * **Le Mans Ultimate (LMU)** — Full Support (Telemetry & Auto-Detect)
 > * **rFactor 2** — Experimental Support (Telemetry & Auto-Detect)
+> * **iRacing** — Experimental Support (Auto-Detect Only)
+> * **Assetto Corsa Competizione** — Experimental Support (Auto-Detect Only)
+> * **Assetto Corsa** — Experimental Support (Auto-Detect Only)
+> * **Dirt Rally 2.0** — Experimental Support (Auto-Detect Only)
+> * **EA WRC** — Experimental Support (Auto-Detect Only)
+> * **Richard Burns Rally** — Experimental Support (Auto-Detect Only)
 >
 > *Once detected and plugin status is clear, you can customize sensitivity, curves, and keybindings to your exact liking.*
 
