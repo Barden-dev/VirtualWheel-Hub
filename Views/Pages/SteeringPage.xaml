@@ -1,0 +1,128 @@
+<Page x:Class="SimRacingHub.Views.Pages.SteeringPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+      xmlns:local="clr-namespace:SimRacingHub.Controls" 
+      xmlns:conv="clr-namespace:SimRacingHub.Converters"
+      Title="SteeringPage">
+    <Page.Resources>
+        <conv:PercentageConverter x:Key="PercentageConverter" />
+        <conv:HalfSteeringLockConverter x:Key="HalfSteeringLockConverter" />
+        <conv:NegativeHalfSteeringLockConverter x:Key="NegativeHalfSteeringLockConverter" />
+        <conv:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+        <conv:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
+        <conv:InputModeTextConverter x:Key="InputModeTextConverter" />
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </Page.Resources>
+    <StackPanel Margin="20">
+        <TextBlock Text="Steering" FontSize="20" FontWeight="SemiBold" Margin="0,0,0,20"/>
+        
+        <TextBlock Text="Input Mode" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,10" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+        <ui:ToggleSwitch Content="Keyboard Mode"
+                         IsChecked="{Binding CurrentProfile.UseKeyboardOnlyMode, UpdateSourceTrigger=PropertyChanged}" 
+                         ToolTip="When enabled, steering is controlled via keyboard keys; when disabled, steering is controlled via mouse." Margin="0,0,0,5" />
+        <TextBlock Text="When enabled, steering is controlled via keyboard keys; when disabled, steering is controlled via mouse." 
+                   Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" TextWrapping="Wrap" MaxWidth="600" HorizontalAlignment="Left" Margin="0,0,0,20" />
+        
+        <!-- Mouse-specific settings -->
+        <StackPanel Visibility="{Binding CurrentProfile.UseKeyboardOnlyMode, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+            <TextBlock Text="Mouse Sensitivity" ToolTip="Adjusts how fast the steering wheel turns when you move the mouse." Margin="0,0,0,5" />
+            <ui:NumberBox Value="{Binding CurrentProfile.MouseSensitivity, UpdateSourceTrigger=PropertyChanged}" SmallChange="0.2" LargeChange="0.5" Minimum="0.1" ToolTip="Adjusts how fast the steering wheel turns when you move the mouse." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+            
+            <ui:ToggleSwitch Content="Freeze Steering When Cursor Unlocked" ToolTip="Prevents mouse movement from turning the steering wheel when the mouse cursor is unlocked." IsChecked="{Binding CurrentProfile.LockSteerWhenUnlocked, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,5"/>
+            <TextBlock Text="When enabled, moving the mouse cursor while unlocked will not turn the virtual steering wheel." 
+                       Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" TextWrapping="Wrap" MaxWidth="600" HorizontalAlignment="Left" Margin="0,0,0,20" />
+        </StackPanel>
+
+        <!-- Keyboard-specific settings -->
+        <StackPanel Visibility="{Binding CurrentProfile.UseKeyboardOnlyMode, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <TextBlock Text="Keyboard Steering Settings" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,10" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+            
+            <TextBlock Text="Ramp-up Time (ms)" ToolTip="How fast the steering wheel reaches full lock when steering key is held down." Margin="0,0,0,5" />
+            <ui:NumberBox Value="{Binding CurrentProfile.KeySteerRampUpMs, UpdateSourceTrigger=PropertyChanged}" Minimum="10" Maximum="2000" SmallChange="10" LargeChange="50" ToolTip="How fast the steering wheel reaches full lock when steering key is held down." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+            
+            <TextBlock Text="Ramp-down / Return Speed (ms)" ToolTip="How fast the steering wheel returns to center when steering key is released." Margin="0,0,0,5" />
+            <ui:NumberBox Value="{Binding CurrentProfile.KeySteerRampDownMs, UpdateSourceTrigger=PropertyChanged}" Minimum="10" Maximum="2000" SmallChange="10" LargeChange="50" ToolTip="How fast the steering wheel returns to center when steering key is released." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+            
+            <ui:ToggleSwitch Content="Snap to Full Lock" ToolTip="If enabled, steering instantly snaps to 100% lock instead of ramping up gradually." IsChecked="{Binding CurrentProfile.KeySteerSnapToFullLock, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,5" />
+            <TextBlock Text="Instantly snaps the virtual steering wheel to 100% lock on key press rather than smoothly turning over Ramp-up time." 
+                       Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" TextWrapping="Wrap" MaxWidth="600" HorizontalAlignment="Left" Margin="0,0,0,20" />
+        </StackPanel>
+        
+        <Rectangle Height="1" Fill="{DynamicResource SurfaceStrokeColorDefaultBrush}" Margin="0,5,0,25" HorizontalAlignment="Stretch" Opacity="0.5" />
+        
+        <TextBlock Text="Steering Offset" ToolTip="Offsets the steering wheel center position." Margin="0,0,0,5" />
+        <ui:NumberBox Value="{Binding CurrentProfile.SteeringOffset, UpdateSourceTrigger=PropertyChanged}" ToolTip="Offsets the steering wheel center position." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+        
+        <TextBlock Text="Steering Non-Linearity (Gamma)" ToolTip="Curves steering response. Values &gt; 1.0 provide fine control near center; values &lt; 1.0 give faster initial turn-in." Margin="0,0,0,5" />
+        <ui:NumberBox Value="{Binding CurrentProfile.SteeringGamma, UpdateSourceTrigger=PropertyChanged}" Minimum="0.2" Maximum="3.0" SmallChange="0.05" LargeChange="0.10" ToolTip="Curves steering response." Margin="0,0,0,10" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+        <local:ResponseCurveControl Gamma="{Binding CurrentProfile.SteeringGamma}" InputValue="{Binding DataContext.NormalizedSteer, RelativeSource={RelativeSource AncestorType=Page}}" IsBipolar="True" Width="300" Height="180" HorizontalAlignment="Left" Margin="0,0,0,30" />
+        
+        <TextBlock Text="Dynamic Steering Clamp" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,10" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+        
+        <ui:ToggleSwitch Content="Enable Dynamic Steering Clamp" ToolTip="Prevents turning the steering wheel past the car's physical limits." IsChecked="{Binding CurrentProfile.UseSteeringLockClamp, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,5"/>
+        <TextBlock Text="Limits your mouse input to the car's physical steering lock. Recommended to enable this if you experience problems where you can turn the virtual wheel further than the car can actually turn." 
+                   Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" TextWrapping="Wrap" MaxWidth="600" HorizontalAlignment="Left" Margin="0,0,0,15" />
+        
+        <TextBlock Text="Car Steering Lock (Degrees)" ToolTip="Real lock-to-lock steering angle of the car (e.g., 540° or 1080°)." Margin="0,0,0,5" />
+        <ui:NumberBox Value="{Binding CurrentProfile.CarSteeringLock, UpdateSourceTrigger=PropertyChanged}" ToolTip="Real lock-to-lock steering angle of the car (e.g., 540° or 1080°)." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" IsEnabled="{Binding CurrentProfile.UseSteeringLockClamp}" />
+
+        <TextBlock Text="Global Steering Range (Degrees)" ToolTip="Matches the 'Steering Wheel Maximum Rotation' in game (LMU default is 900°)." Margin="0,0,0,5" />
+        <ui:NumberBox Value="{Binding CurrentProfile.GlobalSteeringRange, UpdateSourceTrigger=PropertyChanged}" ToolTip="Matches the 'Steering Wheel Maximum Rotation' in game (LMU default is 900°)." Margin="0,0,0,5" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" IsEnabled="{Binding CurrentProfile.UseSteeringLockClamp}" />
+        <TextBlock Text="Configure this if the game accepts the full vJoy range, but the in-game steering stops early and creates a deadzone. Set this to match the game's controller rotation setting (e.g., 'Steering Wheel Maximum Rotation' in LMU, default 900°)." 
+                   Foreground="{DynamicResource TextFillColorSecondaryBrush}" 
+                   FontSize="12" 
+                   TextWrapping="Wrap" 
+                   MaxWidth="600"
+                   HorizontalAlignment="Left"
+                   Margin="0,0,0,30" />
+
+        <TextBlock Text="Speed-Sensitive Steering" FontSize="16" FontWeight="SemiBold" Margin="0,10,0,10" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+        
+        <ui:ToggleSwitch IsEnabled="False" IsChecked="False" Content="Enable Speed-Sensitive Steering" ToolTip="Reduces mouse sensitivity as vehicle speed increases to improve stability at high speeds." Margin="0,0,0,5"/>
+        <TextBlock Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" TextWrapping="Wrap" MaxWidth="600" HorizontalAlignment="Left" Margin="0,0,0,6">
+            <Run Text="Automatically reduces steering sensitivity as car speed increases, providing maximum control in low-speed hairpins while keeping high-speed straights and sweepers stable." />
+            
+            
+        </TextBlock>
+
+            <!-- Boosty Subscription Promo Card (Auto-injected for OpenSource build) -->
+            <ui:Card Padding="12,10" Margin="0,4,0,28" Background="#2B1A28" BorderBrush="#5B2449" HorizontalAlignment="Left" Width="600">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <ui:SymbolIcon Grid.Column="0" Symbol="Heart24" Foreground="#EC4899" FontSize="20" VerticalAlignment="Center" Margin="0,0,10,0"/>
+
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock Text="Boosty Subscription Feature" FontWeight="SemiBold" FontSize="12.5" Foreground="#F472B6"/>
+                        <TextBlock Text="This telemetry feature is available for Boosty subscribers." 
+                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11.5" TextWrapping="Wrap"/>
+                    </StackPanel>
+
+                    <ui:Button Grid.Column="2" 
+                               Command="{Binding DataContext.OpenBoostyCommand, RelativeSource={RelativeSource AncestorType=Page}}" 
+                               Content="Unlock on Boosty" 
+                               Icon="Open24" 
+                               Appearance="Primary" 
+                               Padding="10,5" 
+                               FontSize="12" 
+                               VerticalAlignment="Center" 
+                               Margin="10,0,0,0"/>
+                </Grid>
+            </ui:Card>
+
+        <TextBlock Text="Min Speed (km/h)" ToolTip="Speed below which full (100%) sensitivity is applied." Margin="0,0,0,5" />
+        <ui:NumberBox Value="{Binding CurrentProfile.SpeedSensMinSpeed, UpdateSourceTrigger=PropertyChanged}" ToolTip="Speed below which full (100%) sensitivity is applied." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" IsEnabled="{Binding CurrentProfile.EnableSpeedSensSteering}" />
+
+        <TextBlock Text="Max Speed (km/h)" ToolTip="Speed at which maximum sensitivity reduction is reached." Margin="0,0,0,5" />
+        <ui:NumberBox Value="{Binding CurrentProfile.SpeedSensMaxSpeed, UpdateSourceTrigger=PropertyChanged}" ToolTip="Speed at which maximum sensitivity reduction is reached." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" IsEnabled="{Binding CurrentProfile.EnableSpeedSensSteering}" />
+
+        <TextBlock Text="Min Sensitivity Multiplier (%)" ToolTip="Sensitivity multiplier at maximum speed (e.g. 50% = half sensitivity)." Margin="0,0,0,5" />
+        <ui:NumberBox Value="{Binding CurrentProfile.SpeedSensMinMultiplier, Converter={StaticResource PercentageConverter}, UpdateSourceTrigger=PropertyChanged}" Minimum="5" Maximum="100" SmallChange="5" LargeChange="10" ToolTip="Sensitivity multiplier at maximum speed (e.g. 50% = half sensitivity)." Margin="0,0,0,30" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" IsEnabled="{Binding CurrentProfile.EnableSpeedSensSteering}" />
+    </StackPanel>
+</Page>

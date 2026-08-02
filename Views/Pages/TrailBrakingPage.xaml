@@ -1,0 +1,63 @@
+<Page x:Class="SimRacingHub.Views.Pages.TrailBrakingPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+      xmlns:local="clr-namespace:SimRacingHub.Controls"
+      xmlns:conv="clr-namespace:SimRacingHub.Converters" Title="TrailBrakingPage">
+    <Page.Resources>
+        <conv:PercentageConverter x:Key="PercentageConverter" />
+    </Page.Resources>
+    <StackPanel Margin="20">
+        <TextBlock Text="Trail Braking" FontSize="20" FontWeight="SemiBold" Margin="0,0,0,15"/>
+        
+        <ui:ToggleSwitch IsChecked="False" IsEnabled="False" Content="Enable Synthetic Trail Braking" ToolTip="Automatically reduces brake pressure as steering angle increases to help turn-in." Margin="0,0,0,5" />
+        <TextBlock Text="Automatically reduces brake pressure as you turn the steering wheel. This prevents front tire lockups during corner entry and helps the car rotate into the corner." 
+                   Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" TextWrapping="Wrap" MaxWidth="600" HorizontalAlignment="Left" Margin="0,0,0,6" />
+            <!-- Boosty Subscription Promo Card (OpenSource Build Only) -->
+            <ui:Card Padding="12,10" Margin="0,4,0,28" Background="#2B1A28" BorderBrush="#5B2449" HorizontalAlignment="Left" Width="600">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <ui:SymbolIcon Grid.Column="0" Symbol="Heart24" Foreground="#EC4899" FontSize="20" VerticalAlignment="Center" Margin="0,0,10,0"/>
+
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock Text="Boosty Subscription Feature" FontWeight="SemiBold" FontSize="12.5" Foreground="#F472B6"/>
+                        <TextBlock Text="Synthetic Trail Braking is available for Boosty subscribers." 
+                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11.5" TextWrapping="Wrap"/>
+                    </StackPanel>
+
+                    <ui:Button Grid.Column="2" 
+                               Command="{Binding DataContext.OpenBoostyCommand, RelativeSource={RelativeSource AncestorType=Page}}" 
+                               Content="Unlock on Boosty" 
+                               Icon="Open24" 
+                               Appearance="Primary" 
+                               Padding="10,5" 
+                               FontSize="12" 
+                               VerticalAlignment="Center" 
+                               Margin="10,0,0,0"/>
+                </Grid>
+            </ui:Card>
+        <TextBlock Text="⚠️ Cannot be used together with Telemetry ABS Helper. Enabling Trail Braking automatically disables Telemetry ABS Helper." 
+                   Foreground="#F59E0B" FontSize="11.5" TextWrapping="Wrap" MaxWidth="600" HorizontalAlignment="Left" Margin="0,0,0,20" />
+        
+        <StackPanel IsEnabled="False">
+            <TextBlock Text="Trail Braking Intensity" ToolTip="How strongly the brake pressure is reduced when turning the steering wheel." Margin="0,0,0,5" />
+            <ui:NumberBox Value="{Binding ResolvedProfile.TbIntensity, UpdateSourceTrigger=PropertyChanged}" ToolTip="How strongly the brake pressure is reduced when turning the steering wheel." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+            
+            <TextBlock Text="Trail Braking Min Limit (%)" ToolTip="The lowest allowed brake pressure percentage during a turn." Margin="0,0,0,5" />
+            <ui:NumberBox Value="{Binding ResolvedProfile.TbMinLimit, Converter={StaticResource PercentageConverter}, UpdateSourceTrigger=PropertyChanged}" Minimum="0" Maximum="100" ToolTip="The lowest allowed brake pressure percentage during a turn." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+            
+            <TextBlock Text="Trail Braking Decay (units/tick)" ToolTip="Rate of brake release per step (1–32768). Recommended: 500–3000." Margin="0,0,0,5" />
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                <ui:NumberBox Value="{Binding ResolvedProfile.TbDecay, UpdateSourceTrigger=PropertyChanged}" Minimum="1" Maximum="32768" ToolTip="Rate of brake release per step (1–32768). Recommended: 500–3000." ClearButtonEnabled="False" Width="200" HorizontalAlignment="Left" Margin="0,0,10,0" />
+                <ui:Button Content="Reset to Default" Command="{Binding ResetTbDecayCommand}" Appearance="Secondary" FontSize="12" Padding="8,4" VerticalAlignment="Center"/>
+            </StackPanel>
+            <TextBlock Text="Rate of brake release per step (1–32768). Recommended: 500–3000 (default: 2960)." Foreground="{DynamicResource TextFillColorTertiaryBrush}" FontSize="11" Margin="0,0,0,15"/>
+        </StackPanel>
+    </StackPanel>
+</Page>

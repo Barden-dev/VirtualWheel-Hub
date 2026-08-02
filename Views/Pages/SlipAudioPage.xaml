@@ -1,0 +1,111 @@
+<Page x:Class="SimRacingHub.Views.Pages.SlipAudioPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+       xmlns:local="clr-namespace:SimRacingHub.Controls" Title="SlipAudioPage">
+    <StackPanel Margin="20">
+        <TextBlock Text="Audio Feedback Settings" FontSize="20" FontWeight="SemiBold" Margin="0,0,0,15"/>
+        
+        <ui:ToggleSwitch IsEnabled="False" IsChecked="False" Content="Enable Slip Audio Beeps" ToolTip="Plays audio tone alerts when telemetry detects front or rear tire slip." Margin="0,0,0,5" />
+        <TextBlock Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" TextWrapping="Wrap" MaxWidth="600" HorizontalAlignment="Left" Margin="0,0,0,6">
+            <Run Text="Plays audio tones to help you feel when the tires lose grip." />
+            
+            
+        </TextBlock>
+
+            <!-- Boosty Subscription Promo Card (Auto-injected for OpenSource build) -->
+            <ui:Card Padding="12,10" Margin="0,4,0,28" Background="#2B1A28" BorderBrush="#5B2449" HorizontalAlignment="Left" Width="600">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <ui:SymbolIcon Grid.Column="0" Symbol="Heart24" Foreground="#EC4899" FontSize="20" VerticalAlignment="Center" Margin="0,0,10,0"/>
+
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock Text="Boosty Subscription Feature" FontWeight="SemiBold" FontSize="12.5" Foreground="#F472B6"/>
+                        <TextBlock Text="This telemetry feature is available for Boosty subscribers." 
+                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11.5" TextWrapping="Wrap"/>
+                    </StackPanel>
+
+                    <ui:Button Grid.Column="2" 
+                               Command="{Binding DataContext.OpenBoostyCommand, RelativeSource={RelativeSource AncestorType=Page}}" 
+                               Content="Unlock on Boosty" 
+                               Icon="Open24" 
+                               Appearance="Primary" 
+                               Padding="10,5" 
+                               FontSize="12" 
+                               VerticalAlignment="Center" 
+                               Margin="10,0,0,0"/>
+                </Grid>
+            </ui:Card>
+        
+        <StackPanel IsEnabled="{Binding ResolvedProfile.EnableSlipAudio}" Margin="0,5,0,10">
+            <TextBlock Text="Understeer Pitch (Hz)" ToolTip="Audio pitch for front tire slip (understeer)." Margin="0,0,0,5" />
+            <ui:NumberBox Value="{Binding ResolvedProfile.SlipAudioUnderFreq, UpdateSourceTrigger=PropertyChanged}" ToolTip="Audio pitch for front tire slip (understeer)." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+            
+            <TextBlock Text="Understeer Pulse (ms)" ToolTip="How long each beep lasts during front tire slip (understeer)." Margin="0,0,0,5" />
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
+                <ui:NumberBox Value="{Binding ResolvedProfile.SlipAudioUnderDur, UpdateSourceTrigger=PropertyChanged}" ToolTip="How long each beep lasts during front tire slip (understeer)." ClearButtonEnabled="False" Width="300" />
+                <ui:Button Content="Preview" Icon="{ui:SymbolIcon Play24}" Margin="10,0,0,0" Click="PreviewUndersteer_Click" />
+            </StackPanel>
+            
+            <TextBlock Text="Oversteer Pitch (Hz)" ToolTip="Audio pitch for rear tire slip (oversteer)." Margin="0,0,0,5" />
+            <ui:NumberBox Value="{Binding ResolvedProfile.SlipAudioOverFreq, UpdateSourceTrigger=PropertyChanged}" ToolTip="Audio pitch for rear tire slip (oversteer)." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+            
+            <TextBlock Text="Oversteer Pulse (ms)" ToolTip="How long each beep lasts during rear tire slip (oversteer)." Margin="0,0,0,5" />
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
+                <ui:NumberBox Value="{Binding ResolvedProfile.SlipAudioOverDur, UpdateSourceTrigger=PropertyChanged}" ToolTip="How long each beep lasts during rear tire slip (oversteer)." ClearButtonEnabled="False" Width="300" />
+                <ui:Button Content="Preview" Icon="{ui:SymbolIcon Play24}" Margin="10,0,0,0" Click="PreviewOversteer_Click" />
+            </StackPanel>
+        </StackPanel>
+
+        <ui:ToggleSwitch IsEnabled="False" IsChecked="False" Content="Enable TC Audio Beeps" ToolTip="Plays an audio beep when telemetry detects Traction Control intervention. Requires Smart Traction Control to be enabled." Margin="0,15,0,5" />
+        <TextBlock Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" TextWrapping="Wrap" MaxWidth="600" HorizontalAlignment="Left" Margin="0,0,0,6">
+            <Run Text="Plays an audio beep whenever Traction Control engages. Requires Smart Traction Control to be enabled." />
+        </TextBlock>
+
+            <!-- Boosty Subscription Promo Card (Auto-injected for OpenSource build) -->
+            <ui:Card Padding="12,10" Margin="0,4,0,28" Background="#2B1A28" BorderBrush="#5B2449" HorizontalAlignment="Left" Width="600">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <ui:SymbolIcon Grid.Column="0" Symbol="Heart24" Foreground="#EC4899" FontSize="20" VerticalAlignment="Center" Margin="0,0,10,0"/>
+
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock Text="Boosty Subscription Feature" FontWeight="SemiBold" FontSize="12.5" Foreground="#F472B6"/>
+                        <TextBlock Text="This telemetry feature is available for Boosty subscribers." 
+                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11.5" TextWrapping="Wrap"/>
+                    </StackPanel>
+
+                    <ui:Button Grid.Column="2" 
+                               Command="{Binding DataContext.OpenBoostyCommand, RelativeSource={RelativeSource AncestorType=Page}}" 
+                               Content="Unlock on Boosty" 
+                               Icon="Open24" 
+                               Appearance="Primary" 
+                               Padding="10,5" 
+                               FontSize="12" 
+                               VerticalAlignment="Center" 
+                               Margin="10,0,0,0"/>
+                </Grid>
+            </ui:Card>
+
+        <StackPanel IsEnabled="{Binding ResolvedProfile.EnableTcAudio}" Margin="0,5,0,10">
+            <TextBlock Text="TC Pitch (Hz)" ToolTip="Audio pitch for Traction Control intervention." Margin="0,0,0,5" />
+            <ui:NumberBox Value="{Binding ResolvedProfile.TcAudioFreq, UpdateSourceTrigger=PropertyChanged}" ToolTip="Audio pitch for Traction Control intervention." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+            
+            <TextBlock Text="TC Pulse (ms)" ToolTip="How long each beep lasts during Traction Control intervention." Margin="0,0,0,5" />
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
+                <ui:NumberBox Value="{Binding ResolvedProfile.TcAudioDur, UpdateSourceTrigger=PropertyChanged}" ToolTip="How long each beep lasts during Traction Control intervention." ClearButtonEnabled="False" Width="300" />
+                <ui:Button Content="Preview" Icon="{ui:SymbolIcon Play24}" Margin="10,0,0,0" Click="PreviewTc_Click" />
+            </StackPanel>
+        </StackPanel>
+    </StackPanel>
+</Page>

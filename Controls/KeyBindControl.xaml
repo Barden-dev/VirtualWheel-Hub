@@ -1,0 +1,27 @@
+<UserControl x:Class="SimRacingHub.Controls.KeyBindControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        
+        <ui:Button x:Name="BindButton" 
+                   Content="{Binding DisplayText, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                   Click="BindButton_Click" 
+                   PreviewKeyDown="BindButton_PreviewKeyDown" 
+                   PreviewMouseDown="BindButton_PreviewMouseDown"
+                   LostFocus="BindButton_LostFocus"
+                   Appearance="Primary"
+                   HorizontalAlignment="Stretch" />
+                   
+        <ui:Button Grid.Column="1" 
+                   Icon="{ui:SymbolIcon Dismiss24}" 
+                   Click="ClearButton_Click" 
+                   Margin="5,0,0,0" 
+                   Appearance="Secondary"
+                   ToolTip="Unbind" />
+    </Grid>
+</UserControl>

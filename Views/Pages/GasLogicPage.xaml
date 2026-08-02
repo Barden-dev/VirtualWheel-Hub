@@ -1,0 +1,73 @@
+<Page x:Class="SimRacingHub.Views.Pages.GasLogicPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+      xmlns:local="clr-namespace:SimRacingHub.Controls"
+      xmlns:conv="clr-namespace:SimRacingHub.Converters" Title="GasLogicPage">
+    <Page.Resources>
+        <conv:PercentageConverter x:Key="PercentageConverter" />
+    </Page.Resources>
+    <StackPanel Margin="20">
+            <TextBlock Text="Gas Logic" FontSize="20" FontWeight="SemiBold" Margin="0,0,0,20"/>
+            
+            <ui:ToggleSwitch IsEnabled="False" IsChecked="False" Content="Enable Smart Traction Control" ToolTip="Uses telemetry to reduce wheelspin and prevent oversteer." Margin="0,0,0,5" />
+            <TextBlock Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" TextWrapping="Wrap" MaxWidth="600" HorizontalAlignment="Left" Margin="0,0,0,6">
+                <Run Text="When enabled, the app reads live game telemetry to detect rear wheel spin and automatically reduces throttle output to maintain traction and prevent oversteer under acceleration." />
+                
+                
+            </TextBlock>
+
+            <!-- Boosty Subscription Promo Card (Auto-injected for OpenSource build) -->
+            <ui:Card Padding="12,10" Margin="0,4,0,28" Background="#2B1A28" BorderBrush="#5B2449" HorizontalAlignment="Left" Width="600">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <ui:SymbolIcon Grid.Column="0" Symbol="Heart24" Foreground="#EC4899" FontSize="20" VerticalAlignment="Center" Margin="0,0,10,0"/>
+
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock Text="Boosty Subscription Feature" FontWeight="SemiBold" FontSize="12.5" Foreground="#F472B6"/>
+                        <TextBlock Text="This telemetry feature is available for Boosty subscribers." 
+                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11.5" TextWrapping="Wrap"/>
+                    </StackPanel>
+
+                    <ui:Button Grid.Column="2" 
+                               Command="{Binding DataContext.OpenBoostyCommand, RelativeSource={RelativeSource AncestorType=Page}}" 
+                               Content="Unlock on Boosty" 
+                               Icon="Open24" 
+                               Appearance="Primary" 
+                               Padding="10,5" 
+                               FontSize="12" 
+                               VerticalAlignment="Center" 
+                               Margin="10,0,0,0"/>
+                </Grid>
+            </ui:Card>
+
+            <TextBlock Text="Fast Attack Threshold (%)" ToolTip="The pedal percentage at which the throttle application speed slows down." Margin="0,0,0,5" />
+            <ui:NumberBox Value="{Binding CurrentProfile.GasThreshold, Converter={StaticResource PercentageConverter}, UpdateSourceTrigger=PropertyChanged}" Minimum="0" Maximum="100" ToolTip="The pedal percentage at which the throttle application speed slows down." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+            
+            <TextBlock Text="Attack Speed (Turbo)" ToolTip="Speed at which throttle is applied when holding down both primary and secondary throttle keys simultaneously." Margin="0,0,0,5" />
+            <ui:NumberBox Value="{Binding CurrentProfile.GasAttackTurbo, UpdateSourceTrigger=PropertyChanged}" Minimum="1" Maximum="32768" ToolTip="Speed at which throttle is applied when holding down both primary and secondary throttle keys simultaneously." Margin="0,0,0,4" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+            <TextBlock Text="Triggers when holding down both primary and secondary throttle keys simultaneously." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11.5" Margin="0,0,0,15" TextWrapping="Wrap" MaxWidth="600" HorizontalAlignment="Left" />
+            
+            <TextBlock Text="Attack Speed (Fast)" ToolTip="Speed at which throttle is applied below the fast attack threshold." Margin="0,0,0,5" />
+            <ui:NumberBox Value="{Binding CurrentProfile.GasAttackFast, UpdateSourceTrigger=PropertyChanged}" Minimum="1" Maximum="32768" ToolTip="Speed at which throttle is applied below the fast attack threshold." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+            
+            <TextBlock Text="Attack Speed (Slow)" ToolTip="Speed at which throttle is applied above the threshold to smooth out delivery." Margin="0,0,0,5" />
+            <ui:NumberBox Value="{Binding CurrentProfile.GasAttackSlow, UpdateSourceTrigger=PropertyChanged}" Minimum="1" Maximum="32768" ToolTip="Speed at which throttle is applied above the threshold to smooth out delivery." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+            
+            <TextBlock Text="Release Rate (Decay)" ToolTip="Speed at which throttle is released." Margin="0,0,0,5" />
+            <ui:NumberBox Value="{Binding CurrentProfile.GasDecay, UpdateSourceTrigger=PropertyChanged}" Minimum="1" Maximum="32768" ToolTip="Speed at which throttle is released." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+            
+            <TextBlock Text="Instant Cut Rate" ToolTip="Speed at which throttle is automatically released when braking." Margin="0,0,0,5" />
+            <ui:NumberBox Value="{Binding CurrentProfile.GasInstantCut, UpdateSourceTrigger=PropertyChanged}" Minimum="1" Maximum="32768" ToolTip="Speed at which throttle is automatically released when braking." Margin="0,0,0,20" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+
+            <TextBlock Text="Throttle Non-Linearity (Gamma)" ToolTip="Curves throttle response. Values &gt; 1.0 soften initial pedal travel for better traction control; values &lt; 1.0 give aggressive throttle response." Margin="0,0,0,5" />
+            <ui:NumberBox Value="{Binding CurrentProfile.GasGamma, UpdateSourceTrigger=PropertyChanged}" Minimum="0.2" Maximum="3.0" SmallChange="0.05" LargeChange="0.10" ToolTip="Curves throttle response." Margin="0,0,0,10" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+            <local:ResponseCurveControl Gamma="{Binding CurrentProfile.GasGamma}" InputValue="{Binding DataContext.NormalizedGas, RelativeSource={RelativeSource AncestorType=Page}}" CurveColor="#4ADE80" IsBipolar="False" Width="300" Height="180" HorizontalAlignment="Left" Margin="0,0,0,25" />
+        </StackPanel>
+</Page>

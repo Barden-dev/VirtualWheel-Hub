@@ -1,0 +1,31 @@
+<Page x:Class="SimRacingHub.Views.Pages.VjoyAxesPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+      xmlns:local="clr-namespace:SimRacingHub.Controls" Title="VjoyAxesPage">
+    <StackPanel Margin="20">
+            <TextBlock Text="vJoy Axes Output Limits" FontSize="20" FontWeight="SemiBold" Margin="0,0,0,20"/>
+            
+            <TextBlock Text="vJoy Steer Minimum" ToolTip="Minimum raw output value sent to vJoy steering axis (typically -32768)." Margin="0,0,0,5" />
+            <ui:NumberBox Value="{Binding CurrentProfile.OutSteerMin, UpdateSourceTrigger=PropertyChanged}" Minimum="-32768" Maximum="32768" ToolTip="Minimum raw output value sent to vJoy steering axis (typically -32768)." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+            
+            <TextBlock Text="vJoy Steer Maximum" ToolTip="Maximum raw output value sent to vJoy steering axis (typically 32768)." Margin="0,0,0,5" />
+            <ui:NumberBox Value="{Binding CurrentProfile.OutSteerMax, UpdateSourceTrigger=PropertyChanged}" Minimum="-32768" Maximum="32768" ToolTip="Maximum raw output value sent to vJoy steering axis (typically 32768)." Margin="0,0,0,10" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+            <ui:ToggleSwitch IsChecked="{Binding CurrentProfile.InvertSteering}" Content="Invert Steering Axis" ToolTip="Reverses the steering wheel axis direction." Margin="0,0,0,20" />
+            
+            <TextBlock Text="vJoy Throttle Minimum" ToolTip="Minimum raw output value sent to vJoy throttle axis." Margin="0,0,0,5" />
+            <ui:NumberBox Value="{Binding CurrentProfile.OutGasMin, UpdateSourceTrigger=PropertyChanged}" Minimum="-32768" Maximum="32768" ToolTip="Minimum raw output value sent to vJoy throttle axis." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+            
+            <TextBlock Text="vJoy Throttle Maximum" ToolTip="Maximum raw output value sent to vJoy throttle axis." Margin="0,0,0,5" />
+            <ui:NumberBox Value="{Binding CurrentProfile.OutGasMax, UpdateSourceTrigger=PropertyChanged}" Minimum="-32768" Maximum="32768" ToolTip="Maximum raw output value sent to vJoy throttle axis." Margin="0,0,0,10" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+            <ui:ToggleSwitch IsChecked="{Binding CurrentProfile.InvertGas}" Content="Invert Throttle Axis" ToolTip="Reverses the throttle pedal axis direction." Margin="0,0,0,20" />
+            
+            <TextBlock Text="vJoy Brake Minimum" ToolTip="Minimum raw output value sent to vJoy brake axis." Margin="0,0,0,5" />
+            <ui:NumberBox Value="{Binding CurrentProfile.OutBrakeMin, UpdateSourceTrigger=PropertyChanged}" Minimum="-32768" Maximum="32768" ToolTip="Minimum raw output value sent to vJoy brake axis." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+            
+            <TextBlock Text="vJoy Brake Maximum" ToolTip="Maximum raw output value sent to vJoy brake axis." Margin="0,0,0,5" />
+            <ui:NumberBox Value="{Binding CurrentProfile.OutBrakeMax, UpdateSourceTrigger=PropertyChanged}" Minimum="-32768" Maximum="32768" ToolTip="Maximum raw output value sent to vJoy brake axis." Margin="0,0,0,10" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+            <ui:ToggleSwitch IsChecked="{Binding CurrentProfile.InvertBrake}" Content="Invert Brake Axis" ToolTip="Reverses the brake pedal axis direction." Margin="0,0,0,20" />
+        </StackPanel>
+</Page>
