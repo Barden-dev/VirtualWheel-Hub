@@ -305,7 +305,7 @@
 
                     <TextBlock Text="Hub Processing Rate (Hz)" ToolTip="Controls physics update frequency per second." Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,5"/>
                     <ui:NumberBox Value="{Binding CurrentProfile.PollingRate, UpdateSourceTrigger=PropertyChanged}" Minimum="10" Maximum="5000" SmallChange="50" LargeChange="100" ClearButtonEnabled="False" Width="150" HorizontalAlignment="Left" Margin="0,0,0,5"/>
-                    <TextBlock Text="1000 Hz recommended; reduce if CPU usage is high." Foreground="{DynamicResource TextFillColorTertiaryBrush}" FontSize="11"/>
+                    <TextBlock Text="Recommended: 400 Hz for ACC, 200 Hz for LMU. Reduce if CPU usage is high." Foreground="{DynamicResource TextFillColorTertiaryBrush}" FontSize="11"/>
                 </StackPanel>
             </ui:Card>
         </StackPanel>

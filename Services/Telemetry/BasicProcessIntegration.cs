@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using SimRacingHub.Models;
-
 namespace SimRacingHub.Services.Telemetry
 {
     public class BasicProcessIntegration : IGameIntegration
@@ -19,16 +17,6 @@ namespace SimRacingHub.Services.Telemetry
         
         public IGameDetector Detector => _detector;
         
-        public ITelemetryProvider CreateTelemetryProvider()
-        {
-            return new NullTelemetryProvider();
-        }
-        
         public IReadOnlyCollection<FeatureDescriptor> Features => new List<FeatureDescriptor>();
-    }
-    
-    public class NullTelemetryProvider : ITelemetryProvider
-    {
-        public void Update(TelemetryData data) { }
     }
 }

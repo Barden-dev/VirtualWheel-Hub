@@ -23,7 +23,7 @@ namespace SimRacingHub.Services
 
     public class UpdateService
     {
-        public const string CurrentVersion = "1.0.18";
+        public const string CurrentVersion = "1.0.19";
         public static bool IsProVersion { get; set; } = false;
 
         public const string GitHubRepoUrl = "https://github.com/Barden-dev/vWheel-Hub";

@@ -7,7 +7,6 @@ namespace SimRacingHub.Services.Telemetry
         string GameId { get; }
         string DisplayName { get; }
         IGameDetector Detector { get; }
-        ITelemetryProvider CreateTelemetryProvider();
         IReadOnlyCollection<FeatureDescriptor> Features { get; }
     }
 

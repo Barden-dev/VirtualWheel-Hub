@@ -14,11 +14,11 @@ namespace SimRacingHub.Core
             _state = state;
         }
 
-        public void ProcessSteering(int deltaX, TelemetryData telemetry)
+        public void ProcessSteering(int deltaX)
         {
             if (_profile.UseKeyboardOnlyMode) return;
 
-            double mouseSens = _profile.MouseSensitivity * telemetry.MouseSensMultiplier;
+            double mouseSens = _profile.MouseSensitivity * 1.0;
             _state.Steering += deltaX * mouseSens;
             
             double steerMaxLimit = 32768.0;
@@ -119,13 +119,13 @@ namespace SimRacingHub.Core
             _state.Steering = 0;
         }
 
-        public void UpdatePedals(bool isGasPressed, bool isBrakePressed, bool isTurboGas, bool isTurboBrake, TelemetryData telemetry)
+        public void UpdatePedals(bool isGasPressed, bool isBrakePressed, bool isTurboGas, bool isTurboBrake)
         {
-            UpdateBrake(isBrakePressed, isTurboBrake, isTurboGas, telemetry);
+            UpdateBrake(isBrakePressed, isTurboBrake, isTurboGas);
             UpdateGas(isGasPressed, isBrakePressed, isTurboGas);
         }
 
-        private void UpdateBrake(bool isBrakePressed, bool isTurboBrake, bool isTurboGas, TelemetryData telemetry)
+        private void UpdateBrake(bool isBrakePressed, bool isTurboBrake, bool isTurboGas)
         {
             double fullRange = 65536.0;
             double steeringMin = -32768.0;
@@ -214,7 +214,7 @@ namespace SimRacingHub.Core
             return (int)Math.Round(outMin + ((val - inMin) / (inMax - inMin)) * (outMax - outMin));
         }
 
-        public (int steer, int gas, int brake) GetMappedOutputs(TelemetryData telemetry)
+        public (int steer, int gas, int brake) GetMappedOutputs()
         {
             // Steering Gamma
             double rawSteerNorm = _state.Steering / 32768.0;
@@ -242,7 +242,7 @@ namespace SimRacingHub.Core
             int mappedGas;
             if (_profile.UseTcHelper)
             {
-                mappedGas = (int)Math.Round(_profile.OutGasMin + (rawGas - _profile.OutGasMin) * telemetry.TcScaleFactor);
+                mappedGas = (int)Math.Round(_profile.OutGasMin + (rawGas - _profile.OutGasMin) * 1.0);
             }
             else
             {
@@ -263,7 +263,7 @@ namespace SimRacingHub.Core
 
             if (_profile.UseAbsHelper)
             {
-                mappedBrake = (int)Math.Round(_profile.OutBrakeMin + (rawBrake - _profile.OutBrakeMin) * telemetry.ScaleFactor);
+                mappedBrake = (int)Math.Round(_profile.OutBrakeMin + (rawBrake - _profile.OutBrakeMin) * 1.0);
             }
             else
             {

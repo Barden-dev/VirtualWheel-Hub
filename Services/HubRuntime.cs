@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using SimRacingHub.Models;
 using SimRacingHub.Services.Telemetry;
+
 using SimRacingHub.Input;
 using SimRacingHub.Core;
 
@@ -18,7 +19,7 @@ namespace SimRacingHub.Services
         private VJoyWrapper? _vJoy;
         private MathEngine? _mathEngine;
         private readonly AxisState _axisState;
-        private readonly TelemetryData _telemetryData;
+        
         private CancellationTokenSource? _cts;
         
         private ResolvedProfile? _currentProfile;
@@ -35,7 +36,7 @@ namespace SimRacingHub.Services
             _registry = registry;
             _windowManager = windowManager;
             _axisState = new AxisState();
-            _telemetryData = new TelemetryData();
+            
         }
 
         public void UpdateRuntimeProfile(ResolvedProfile profile, ProfileContext? context)
@@ -183,7 +184,7 @@ namespace SimRacingHub.Services
                     {
                         return;
                     }
-                    _mathEngine.ProcessSteering(deltaX, _telemetryData);
+                    _mathEngine.ProcessSteering(deltaX);
                 }
             }
         }
@@ -248,9 +249,9 @@ namespace SimRacingHub.Services
                         mathEngine.CenterSteering();
                     }
 
-                    mathEngine.UpdatePedals(isGasPressed, isBrakePressed, isTurboGas, isTurboBrake, _telemetryData);
+                    mathEngine.UpdatePedals(isGasPressed, isBrakePressed, isTurboGas, isTurboBrake);
                     
-                    var outputs = mathEngine.GetMappedOutputs(_telemetryData);
+                    var outputs = mathEngine.GetMappedOutputs();
                     steer = outputs.steer;
                     gas = outputs.gas;
                     brake = outputs.brake;

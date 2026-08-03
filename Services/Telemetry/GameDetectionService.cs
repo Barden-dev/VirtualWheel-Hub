@@ -94,13 +94,6 @@ namespace SimRacingHub.Services.Telemetry
                 Thread.Sleep(2000); // Check every 2 seconds
             }
         }
-
-        public TelemetryCapabilities GetCapabilities(string gameName)
-        {
-            if (string.IsNullOrEmpty(gameName)) return TelemetryCapabilities.None;
-            var integration = _registry.GetIntegration(gameName);
-            return integration?.Detector.Capabilities ?? TelemetryCapabilities.None;
-        }
     }
 
     public class ProcessGameDetector : IGameDetector
@@ -108,7 +101,6 @@ namespace SimRacingHub.Services.Telemetry
         private readonly string _processName;
         public string GameName { get; }
         public bool IsRunning { get; private set; }
-        public TelemetryCapabilities Capabilities => TelemetryCapabilities.None;
 
         public ProcessGameDetector(string gameName, string processName)
         {

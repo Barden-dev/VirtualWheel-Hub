@@ -38,7 +38,7 @@ It translates real-time mouse movement into ultra-smooth virtual wheel angles an
 
 ### 📌 Key Features
 
-* **High-Precision Mouse Steering:** Converts raw mouse coordinates into virtual joystick output.
+* **High-Precision Mouse Steering:** Converts raw mouse coordinates into virtual joystick output with polling rates up to **1000 Hz**.
 * **Advanced Gas & Brake Physics:** Fully customizable Fast/Slow Attack curves, Decay rates, instant cutoffs, thresholds, and gamma settings for keyboard inputs.
 * **Hierarchical Profile System:** Multi-tiered context profile inheritance (`Game` ➔ `Car Class` ➔ `Car Model`) with real-time undo/redo support.
 * **Automatic Game Detection:** Real-time monitoring of running sim racing processes.
