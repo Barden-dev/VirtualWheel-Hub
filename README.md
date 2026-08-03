@@ -1,7 +1,7 @@
 # 🏎️ vWheel Hub (Open Source / Free Version)
 
 ---
-[![Version](https://img.shields.io/badge/version-v1.0.18-blue.svg)](https://github.com/Barden-dev/vWheel-Hub)
+[![Version](https://img.shields.io/badge/version-v1.0.19-blue.svg)](https://github.com/Barden-dev/vWheel-Hub)
 [![License](https://img.shields.io/badge/license-All_Rights_Reserved-red.svg)](LICENSE)
 [![Boosty](https://img.shields.io/badge/Support-Boosty-orange.svg?style=flat&logo=boosty)](https://boosty.to/barden_dev)
 [![Discord](https://img.shields.io/badge/Community-Discord-5865F2.svg?style=flat&logo=discord)](https://discord.gg/YQn5eh2vfc)
