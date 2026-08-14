@@ -5,6 +5,8 @@ namespace SimRacingHub.Models
 {
     public partial class ProfileContext : ObservableObject, IEquatable<ProfileContext>
     {
+        private bool _isBulkUpdating = false;
+
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(DisplayPath))]
         private string _game;
@@ -19,9 +21,41 @@ namespace SimRacingHub.Models
 
         public ProfileContext(string game = null, string carClass = null, string car = null)
         {
+            _isBulkUpdating = true;
             Game = game;
             CarClass = carClass;
             Car = car;
+            _isBulkUpdating = false;
+        }
+
+        partial void OnGameChanged(string oldValue, string newValue)
+        {
+            if (_isBulkUpdating) return;
+
+            if (!string.Equals(oldValue, newValue, StringComparison.OrdinalIgnoreCase))
+            {
+                CarClass = string.Empty;
+                Car = string.Empty;
+            }
+        }
+
+        partial void OnCarClassChanged(string oldValue, string newValue)
+        {
+            if (_isBulkUpdating) return;
+
+            if (!string.Equals(oldValue, newValue, StringComparison.OrdinalIgnoreCase))
+            {
+                Car = string.Empty;
+            }
+        }
+
+        public void Set(string game, string carClass, string car)
+        {
+            _isBulkUpdating = true;
+            Game = game;
+            CarClass = carClass;
+            Car = car;
+            _isBulkUpdating = false;
         }
 
         public string DisplayPath

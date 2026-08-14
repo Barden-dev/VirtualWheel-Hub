@@ -3,6 +3,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+      AllowDrop="True"
       xmlns:local="clr-namespace:SimRacingHub.Controls" Title="VjoyAxesPage">
     <StackPanel Margin="20">
             <TextBlock Text="vJoy Axes Output Limits" FontSize="20" FontWeight="SemiBold" Margin="0,0,0,20"/>

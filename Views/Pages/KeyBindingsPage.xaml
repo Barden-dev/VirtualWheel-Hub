@@ -4,68 +4,69 @@
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       xmlns:local="clr-namespace:SimRacingHub.Controls"
       Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+      AllowDrop="True"
       Title="KeyBindingsPage">
     <StackPanel Margin="20">
-            <TextBlock Text="Key Bindings" FontSize="20" FontWeight="SemiBold" Margin="0,0,0,20"/>
+        <TextBlock Text="Key Bindings" FontSize="20" FontWeight="SemiBold" Margin="0,0,0,20"/>
+        
+        <Grid Margin="0,10,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="200" />
+                <ColumnDefinition Width="200" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
             
-            <Grid Margin="0,10,0,0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="200" />
-                    <ColumnDefinition Width="200" />
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                
-                <TextBlock Grid.Row="0" Grid.Column="1" Text="Primary Key" Foreground="Gray" Margin="0,0,5,10" HorizontalAlignment="Left" />
-                <TextBlock Grid.Row="0" Grid.Column="2" Text="Secondary Key" Foreground="Gray" Margin="5,0,0,10" HorizontalAlignment="Left" />
-                
-                <TextBlock Grid.Row="1" Grid.Column="0" Text="Steer Left:" Margin="0,0,15,15" VerticalAlignment="Center" IsEnabled="{Binding ResolvedProfile.UseKeyboardOnlyMode}" />
-                <local:KeyBindControl Grid.Row="1" Grid.Column="1" VirtualKeyCode="{Binding CurrentProfile.KeySteerLeft1}" ToolTip="Primary key to turn steering wheel left in Keyboard Only mode." IsEnabled="{Binding ResolvedProfile.UseKeyboardOnlyMode}" Margin="0,0,5,15" />
-                <local:KeyBindControl Grid.Row="1" Grid.Column="2" VirtualKeyCode="{Binding CurrentProfile.KeySteerLeft2}" ToolTip="Secondary key to turn steering wheel left in Keyboard Only mode." IsEnabled="{Binding ResolvedProfile.UseKeyboardOnlyMode}" Margin="5,0,0,15" />
+            <TextBlock Grid.Row="0" Grid.Column="1" Text="Primary Key" Foreground="Gray" Margin="0,0,5,10" HorizontalAlignment="Left" />
+            <TextBlock Grid.Row="0" Grid.Column="2" Text="Secondary Key" Foreground="Gray" Margin="5,0,0,10" HorizontalAlignment="Left" />
+            
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Steer Left:" Margin="0,0,15,15" VerticalAlignment="Center" IsEnabled="{Binding ResolvedProfile.UseKeyboardOnlyMode}" />
+            <local:KeyBindControl Grid.Row="1" Grid.Column="1" VirtualKeyCode="{Binding CurrentProfile.KeySteerLeft1}" ToolTip="Primary key to turn steering wheel left in Keyboard Only mode." IsEnabled="{Binding ResolvedProfile.UseKeyboardOnlyMode}" Margin="0,0,5,15" />
+            <local:KeyBindControl Grid.Row="1" Grid.Column="2" VirtualKeyCode="{Binding CurrentProfile.KeySteerLeft2}" ToolTip="Secondary key to turn steering wheel left in Keyboard Only mode." IsEnabled="{Binding ResolvedProfile.UseKeyboardOnlyMode}" Margin="5,0,0,15" />
 
-                <TextBlock Grid.Row="2" Grid.Column="0" Text="Steer Right:" Margin="0,0,15,15" VerticalAlignment="Center" IsEnabled="{Binding ResolvedProfile.UseKeyboardOnlyMode}" />
-                <local:KeyBindControl Grid.Row="2" Grid.Column="1" VirtualKeyCode="{Binding CurrentProfile.KeySteerRight1}" ToolTip="Primary key to turn steering wheel right in Keyboard Only mode." IsEnabled="{Binding ResolvedProfile.UseKeyboardOnlyMode}" Margin="0,0,5,15" />
-                <local:KeyBindControl Grid.Row="2" Grid.Column="2" VirtualKeyCode="{Binding CurrentProfile.KeySteerRight2}" ToolTip="Secondary key to turn steering wheel right in Keyboard Only mode." IsEnabled="{Binding ResolvedProfile.UseKeyboardOnlyMode}" Margin="5,0,0,15" />
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Steer Right:" Margin="0,0,15,15" VerticalAlignment="Center" IsEnabled="{Binding ResolvedProfile.UseKeyboardOnlyMode}" />
+            <local:KeyBindControl Grid.Row="2" Grid.Column="1" VirtualKeyCode="{Binding CurrentProfile.KeySteerRight1}" ToolTip="Primary key to turn steering wheel right in Keyboard Only mode." IsEnabled="{Binding ResolvedProfile.UseKeyboardOnlyMode}" Margin="0,0,5,15" />
+            <local:KeyBindControl Grid.Row="2" Grid.Column="2" VirtualKeyCode="{Binding CurrentProfile.KeySteerRight2}" ToolTip="Secondary key to turn steering wheel right in Keyboard Only mode." IsEnabled="{Binding ResolvedProfile.UseKeyboardOnlyMode}" Margin="5,0,0,15" />
 
-                <TextBlock Grid.Row="3" Grid.Column="0" Text="Throttle:" Margin="0,0,15,15" VerticalAlignment="Center" />
-                <local:KeyBindControl Grid.Row="3" Grid.Column="1" VirtualKeyCode="{Binding CurrentProfile.KeyGas1}" ToolTip="Primary key to apply throttle." Margin="0,0,5,15" />
-                <local:KeyBindControl Grid.Row="3" Grid.Column="2" VirtualKeyCode="{Binding CurrentProfile.KeyGas2}" ToolTip="Secondary key to apply throttle. Pressing both triggers Turbo attack." Margin="5,0,0,15" />
-                
-                <TextBlock Grid.Row="4" Grid.Column="0" Text="Brake:" Margin="0,0,15,15" VerticalAlignment="Center" />
-                <local:KeyBindControl Grid.Row="4" Grid.Column="1" VirtualKeyCode="{Binding CurrentProfile.KeyBrake1}" ToolTip="Primary key to apply brake." Margin="0,0,5,15" />
-                <local:KeyBindControl Grid.Row="4" Grid.Column="2" VirtualKeyCode="{Binding CurrentProfile.KeyBrake2}" ToolTip="Secondary key to apply brake. Pressing both triggers Turbo attack." Margin="5,0,0,15" />
-                
-                <TextBlock Grid.Row="5" Grid.Column="0" Text="Shift Up:" Margin="0,0,15,15" VerticalAlignment="Center" />
-                <local:KeyBindControl Grid.Row="5" Grid.Column="1" VirtualKeyCode="{Binding CurrentProfile.KeyShiftUp1}" ToolTip="Primary key to shift gear up." Margin="0,0,5,15" />
-                <local:KeyBindControl Grid.Row="5" Grid.Column="2" VirtualKeyCode="{Binding CurrentProfile.KeyShiftUp2}" ToolTip="Secondary key to shift gear up." Margin="5,0,0,15" />
-                
-                <TextBlock Grid.Row="6" Grid.Column="0" Text="Shift Down:" Margin="0,0,15,15" VerticalAlignment="Center" />
-                <local:KeyBindControl Grid.Row="6" Grid.Column="1" VirtualKeyCode="{Binding CurrentProfile.KeyShiftDown1}" ToolTip="Primary key to shift gear down." Margin="0,0,5,15" />
-                <local:KeyBindControl Grid.Row="6" Grid.Column="2" VirtualKeyCode="{Binding CurrentProfile.KeyShiftDown2}" ToolTip="Secondary key to shift gear down." Margin="5,0,0,15" />
-                
-                <TextBlock Grid.Row="7" Grid.Column="0" Text="Center Steer:" Margin="0,0,15,15" VerticalAlignment="Center" />
-                <local:KeyBindControl Grid.Row="7" Grid.Column="1" VirtualKeyCode="{Binding CurrentProfile.KeyCenterSteering1}" ToolTip="Primary key to snap steering wheel to center instantly." Margin="0,0,5,15" />
-                <local:KeyBindControl Grid.Row="7" Grid.Column="2" VirtualKeyCode="{Binding CurrentProfile.KeyCenterSteering2}" ToolTip="Secondary key to snap steering wheel to center instantly." Margin="5,0,0,15" />
-                
-                <TextBlock Grid.Row="8" Grid.Column="0" Text="Toggle Hub:" Margin="0,0,15,15" VerticalAlignment="Center" />
-                <local:KeyBindControl Grid.Row="8" Grid.Column="1" VirtualKeyCode="{Binding CurrentProfile.KeyToggleHub1}" ToolTip="Primary key to toggle Hub Active state on/off." Margin="0,0,5,15" />
-                <local:KeyBindControl Grid.Row="8" Grid.Column="2" VirtualKeyCode="{Binding CurrentProfile.KeyToggleHub2}" ToolTip="Secondary key to toggle Hub Active state on/off." Margin="5,0,0,15" />
-                
-                <TextBlock Grid.Row="9" Grid.Column="0" Text="Toggle Lock:" Margin="0,0,15,0" VerticalAlignment="Center" />
-                <local:KeyBindControl Grid.Row="9" Grid.Column="1" VirtualKeyCode="{Binding CurrentProfile.KeyToggleLock1}" ToolTip="Primary key to toggle mouse lock on/off." Margin="0,0,5,0" />
-                <local:KeyBindControl Grid.Row="9" Grid.Column="2" VirtualKeyCode="{Binding CurrentProfile.KeyToggleLock2}" ToolTip="Secondary key to toggle mouse lock on/off." Margin="5,0,0,0" />
-            </Grid>
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="Throttle:" Margin="0,0,15,15" VerticalAlignment="Center" />
+            <local:KeyBindControl Grid.Row="3" Grid.Column="1" VirtualKeyCode="{Binding CurrentProfile.KeyGas1}" ToolTip="Primary key to apply throttle." Margin="0,0,5,15" />
+            <local:KeyBindControl Grid.Row="3" Grid.Column="2" VirtualKeyCode="{Binding CurrentProfile.KeyGas2}" ToolTip="Secondary key to apply throttle. Pressing both triggers Turbo attack." Margin="5,0,0,15" />
+            
+            <TextBlock Grid.Row="4" Grid.Column="0" Text="Brake:" Margin="0,0,15,15" VerticalAlignment="Center" />
+            <local:KeyBindControl Grid.Row="4" Grid.Column="1" VirtualKeyCode="{Binding CurrentProfile.KeyBrake1}" ToolTip="Primary key to apply brake." Margin="0,0,5,15" />
+            <local:KeyBindControl Grid.Row="4" Grid.Column="2" VirtualKeyCode="{Binding CurrentProfile.KeyBrake2}" ToolTip="Secondary key to apply brake. Pressing both triggers Turbo attack." Margin="5,0,0,15" />
+            
+            <TextBlock Grid.Row="5" Grid.Column="0" Text="Shift Up:" Margin="0,0,15,15" VerticalAlignment="Center" />
+            <local:KeyBindControl Grid.Row="5" Grid.Column="1" VirtualKeyCode="{Binding CurrentProfile.KeyShiftUp1}" ToolTip="Primary key to shift gear up." Margin="0,0,5,15" />
+            <local:KeyBindControl Grid.Row="5" Grid.Column="2" VirtualKeyCode="{Binding CurrentProfile.KeyShiftUp2}" ToolTip="Secondary key to shift gear up." Margin="5,0,0,15" />
+            
+            <TextBlock Grid.Row="6" Grid.Column="0" Text="Shift Down:" Margin="0,0,15,15" VerticalAlignment="Center" />
+            <local:KeyBindControl Grid.Row="6" Grid.Column="1" VirtualKeyCode="{Binding CurrentProfile.KeyShiftDown1}" ToolTip="Primary key to shift gear down." Margin="0,0,5,15" />
+            <local:KeyBindControl Grid.Row="6" Grid.Column="2" VirtualKeyCode="{Binding CurrentProfile.KeyShiftDown2}" ToolTip="Secondary key to shift gear down." Margin="5,0,0,15" />
+            
+            <TextBlock Grid.Row="7" Grid.Column="0" Text="Center Steer:" Margin="0,0,15,15" VerticalAlignment="Center" />
+            <local:KeyBindControl Grid.Row="7" Grid.Column="1" VirtualKeyCode="{Binding CurrentProfile.KeyCenterSteering1}" ToolTip="Primary key to snap steering wheel to center instantly." Margin="0,0,5,15" />
+            <local:KeyBindControl Grid.Row="7" Grid.Column="2" VirtualKeyCode="{Binding CurrentProfile.KeyCenterSteering2}" ToolTip="Secondary key to snap steering wheel to center instantly." Margin="5,0,0,15" />
+            
+            <TextBlock Grid.Row="8" Grid.Column="0" Text="Toggle Hub:" Margin="0,0,15,15" VerticalAlignment="Center" />
+            <local:KeyBindControl Grid.Row="8" Grid.Column="1" VirtualKeyCode="{Binding CurrentProfile.KeyToggleHub1}" ToolTip="Primary key to toggle Hub Active state on/off." Margin="0,0,5,15" />
+            <local:KeyBindControl Grid.Row="8" Grid.Column="2" VirtualKeyCode="{Binding CurrentProfile.KeyToggleHub2}" ToolTip="Secondary key to toggle Hub Active state on/off." Margin="5,0,0,15" />
+            
+            <TextBlock Grid.Row="9" Grid.Column="0" Text="Toggle Lock:" Margin="0,0,15,0" VerticalAlignment="Center" />
+            <local:KeyBindControl Grid.Row="9" Grid.Column="1" VirtualKeyCode="{Binding CurrentProfile.KeyToggleLock1}" ToolTip="Primary key to toggle mouse lock on/off." Margin="0,0,5,0" />
+            <local:KeyBindControl Grid.Row="9" Grid.Column="2" VirtualKeyCode="{Binding CurrentProfile.KeyToggleLock2}" ToolTip="Secondary key to toggle mouse lock on/off." Margin="5,0,0,0" />
+        </Grid>
         
         <TextBlock Text="⚠️ Steer Left and Steer Right key bindings are active only when 'Keyboard only' mode is enabled in Steering settings." 
                    Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" Margin="0,20,0,0" TextWrapping="Wrap" MaxWidth="600" HorizontalAlignment="Left" />

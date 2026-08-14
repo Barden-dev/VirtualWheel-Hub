@@ -25,6 +25,9 @@ namespace SimRacingHub.Models
         [ObservableProperty] private double _gasInstantCut;
         [ObservableProperty] private double _gasGamma = 1.0;
         [ObservableProperty] private bool _useTcHelper;
+        [ObservableProperty] private double _tcSlipThreshold = 0.05;
+        [ObservableProperty] private double _tcMinScale = 0.30;
+        [ObservableProperty] private double _tcMinSpeed = 5.0;
         [ObservableProperty] private bool _enableTcAudio;
         [ObservableProperty] private int _tcAudioFreq;
         [ObservableProperty] private int _tcAudioDur;
@@ -34,7 +37,13 @@ namespace SimRacingHub.Models
         [ObservableProperty] private double _brakeDecay;
         [ObservableProperty] private double _brakeGamma = 1.0;
         [ObservableProperty] private bool _useAbsHelper;
+        [ObservableProperty] private double _absSlipThreshold = 0.10;
+        [ObservableProperty] private double _absMinScale = 0.20;
+        [ObservableProperty] private double _absMinSpeed = 10.0;
         [ObservableProperty] private bool _enableSlipAudio;
+        [ObservableProperty] private double _slipAudioUnderThreshold = 2.0;
+        [ObservableProperty] private double _slipAudioOverThreshold = 1.8;
+        [ObservableProperty] private double _slipAudioMinSpeed = 50.0;
 
         partial void OnUseTcHelperChanged(bool value)
         {
@@ -128,6 +137,9 @@ namespace SimRacingHub.Models
             if (p.GasInstantCut.HasValue) GasInstantCut = p.GasInstantCut.Value;
             if (p.GasGamma.HasValue) GasGamma = p.GasGamma.Value;
             if (p.UseTcHelper.HasValue) UseTcHelper = p.UseTcHelper.Value;
+            if (p.TcSlipThreshold.HasValue) TcSlipThreshold = p.TcSlipThreshold.Value;
+            if (p.TcMinScale.HasValue) TcMinScale = p.TcMinScale.Value;
+            if (p.TcMinSpeed.HasValue) TcMinSpeed = p.TcMinSpeed.Value;
             if (p.EnableTcAudio.HasValue) EnableTcAudio = p.EnableTcAudio.Value;
             if (p.TcAudioFreq.HasValue) TcAudioFreq = p.TcAudioFreq.Value;
             if (p.TcAudioDur.HasValue) TcAudioDur = p.TcAudioDur.Value;
@@ -137,7 +149,13 @@ namespace SimRacingHub.Models
             if (p.BrakeDecay.HasValue) BrakeDecay = p.BrakeDecay.Value;
             if (p.BrakeGamma.HasValue) BrakeGamma = p.BrakeGamma.Value;
             if (p.UseAbsHelper.HasValue) UseAbsHelper = p.UseAbsHelper.Value;
+            if (p.AbsSlipThreshold.HasValue) AbsSlipThreshold = p.AbsSlipThreshold.Value;
+            if (p.AbsMinScale.HasValue) AbsMinScale = p.AbsMinScale.Value;
+            if (p.AbsMinSpeed.HasValue) AbsMinSpeed = p.AbsMinSpeed.Value;
             if (p.EnableSlipAudio.HasValue) EnableSlipAudio = p.EnableSlipAudio.Value;
+            if (p.SlipAudioUnderThreshold.HasValue) SlipAudioUnderThreshold = p.SlipAudioUnderThreshold.Value;
+            if (p.SlipAudioOverThreshold.HasValue) SlipAudioOverThreshold = p.SlipAudioOverThreshold.Value;
+            if (p.SlipAudioMinSpeed.HasValue) SlipAudioMinSpeed = p.SlipAudioMinSpeed.Value;
             if (p.SlipAudioUnderFreq.HasValue) SlipAudioUnderFreq = p.SlipAudioUnderFreq.Value;
             if (p.SlipAudioUnderDur.HasValue) SlipAudioUnderDur = p.SlipAudioUnderDur.Value;
             if (p.SlipAudioOverFreq.HasValue) SlipAudioOverFreq = p.SlipAudioOverFreq.Value;
@@ -201,6 +219,9 @@ namespace SimRacingHub.Models
             GasInstantCut = p.GasInstantCut;
             GasGamma = p.GasGamma;
             UseTcHelper = p.UseTcHelper;
+            TcSlipThreshold = p.TcSlipThreshold;
+            TcMinScale = p.TcMinScale;
+            TcMinSpeed = p.TcMinSpeed;
             EnableTcAudio = p.EnableTcAudio;
             TcAudioFreq = p.TcAudioFreq;
             TcAudioDur = p.TcAudioDur;
@@ -210,7 +231,13 @@ namespace SimRacingHub.Models
             BrakeDecay = p.BrakeDecay;
             BrakeGamma = p.BrakeGamma;
             UseAbsHelper = p.UseAbsHelper;
+            AbsSlipThreshold = p.AbsSlipThreshold;
+            AbsMinScale = p.AbsMinScale;
+            AbsMinSpeed = p.AbsMinSpeed;
             EnableSlipAudio = p.EnableSlipAudio;
+            SlipAudioUnderThreshold = p.SlipAudioUnderThreshold;
+            SlipAudioOverThreshold = p.SlipAudioOverThreshold;
+            SlipAudioMinSpeed = p.SlipAudioMinSpeed;
             SlipAudioUnderFreq = p.SlipAudioUnderFreq;
             SlipAudioUnderDur = p.SlipAudioUnderDur;
             SlipAudioOverFreq = p.SlipAudioOverFreq;

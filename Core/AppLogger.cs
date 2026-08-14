@@ -34,6 +34,15 @@ namespace SimRacingHub.Core
                 LastStatusMessage = message;
             });
         }
+
+        public void LogWarning(string message)
+        {
+            Debug.WriteLine($"[WARN] {message}");
+            System.Windows.Application.Current?.Dispatcher.InvokeAsync(() => 
+            {
+                LastStatusMessage = message;
+            });
+        }
         
         public void ClearStatus()
         {

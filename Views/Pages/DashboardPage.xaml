@@ -3,6 +3,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+      AllowDrop="True"
       xmlns:local="clr-namespace:SimRacingHub.Controls" Title="DashboardPage">
     <StackPanel Margin="30">
         
@@ -242,9 +243,18 @@
                 <!-- Top status row with label and pill badge -->
                 <Grid Margin="0,0,0,8">
                     <TextBlock Text="Active profile" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="13" VerticalAlignment="Center"/>
-                    <Border HorizontalAlignment="Right" Background="#1D3E6E" BorderBrush="#2B5899" BorderThickness="1" CornerRadius="12" Padding="10,2,10,3">
-                        <TextBlock Text="{Binding CurrentContext.DisplayPath, FallbackValue='Universal'}" Foreground="#60A5FA" FontSize="12" FontWeight="SemiBold"/>
-                    </Border>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Border Visibility="{Binding IsNewProfile, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                Background="#142B1A" BorderBrush="#15803D" BorderThickness="1" CornerRadius="12" Padding="8,2" Margin="0,0,6,0">
+                            <StackPanel Orientation="Horizontal">
+                                <ui:SymbolIcon Symbol="Add24" FontSize="11" Foreground="#4ADE80" Margin="0,0,4,0"/>
+                                <TextBlock Text="New Profile" Foreground="#4ADE80" FontSize="11" FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </Border>
+                        <Border Background="#1D3E6E" BorderBrush="#2B5899" BorderThickness="1" CornerRadius="12" Padding="10,2,10,3">
+                            <TextBlock Text="{Binding CurrentContext.DisplayPath, FallbackValue='Universal'}" Foreground="#60A5FA" FontSize="12" FontWeight="SemiBold"/>
+                        </Border>
+                    </StackPanel>
                 </Grid>
                 
                 <!-- Descriptive heading -->
@@ -268,6 +278,9 @@
                         <Style TargetType="TextBlock">
                             <Setter Property="Text" Value="Custom tuned profile active for this specific game context."/>
                             <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsNewProfile}" Value="True">
+                                    <Setter Property="Text" Value="This profile does not exist on disk yet. It is inheriting settings from its parent. Click 'Create Profile' above to save it as a dedicated profile."/>
+                                </DataTrigger>
                                 <DataTrigger Binding="{Binding CurrentContext.DisplayPath}" Value="Universal">
                                     <Setter Property="Text" Value="Used as a fallback when a game is not auto-detected or has no dedicated profile."/>
                                 </DataTrigger>

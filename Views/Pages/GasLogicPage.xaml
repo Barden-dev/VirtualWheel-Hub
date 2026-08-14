@@ -3,6 +3,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+      AllowDrop="True"
       xmlns:local="clr-namespace:SimRacingHub.Controls"
       xmlns:conv="clr-namespace:SimRacingHub.Converters" Title="GasLogicPage">
     <Page.Resources>
@@ -46,6 +47,17 @@
                                Margin="10,0,0,0"/>
                 </Grid>
             </ui:Card>
+
+            <StackPanel IsEnabled="{Binding ResolvedProfile.UseTcHelper}" Margin="0,0,0,15">
+                <TextBlock Text="TC Slip Threshold (%)" ToolTip="Rear wheelspin slip percentage over car speed required to trigger TC throttle cut." Margin="0,0,0,5" />
+                <ui:NumberBox Value="{Binding CurrentProfile.TcSlipThreshold, Converter={StaticResource PercentageConverter}, UpdateSourceTrigger=PropertyChanged}" Minimum="1" Maximum="50" ToolTip="Rear wheelspin slip percentage over car speed required to trigger TC throttle cut." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+
+                <TextBlock Text="TC Min Throttle Limit (%)" ToolTip="The lowest allowed throttle percentage while TC is actively intervening." Margin="0,0,0,5" />
+                <ui:NumberBox Value="{Binding CurrentProfile.TcMinScale, Converter={StaticResource PercentageConverter}, UpdateSourceTrigger=PropertyChanged}" Minimum="5" Maximum="95" ToolTip="The lowest allowed throttle percentage while TC is actively intervening." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+
+                <TextBlock Text="TC Min Speed (km/h)" ToolTip="Minimum vehicle speed for TC to intervene. Below this speed, TC allows higher throttle to help launch from standstill." Margin="0,0,0,5" />
+                <ui:NumberBox Value="{Binding CurrentProfile.TcMinSpeed, UpdateSourceTrigger=PropertyChanged}" Minimum="1" Maximum="50" ToolTip="Minimum vehicle speed for TC to intervene." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+            </StackPanel>
 
             <TextBlock Text="Fast Attack Threshold (%)" ToolTip="The pedal percentage at which the throttle application speed slows down." Margin="0,0,0,5" />
             <ui:NumberBox Value="{Binding CurrentProfile.GasThreshold, Converter={StaticResource PercentageConverter}, UpdateSourceTrigger=PropertyChanged}" Minimum="0" Maximum="100" ToolTip="The pedal percentage at which the throttle application speed slows down." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />

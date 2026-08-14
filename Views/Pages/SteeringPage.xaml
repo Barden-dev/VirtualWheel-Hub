@@ -3,6 +3,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+      AllowDrop="True"
       xmlns:local="clr-namespace:SimRacingHub.Controls" 
       xmlns:conv="clr-namespace:SimRacingHub.Converters"
       Title="SteeringPage">

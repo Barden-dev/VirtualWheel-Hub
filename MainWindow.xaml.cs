@@ -13,7 +13,7 @@ namespace SimRacingHub
 {
     public class WindowSettings
     {
-        public double Width { get; set; } = 1000;
+        public double Width { get; set; } = 1100;
         public double Height { get; set; } = 700;
         public double Left { get; set; } = double.NaN;
         public double Top { get; set; } = double.NaN;
@@ -23,7 +23,7 @@ namespace SimRacingHub
 
     public partial class MainWindow : FluentWindow
     {
-        private const string SettingsFile = "window.json";
+        private static readonly string SettingsFile = StoragePaths.WindowSettingsPath;
 
         public MainWindow(MainViewModel viewModel)
         {
@@ -60,8 +60,8 @@ namespace SimRacingHub
                     var settings = JsonConvert.DeserializeObject<WindowSettings>(File.ReadAllText(SettingsFile));
                     if (settings != null)
                     {
-                        Width = settings.Width;
-                        Height = settings.Height;
+                        Width = Math.Max(1100, settings.Width);
+                        Height = Math.Max(600, settings.Height);
                         if (!double.IsNaN(settings.Left) && !double.IsNaN(settings.Top))
                         {
                             WindowStartupLocation = WindowStartupLocation.Manual;
@@ -120,6 +120,94 @@ namespace SimRacingHub
             {
                 var helper = new WindowInteropHelper(this);
                 vm.WindowHandle = helper.Handle;
+            }
+        }
+
+        private bool IsValidProfileDrag(DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                var files = (string[])e.Data.GetData(DataFormats.FileDrop);
+                if (files != null && files.Length > 0)
+                {
+                    string ext = Path.GetExtension(files[0]).ToLowerInvariant();
+                    return ext == ".vwh" || ext == ".json";
+                }
+            }
+            return false;
+        }
+
+        private void MainWindow_PreviewDragEnter(object sender, DragEventArgs e)
+        {
+            if (IsValidProfileDrag(e))
+            {
+                e.Effects = DragDropEffects.Copy;
+                DropOverlay.Visibility = Visibility.Visible;
+                e.Handled = true;
+            }
+            else
+            {
+                e.Effects = DragDropEffects.None;
+            }
+        }
+
+        private void MainWindow_PreviewDragOver(object sender, DragEventArgs e)
+        {
+            if (IsValidProfileDrag(e))
+            {
+                e.Effects = DragDropEffects.Copy;
+                if (DropOverlay.Visibility != Visibility.Visible)
+                {
+                    DropOverlay.Visibility = Visibility.Visible;
+                }
+                e.Handled = true;
+            }
+            else
+            {
+                e.Effects = DragDropEffects.None;
+                if (DropOverlay.Visibility != Visibility.Collapsed)
+                {
+                    DropOverlay.Visibility = Visibility.Collapsed;
+                }
+            }
+        }
+
+        private void MainWindow_PreviewDragLeave(object sender, DragEventArgs e)
+        {
+            DropOverlay.Visibility = Visibility.Collapsed;
+        }
+
+        private void MainWindow_PreviewDrop(object sender, DragEventArgs e)
+        {
+            DropOverlay.Visibility = Visibility.Collapsed;
+
+            if (IsValidProfileDrag(e))
+            {
+                var files = (string[])e.Data.GetData(DataFormats.FileDrop);
+                if (files != null && files.Length > 0)
+                {
+                    string filePath = files[0];
+                    if (DataContext is MainViewModel vm)
+                    {
+                        var pkg = vm.ProfileSharingService.ImportFromFile(filePath);
+                        if (pkg != null)
+                        {
+                            vm.ProcessImportPackage(pkg);
+                        }
+                        else
+                        {
+                            AppLogger.Instance.LogWarning($"Failed to parse dropped preset file: {Path.GetFileName(filePath)}");
+                            var box = new Wpf.Ui.Controls.MessageBox
+                            {
+                                Title = "Invalid Preset File",
+                                Content = $"The file '{Path.GetFileName(filePath)}' could not be parsed as a valid vWheel Hub profile preset.",
+                                CloseButtonText = "OK"
+                            };
+                            _ = box.ShowDialogAsync();
+                        }
+                    }
+                }
+                e.Handled = true;
             }
         }
     }

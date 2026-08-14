@@ -5,11 +5,13 @@ using Newtonsoft.Json;
 using SimRacingHub.Models;
 using System.Linq;
 
+using SimRacingHub.Core;
+
 namespace SimRacingHub.Services
 {
     public class ProfileManager
     {
-        private readonly string _profileDirectory = "Profiles";
+        private readonly string _profileDirectory = StoragePaths.ProfilesDirectory;
 
         public ProfileManager()
         {
@@ -31,11 +33,14 @@ namespace SimRacingHub.Services
         public string GetProfilePath(ProfileContext context)
         {
             string game = SanitizeName(context?.Game);
+            if (string.IsNullOrEmpty(game)) game = "Universal";
             string carClass = SanitizeName(context?.CarClass);
             string car = SanitizeName(context?.Car);
 
-            if (string.IsNullOrEmpty(game) || game.Equals("Universal", StringComparison.OrdinalIgnoreCase))
+            if (game.Equals("Universal", StringComparison.OrdinalIgnoreCase) && string.IsNullOrEmpty(carClass))
+            {
                 return Path.Combine(_profileDirectory, "Universal.json");
+            }
             
             if (string.IsNullOrEmpty(carClass))
             {
@@ -93,55 +98,62 @@ namespace SimRacingHub.Services
             Profile activeProfile;
 
             string game = SanitizeName(context?.Game);
+            if (string.IsNullOrEmpty(game)) game = "Universal";
             string carClass = SanitizeName(context?.CarClass);
             string car = SanitizeName(context?.Car);
 
-            if (string.IsNullOrEmpty(game) || game.Equals("Universal", StringComparison.OrdinalIgnoreCase))
+            // 1. Game Level
+            Profile gameProf;
+            if (game.Equals("Universal", StringComparison.OrdinalIgnoreCase))
             {
-                var (universal, _) = LoadFile(Path.Combine(_profileDirectory, "Universal.json"));
-                if (!universal.MouseSensitivity.HasValue) 
+                var (universal, universalIsNew) = LoadFile(Path.Combine(_profileDirectory, "Universal.json"));
+                if (universalIsNew || !universal.MouseSensitivity.HasValue) 
                 {
                     universal = Profile.CreateDefault("Universal");
                     SaveFile(Path.Combine(_profileDirectory, "Universal.json"), universal);
                 }
-                resolved.UpdateFrom(universal);
-                activeProfile = universal;
+                gameProf = universal;
             }
             else
             {
-                var (gameProf, gameIsNew) = LoadFile(Path.Combine(_profileDirectory, game, "Default.json"));
-                if (gameIsNew || !gameProf.MouseSensitivity.HasValue)
+                var (gProf, gIsNew) = LoadFile(Path.Combine(_profileDirectory, game, "Default.json"));
+                if (gIsNew)
                 {
-                    gameProf = Profile.CreateDefault(game);
-                    SaveFile(Path.Combine(_profileDirectory, game, "Default.json"), gameProf);
+                    var (universal, _) = LoadFile(Path.Combine(_profileDirectory, "Universal.json"));
+                    gProf.CopyFrom(universal);
+                    gProf.Name = $"{game} (Default)";
                 }
-                resolved.UpdateFrom(gameProf);
-                activeProfile = gameProf;
+                gameProf = gProf;
+            }
 
-                if (!string.IsNullOrEmpty(carClass))
+            resolved.UpdateFrom(gameProf);
+            activeProfile = gameProf;
+
+            // 2. Class Level
+            if (!string.IsNullOrEmpty(carClass))
+            {
+                var (classProf, classIsNew) = LoadFile(Path.Combine(_profileDirectory, game, carClass, "Default.json"));
+                if (classIsNew)
                 {
-                    var (classProf, classIsNew) = LoadFile(Path.Combine(_profileDirectory, game, carClass, "Default.json"));
-                    if (classIsNew)
+                    classProf.CopyFrom(gameProf);
+                    classProf.Name = $"{carClass} (Default)";
+                }
+                
+                resolved.UpdateFrom(classProf);
+                activeProfile = classProf;
+
+                // 3. Car Level
+                if (!string.IsNullOrEmpty(car))
+                {
+                    var (carProf, carIsNew) = LoadFile(Path.Combine(_profileDirectory, game, carClass, $"{car}.json"));
+                    if (carIsNew)
                     {
-                        classProf.CopyFrom(gameProf);
-                        SaveFile(Path.Combine(_profileDirectory, game, carClass, "Default.json"), classProf);
+                        carProf.CopyFrom(classProf);
+                        carProf.Name = car;
                     }
                     
-                    resolved.UpdateFrom(classProf);
-                    activeProfile = classProf;
-
-                    if (!string.IsNullOrEmpty(car))
-                    {
-                        var (carProf, carIsNew) = LoadFile(Path.Combine(_profileDirectory, game, carClass, $"{car}.json"));
-                        if (carIsNew)
-                        {
-                            carProf.CopyFrom(classProf);
-                            SaveFile(Path.Combine(_profileDirectory, game, carClass, $"{car}.json"), carProf);
-                        }
-                        
-                        resolved.UpdateFrom(carProf);
-                        activeProfile = carProf;
-                    }
+                    resolved.UpdateFrom(carProf);
+                    activeProfile = carProf;
                 }
             }
 

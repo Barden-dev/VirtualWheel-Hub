@@ -13,6 +13,7 @@ using SimRacingHub.Services;
 using SimRacingHub.Services.Telemetry;
 using SimRacingHub.Services.Plugins;
 using System.Collections.Generic;
+using SimRacingHub.Views.Dialogs;
 
 namespace SimRacingHub.ViewModels
 {
@@ -25,6 +26,8 @@ namespace SimRacingHub.ViewModels
         private readonly UpdateService _updateService;
         private readonly HubRuntime _hubRuntime;
         private readonly HotkeyService _hotkeyService;
+        private readonly ProfileSharingService _profileSharingService = new ProfileSharingService();
+        public ProfileSharingService ProfileSharingService => _profileSharingService;
         private GameDetectionService _gameDetection;
         public GameDetectionService GameDetection => _gameDetection;
 
@@ -308,7 +311,7 @@ namespace SimRacingHub.ViewModels
                     AutoStartHub = AutoStartHub,
                     AutoDetectOnStartup = AutoDetectOnStartup
                 };
-                System.IO.File.WriteAllText("appsettings.json", Newtonsoft.Json.JsonConvert.SerializeObject(settings, Newtonsoft.Json.Formatting.Indented));
+                System.IO.File.WriteAllText(StoragePaths.AppSettingsPath, Newtonsoft.Json.JsonConvert.SerializeObject(settings, Newtonsoft.Json.Formatting.Indented));
             }
             catch (Exception ex)
             {
@@ -392,9 +395,9 @@ namespace SimRacingHub.ViewModels
             
             try
             {
-                if (System.IO.File.Exists("appsettings.json"))
+                if (System.IO.File.Exists(StoragePaths.AppSettingsPath))
                 {
-                    var settings = Newtonsoft.Json.JsonConvert.DeserializeObject<System.Collections.Generic.Dictionary<string, bool>>(System.IO.File.ReadAllText("appsettings.json"));
+                    var settings = Newtonsoft.Json.JsonConvert.DeserializeObject<System.Collections.Generic.Dictionary<string, bool>>(System.IO.File.ReadAllText(StoragePaths.AppSettingsPath));
                     if (settings != null)
                     {
                         if (settings.TryGetValue("AutoStartHub", out bool autoStart))
@@ -877,6 +880,77 @@ namespace SimRacingHub.ViewModels
             if (CurrentProfile != null)
             {
                 CurrentProfile.TbDecay = Profile.DefaultTbDecay;
+            }
+        }
+
+        [RelayCommand]
+        public void OpenExportDialog()
+        {
+            if (CurrentProfile == null) return;
+            var dialog = new ProfileExportDialog(CurrentProfile, CurrentContext, _profileSharingService);
+            dialog.Owner = System.Windows.Application.Current?.MainWindow;
+            dialog.ShowDialog();
+        }
+
+        [RelayCommand]
+        public void OpenImportDialog()
+        {
+            var dialog = new ProfileImportDialog(CurrentContext, _profileSharingService);
+            dialog.Owner = System.Windows.Application.Current?.MainWindow;
+            ExecuteImportDialog(dialog);
+        }
+
+        public void ProcessImportPackage(ProfileSharePackage package)
+        {
+            if (package == null || package.Settings == null) return;
+
+            var dialog = new ProfileImportDialog(CurrentContext, _profileSharingService, package);
+            dialog.Owner = System.Windows.Application.Current?.MainWindow;
+            ExecuteImportDialog(dialog);
+        }
+
+        private void ExecuteImportDialog(ProfileImportDialog dialog)
+        {
+            if (dialog.ShowDialog() == true && dialog.Package?.Settings != null)
+            {
+                var package = dialog.Package;
+                if (dialog.ResultAction == ProfileImportAction.SaveToTargetSlot && package.TargetContext != null)
+                {
+                    _profileManager.SaveContext(package.TargetContext, package.Settings);
+                    AppLogger.Instance.LogInfo($"Saved profile preset to slot: {package.TargetContext.DisplayPath}");
+
+                    // If user is currently looking at this context, reload
+                    if (string.Equals(CurrentContext.DisplayPath, package.TargetContext.DisplayPath, StringComparison.OrdinalIgnoreCase))
+                    {
+                        LoadCurrentContext();
+                    }
+                    else
+                    {
+                        RefreshDropdownCollections();
+                    }
+                }
+                else if (dialog.ResultAction == ProfileImportAction.ApplyToCurrentContext)
+                {
+                    CurrentProfile.CopyFrom(package.Settings);
+                    AppLogger.Instance.LogInfo($"Applied profile preset to active configuration: {CurrentContext.DisplayPath}");
+                }
+            }
+        }
+
+        [RelayCommand]
+        public void OpenProfilesFolder()
+        {
+            try
+            {
+                if (!System.IO.Directory.Exists(StoragePaths.ProfilesDirectory))
+                {
+                    System.IO.Directory.CreateDirectory(StoragePaths.ProfilesDirectory);
+                }
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("explorer.exe", StoragePaths.ProfilesDirectory) { UseShellExecute = true });
+            }
+            catch (Exception ex)
+            {
+                AppLogger.Instance.LogError("Failed to open profiles folder", ex);
             }
         }
     }

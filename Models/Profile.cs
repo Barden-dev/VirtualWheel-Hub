@@ -35,6 +35,9 @@ namespace SimRacingHub.Models
         [ObservableProperty] private double? _gasGamma = 1.0;
         
         [ObservableProperty] private bool? _useTcHelper;
+        [ObservableProperty] private double? _tcSlipThreshold = 0.05;
+        [ObservableProperty] private double? _tcMinScale = 0.30;
+        [ObservableProperty] private double? _tcMinSpeed = 5.0;
         [ObservableProperty] private bool? _enableTcAudio;
         [ObservableProperty] private int? _tcAudioFreq = 500;
         [ObservableProperty] private int? _tcAudioDur = 60;
@@ -47,7 +50,13 @@ namespace SimRacingHub.Models
         [ObservableProperty] private double? _brakeGamma = 1.0;
         
         [ObservableProperty] private bool? _useAbsHelper;
+        [ObservableProperty] private double? _absSlipThreshold = 0.10;
+        [ObservableProperty] private double? _absMinScale = 0.20;
+        [ObservableProperty] private double? _absMinSpeed = 10.0;
         [ObservableProperty] private bool? _enableSlipAudio;
+        [ObservableProperty] private double? _slipAudioUnderThreshold = 2.0;
+        [ObservableProperty] private double? _slipAudioOverThreshold = 1.8;
+        [ObservableProperty] private double? _slipAudioMinSpeed = 50.0;
 
         partial void OnUseTcHelperChanged(bool? value)
         {
@@ -153,6 +162,11 @@ namespace SimRacingHub.Models
             {
                 return CreateLmuDefault(name);
             }
+            if (string.Equals(name, "Assetto Corsa Competizione", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(name, "ACC", StringComparison.OrdinalIgnoreCase))
+            {
+                return CreateAccDefault(name);
+            }
 
             return new Profile
             {
@@ -177,6 +191,9 @@ namespace SimRacingHub.Models
                 GasInstantCut = 7400.0,
                 GasGamma = 1.0,
                 UseTcHelper = false,
+                TcSlipThreshold = 0.05,
+                TcMinScale = 0.30,
+                TcMinSpeed = 5.0,
                 EnableTcAudio = false,
                 TcAudioFreq = 500,
                 TcAudioDur = 60,
@@ -186,7 +203,13 @@ namespace SimRacingHub.Models
                 BrakeDecay = 1295.0,
                 BrakeGamma = 1.0,
                 UseAbsHelper = false,
+                AbsSlipThreshold = 0.10,
+                AbsMinScale = 0.20,
+                AbsMinSpeed = 10.0,
                 EnableSlipAudio = false,
+                SlipAudioUnderThreshold = 2.0,
+                SlipAudioOverThreshold = 1.8,
+                SlipAudioMinSpeed = 50.0,
                 SlipAudioUnderFreq = 650,
                 SlipAudioUnderDur = 80,
                 SlipAudioOverFreq = 280,
@@ -254,6 +277,9 @@ namespace SimRacingHub.Models
                 GasInstantCut = 7400.0,
                 GasGamma = 1.0,
                 UseTcHelper = false,
+                TcSlipThreshold = 0.05,
+                TcMinScale = 0.30,
+                TcMinSpeed = 5.0,
                 EnableTcAudio = false,
                 TcAudioFreq = 500,
                 TcAudioDur = 60,
@@ -263,7 +289,13 @@ namespace SimRacingHub.Models
                 BrakeDecay = 1295.0,
                 BrakeGamma = 1.0,
                 UseAbsHelper = false,
+                AbsSlipThreshold = 0.05,
+                AbsMinScale = 0.20,
+                AbsMinSpeed = 10.0,
                 EnableSlipAudio = false,
+                SlipAudioUnderThreshold = 2.0,
+                SlipAudioOverThreshold = 1.8,
+                SlipAudioMinSpeed = 54.0,
                 SlipAudioUnderFreq = 650,
                 SlipAudioUnderDur = 80,
                 SlipAudioOverFreq = 280,
@@ -304,6 +336,21 @@ namespace SimRacingHub.Models
                 KeyToggleLock1 = 0x23, // End
                 KeyToggleLock2 = 0
             };
+        }
+
+        public static Profile CreateAccDefault(string name = "Assetto Corsa Competizione")
+        {
+            var p = CreateDefault(name);
+            p.AbsSlipThreshold = 0.14;
+            p.AbsMinScale = 0.20;
+            p.AbsMinSpeed = 10.0;
+            p.TcSlipThreshold = 0.05;
+            p.TcMinScale = 0.50;
+            p.TcMinSpeed = 5.0;
+            p.SlipAudioUnderThreshold = 2.0;
+            p.SlipAudioOverThreshold = 1.8;
+            p.SlipAudioMinSpeed = 50.0;
+            return p;
         }
 
         public void CopyFrom(Profile source)

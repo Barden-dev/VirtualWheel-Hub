@@ -1,7 +1,7 @@
 # 🏎️ vWheel Hub (Open Source / Free Version)
 
 ---
-[![Version](https://img.shields.io/badge/version-v1.0.19-blue.svg)](https://github.com/Barden-dev/vWheel-Hub)
+[![Version](https://img.shields.io/badge/version-v1.0.20-blue.svg)](https://github.com/Barden-dev/vWheel-Hub)
 [![License](https://img.shields.io/badge/license-All_Rights_Reserved-red.svg)](LICENSE)
 [![Boosty](https://img.shields.io/badge/Support-Boosty-orange.svg?style=flat&logo=boosty)](https://boosty.to/barden_dev)
 [![Discord](https://img.shields.io/badge/Community-Discord-5865F2.svg?style=flat&logo=discord)](https://discord.gg/YQn5eh2vfc)
@@ -24,9 +24,9 @@ It translates real-time mouse movement into ultra-smooth virtual wheel angles an
 >
 > 🏎️ **Telemetry & Auto-Detection:** Telemetry features (ABS/TC Helpers, Speed-Sensitive Steering, Trail Braking, Audio Slip Cues) and automatic game detection are currently supported for:
 > * **Le Mans Ultimate (LMU)** — Full Support (Telemetry & Auto-Detect)
-> * **Assetto Corsa Competizione** — Full Support (Telemetry & Auto-Detect)
 > * **rFactor 2** — Experimental Support (Telemetry & Auto-Detect)
 > * **iRacing** — Experimental Support (Auto-Detect Only)
+> * **Assetto Corsa Competizione** — Experimental Support (Auto-Detect Only)
 > * **Assetto Corsa** — Experimental Support (Auto-Detect Only)
 > * **Dirt Rally 2.0** — Experimental Support (Auto-Detect Only)
 > * **EA WRC** — Experimental Support (Auto-Detect Only)

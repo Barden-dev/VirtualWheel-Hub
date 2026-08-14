@@ -19,6 +19,12 @@
                 <Setter Property="UseLayoutRounding" Value="True" />
                 <Setter Property="SnapsToDevicePixels" Value="True" />
             </Style>
+            <Style TargetType="Page">
+                <Setter Property="AllowDrop" Value="True" />
+            </Style>
+            <Style TargetType="Frame">
+                <Setter Property="AllowDrop" Value="True" />
+            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

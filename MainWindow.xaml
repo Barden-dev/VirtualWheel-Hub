@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:SimRacingHub.Controls"
         xmlns:core="clr-namespace:SimRacingHub.Core"
         xmlns:conv="clr-namespace:SimRacingHub.Converters"
-        Title="vWheel Hub" Height="700" Width="1000"
+        Title="vWheel Hub" Height="700" Width="1100" MinWidth="1100" MinHeight="600"
         WindowBackdropType="Mica"
         ExtendsContentIntoTitleBar="True"
         WindowCornerPreference="Round"
@@ -14,6 +14,11 @@
         SnapsToDevicePixels="True"
         RenderOptions.BitmapScalingMode="HighQuality"
         Icon="pack://application:,,,/icon.ico"
+        AllowDrop="True"
+        PreviewDragEnter="MainWindow_PreviewDragEnter"
+        PreviewDragOver="MainWindow_PreviewDragOver"
+        PreviewDragLeave="MainWindow_PreviewDragLeave"
+        PreviewDrop="MainWindow_PreviewDrop"
         Foreground="{DynamicResource TextFillColorPrimaryBrush}">
 
     <ui:FluentWindow.Resources>
@@ -21,7 +26,7 @@
         <conv:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
     </ui:FluentWindow.Resources>
 
-    <Grid>
+    <Grid AllowDrop="True">
         <!-- App TitleBar -->
         <ui:TitleBar Padding="10,0,0,0">
             <ui:TitleBar.Header>
@@ -38,7 +43,7 @@
             </ui:TitleBar.TrailingContent>
         </ui:TitleBar>
 
-        <Grid Margin="0,32,0,0">
+        <Grid Margin="0,32,0,0" AllowDrop="True">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
@@ -144,6 +149,7 @@
             </StackPanel>
 
             <ui:NavigationView Grid.Row="1" x:Name="RootNavigation"
+                               AllowDrop="True"
                                PaneTitle="vWheel Hub"
                                PaneDisplayMode="Left"
                                IsPaneToggleVisible="False"
@@ -173,113 +179,142 @@
                     <ui:NavigationViewItem Content="Wiki" Command="{Binding OpenWikiCommand}" Icon="{ui:SymbolIcon Book24}" ToolTip="View documentation and guides on Wiki." />
                 </ui:NavigationView.FooterMenuItems>
 
-                <!-- Content Overlay -->
+                <!-- Content Header: 2-Tier Structured Top Bar -->
                 <ui:NavigationView.Header>
-                    <Border BorderThickness="0,0,0,1" BorderBrush="{DynamicResource SurfaceStrokeColorDefaultBrush}" Margin="20,0,20,0" Padding="0,0,0,5">
-                        <Grid Margin="0,10,0,5">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
+                    <Border BorderThickness="0,0,0,1" BorderBrush="{DynamicResource SurfaceStrokeColorDefaultBrush}" Margin="20,0,20,0" Padding="0,4,0,8">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
 
-                            <!-- Left: Breadcrumb & Profile Controls -->
-                            <WrapPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                                <!-- Profile Breadcrumb -->
-                                <StackPanel Orientation="Horizontal" Margin="0,0,15,5" VerticalAlignment="Center">
-                                    <ui:SymbolIcon Symbol="Folder24" Margin="0,0,6,0" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
-                                    <TextBlock Text="{Binding CurrentContext.DisplayPath, FallbackValue='Universal'}" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                                </StackPanel>
+                            <!-- Row 0: Context Path & Status on Left, Master Hub Toggles on Right -->
+                            <Grid Grid.Row="0" Margin="0,4,0,8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
 
-                                <!-- Profile Status Badge (Fixed Width to prevent layout shift) -->
-                                <StackPanel Orientation="Horizontal" Width="72" Margin="0,0,15,5" VerticalAlignment="Center">
-                                    <ui:SymbolIcon Margin="0,0,4,0" FontSize="14">
-                                        <ui:SymbolIcon.Style>
-                                            <Style TargetType="ui:SymbolIcon">
-                                                <Setter Property="Symbol" Value="Save24" />
-                                                <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+                                <!-- Left: Profile Breadcrumb and Status Pill -->
+                                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                                    <ui:SymbolIcon Symbol="Folder24" Margin="0,0,8,0" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                    <TextBlock Text="{Binding CurrentContext.DisplayPath, FallbackValue='Universal'}" 
+                                               FontSize="15.5" FontWeight="SemiBold" 
+                                               VerticalAlignment="Center" 
+                                               TextTrimming="CharacterEllipsis" 
+                                               MaxWidth="420"
+                                               ToolTip="{Binding CurrentContext.DisplayPath, FallbackValue='Universal'}"/>
+
+                                    <!-- Status Pill Badge (Saved / Unsaved Changes / New Profile) -->
+                                    <Border CornerRadius="4" Padding="7,2" Margin="10,0,0,0" VerticalAlignment="Center">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="Background" Value="#1E293B"/>
+                                                <Setter Property="BorderBrush" Value="#334155"/>
+                                                <Setter Property="BorderThickness" Value="1"/>
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding HasUnsavedChanges}" Value="True">
-                                                        <Setter Property="Symbol" Value="Warning24" />
-                                                        <Setter Property="Foreground" Value="DarkOrange" />
+                                                        <Setter Property="Background" Value="#38210A"/>
+                                                        <Setter Property="BorderBrush" Value="#B45309"/>
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding IsNewProfile}" Value="True">
-                                                        <Setter Property="Symbol" Value="Add24" />
-                                                        <Setter Property="Foreground" Value="#4ADE80" />
+                                                        <Setter Property="Background" Value="#142B1A"/>
+                                                        <Setter Property="BorderBrush" Value="#15803D"/>
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
-                                        </ui:SymbolIcon.Style>
-                                    </ui:SymbolIcon>
-                                    
-                                    <TextBlock FontWeight="SemiBold" FontSize="12" VerticalAlignment="Center">
-                                        <TextBlock.Style>
-                                            <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
-                                                <Setter Property="Text" Value="Saved" />
-                                                <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding HasUnsavedChanges}" Value="True">
-                                                        <Setter Property="Text" Value="Unsaved" />
-                                                        <Setter Property="Foreground" Value="DarkOrange" />
-                                                    </DataTrigger>
-                                                    <DataTrigger Binding="{Binding IsNewProfile}" Value="True">
-                                                        <Setter Property="Text" Value="New" />
-                                                        <Setter Property="Foreground" Value="#4ADE80" />
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </TextBlock.Style>
-                                    </TextBlock>
+                                        </Border.Style>
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                            <ui:SymbolIcon Margin="0,0,4,0" FontSize="12">
+                                                <ui:SymbolIcon.Style>
+                                                    <Style TargetType="ui:SymbolIcon">
+                                                        <Setter Property="Symbol" Value="Save24" />
+                                                        <Setter Property="Foreground" Value="#94A3B8" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding HasUnsavedChanges}" Value="True">
+                                                                <Setter Property="Symbol" Value="Warning24" />
+                                                                <Setter Property="Foreground" Value="#F59E0B" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding IsNewProfile}" Value="True">
+                                                                <Setter Property="Symbol" Value="Add24" />
+                                                                <Setter Property="Foreground" Value="#4ADE80" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </ui:SymbolIcon.Style>
+                                            </ui:SymbolIcon>
+                                            <TextBlock FontWeight="SemiBold" FontSize="11" VerticalAlignment="Center">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                                        <Setter Property="Text" Value="Saved" />
+                                                        <Setter Property="Foreground" Value="#94A3B8" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding HasUnsavedChanges}" Value="True">
+                                                                <Setter Property="Text" Value="Unsaved Changes" />
+                                                                <Setter Property="Foreground" Value="#F59E0B" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding IsNewProfile}" Value="True">
+                                                                <Setter Property="Text" Value="New Profile" />
+                                                                <Setter Property="Foreground" Value="#4ADE80" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </Border>
                                 </StackPanel>
-                                
-                                <StackPanel Orientation="Horizontal" Margin="0,0,15,5" VerticalAlignment="Center">
-                                     <ui:Button Content="Undo" Command="{Binding RevertProfileCommand}" Padding="8,4" Margin="0,0,5,0" FontSize="12">
-                                         <ui:Button.Style>
-                                             <Style TargetType="ui:Button" BasedOn="{StaticResource {x:Type ui:Button}}">
-                                                 <Setter Property="Icon" Value="{ui:SymbolIcon ArrowUndo24}"/>
-                                                 <Setter Property="Appearance" Value="Secondary"/>
-                                                 <Setter Property="Opacity" Value="0.4"/>
-                                                 <Setter Property="ToolTip" Value="No changes to undo."/>
-                                                 <Style.Triggers>
-                                                     <DataTrigger Binding="{Binding CanUndo}" Value="True">
-                                                         <Setter Property="Appearance" Value="Caution"/>
-                                                         <Setter Property="Opacity" Value="1.0"/>
-                                                         <Setter Property="ToolTip" Value="Click to undo your last unsaved profile change."/>
-                                                     </DataTrigger>
-                                                 </Style.Triggers>
-                                             </Style>
-                                         </ui:Button.Style>
-                                     </ui:Button>
-                                     <ui:Button Command="{Binding SaveProfileCommand}" Appearance="Primary" Padding="10,4" FontSize="12" ToolTip="Saves the current profile to disk.">
+
+                                <!-- Right: Master Hub Controls -->
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                    <ui:ToggleSwitch IsChecked="{Binding LockMouse}" Content="Lock Mouse" ToolTip="Locks and centers the mouse cursor inside the screen while driving." Margin="0,0,14,0" VerticalAlignment="Center" />
+                                    <Border CornerRadius="6" Padding="8,3" Background="{DynamicResource ControlFillColorDefaultBrush}" BorderBrush="{DynamicResource SurfaceStrokeColorDefaultBrush}" BorderThickness="1">
+                                        <ui:ToggleSwitch IsChecked="{Binding IsActive}" Content="HUB ACTIVE" FontWeight="Bold" ToolTip="Toggles mouse/keyboard input interception and vJoy axis output." VerticalAlignment="Center" />
+                                    </Border>
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- Row 1: Profile Toolbar Actions (Save, Undo, Share, Import) -->
+                            <Grid Grid.Row="1" Margin="0,0,0,2">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <ui:Button Command="{Binding SaveProfileCommand}" Appearance="Primary" Padding="12,5" Margin="0,0,6,0" FontSize="12" ToolTip="Saves the current profile to disk.">
                                         <ui:Button.Style>
                                             <Style TargetType="ui:Button" BasedOn="{StaticResource {x:Type ui:Button}}">
                                                 <Setter Property="Content" Value="Save Profile" />
+                                                <Setter Property="Icon" Value="{ui:SymbolIcon Save24}" />
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding IsNewProfile}" Value="True">
-                                                        <Setter Property="Content" Value="Create profile" />
+                                                        <Setter Property="Content" Value="Create Profile" />
+                                                        <Setter Property="Icon" Value="{ui:SymbolIcon Add24}" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
                                         </ui:Button.Style>
                                     </ui:Button>
+
+                                    <ui:Button Content="Undo" Command="{Binding RevertProfileCommand}" Padding="10,5" Margin="0,0,6,0" FontSize="12">
+                                        <ui:Button.Style>
+                                            <Style TargetType="ui:Button" BasedOn="{StaticResource {x:Type ui:Button}}">
+                                                <Setter Property="Icon" Value="{ui:SymbolIcon ArrowUndo24}"/>
+                                                <Setter Property="Appearance" Value="Secondary"/>
+                                                <Setter Property="Opacity" Value="0.4"/>
+                                                <Setter Property="ToolTip" Value="No changes to undo."/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding CanUndo}" Value="True">
+                                                        <Setter Property="Appearance" Value="Caution"/>
+                                                        <Setter Property="Opacity" Value="1.0"/>
+                                                        <Setter Property="ToolTip" Value="Click to undo your last unsaved profile change."/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </ui:Button.Style>
+                                    </ui:Button>
+
+                                    <ui:Button Command="{Binding OpenProfilesFolderCommand}" Icon="{ui:SymbolIcon Folder24}" Content="Folder" Appearance="Secondary" Padding="10,5" Margin="0,0,6,0" FontSize="12" ToolTip="Opens your Profiles directory in Windows Explorer (Documents\vWheel Hub\Profiles)" />
+                                    <ui:Button Command="{Binding OpenExportDialogCommand}" Icon="{ui:SymbolIcon Share24}" Content="Share" Appearance="Secondary" Padding="10,5" Margin="0,0,6,0" FontSize="12" ToolTip="Export or generate a Share Code for this profile" />
+                                    <ui:Button Command="{Binding OpenImportDialogCommand}" Icon="{ui:SymbolIcon ArrowDownload24}" Content="Import" Appearance="Secondary" Padding="10,5" FontSize="12" ToolTip="Import a preset from Share Code, file or drag &amp; drop" />
                                 </StackPanel>
-                            </WrapPanel>
-
-                            <!-- Right: Prominent Hub Active Controls & Community Quick Links -->
-                            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                <ui:Button Command="{Binding OpenDiscordCommand}" ToolTip="Discord Community &amp; Support" Appearance="Transparent" Padding="6,4" Margin="0,0,4,0" VerticalAlignment="Center">
-                                    <ui:SymbolIcon Symbol="Chat24" FontSize="16" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
-                                </ui:Button>
-                                <ui:Button Command="{Binding OpenBoostyCommand}" ToolTip="Support on Boosty" Appearance="Transparent" Padding="6,4" Margin="0,0,12,0" VerticalAlignment="Center">
-                                    <ui:SymbolIcon Symbol="Heart24" FontSize="16" Foreground="#EC4899"/>
-                                </ui:Button>
-
-                                <ui:ToggleSwitch IsChecked="{Binding LockMouse}" Content="Lock Mouse" ToolTip="Locks and centers the mouse cursor inside the screen while driving." Margin="0,0,15,0" VerticalAlignment="Center" />
-                                <Border CornerRadius="6" Padding="8,4" Background="{DynamicResource ControlFillColorDefaultBrush}" BorderBrush="{DynamicResource SurfaceStrokeColorDefaultBrush}" BorderThickness="1">
-                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                        <ui:ToggleSwitch IsChecked="{Binding IsActive}" Content="HUB ACTIVE" FontWeight="Bold" ToolTip="Toggles mouse/keyboard input interception and vJoy axis output." VerticalAlignment="Center" />
-                                    </StackPanel>
-                                </Border>
-                            </StackPanel>
+                            </Grid>
                         </Grid>
                     </Border>
                 </ui:NavigationView.Header>
@@ -334,5 +369,26 @@
                 </Expander>
             </Grid>
         </Grid>
+
+        <!-- Drop Zone Visual Overlay (Visible when dragging a profile file into window) -->
+        <Border x:Name="DropOverlay" 
+                Visibility="Collapsed" 
+                AllowDrop="True"
+                IsHitTestVisible="True"
+                Background="#F20F172A" 
+                CornerRadius="8" 
+                Margin="12" 
+                BorderBrush="#3B82F6" 
+                BorderThickness="2" 
+                SnapsToDevicePixels="True">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="24" ShadowDepth="0" Color="#3B82F6" Opacity="0.4"/>
+            </Border.Effect>
+            <StackPanel IsHitTestVisible="False" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <ui:SymbolIcon Symbol="ArrowDownload24" FontSize="56" Foreground="#60A5FA" HorizontalAlignment="Center" Margin="0,0,0,16"/>
+                <TextBlock Text="Drop Profile File Here to Import" FontSize="20" FontWeight="Bold" Foreground="#F8FAFC" HorizontalAlignment="Center" Margin="0,0,0,6"/>
+                <TextBlock Text="Release your .vwh or .json profile preset to preview and apply settings" FontSize="13" Foreground="#94A3B8" HorizontalAlignment="Center"/>
+            </StackPanel>
+        </Border>
     </Grid>
 </ui:FluentWindow>

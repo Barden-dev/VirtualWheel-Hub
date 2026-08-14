@@ -3,6 +3,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+      AllowDrop="True"
       xmlns:local="clr-namespace:SimRacingHub.Controls"
       xmlns:conv="clr-namespace:SimRacingHub.Converters" Title="BrakeLogicPage">
     <Page.Resources>
@@ -47,7 +48,18 @@
                 </Grid>
             </ui:Card>
             <TextBlock Text="⚠️ Cannot be used together with Trail Braking. Enabling ABS Helper automatically disables Trail Braking." 
-                       Foreground="#F59E0B" FontSize="11.5" TextWrapping="Wrap" MaxWidth="600" HorizontalAlignment="Left" Margin="0,0,0,20" />
+                       Foreground="#F59E0B" FontSize="11.5" TextWrapping="Wrap" MaxWidth="600" HorizontalAlignment="Left" Margin="0,0,0,15" />
+
+            <StackPanel IsEnabled="{Binding CurrentProfile.UseAbsHelper}" Margin="0,0,0,15">
+                <TextBlock Text="ABS Slip Threshold (%)" ToolTip="Longitudinal tire lockup slip percentage required to trigger ABS brake release." Margin="0,0,0,5" />
+                <ui:NumberBox Value="{Binding CurrentProfile.AbsSlipThreshold, Converter={StaticResource PercentageConverter}, UpdateSourceTrigger=PropertyChanged}" Minimum="1" Maximum="50" ToolTip="Longitudinal tire lockup slip percentage required to trigger ABS brake release." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+
+                <TextBlock Text="ABS Min Brake Pressure (%)" ToolTip="The lowest allowed brake pressure percentage while ABS is actively intervening." Margin="0,0,0,5" />
+                <ui:NumberBox Value="{Binding CurrentProfile.AbsMinScale, Converter={StaticResource PercentageConverter}, UpdateSourceTrigger=PropertyChanged}" Minimum="5" Maximum="80" ToolTip="The lowest allowed brake pressure percentage while ABS is actively intervening." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+
+                <TextBlock Text="ABS Min Speed (km/h)" ToolTip="Minimum vehicle speed for ABS to activate. Below this speed, ABS is disabled to allow full stop." Margin="0,0,0,5" />
+                <ui:NumberBox Value="{Binding CurrentProfile.AbsMinSpeed, UpdateSourceTrigger=PropertyChanged}" Minimum="1" Maximum="100" ToolTip="Minimum vehicle speed for ABS to activate." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+            </StackPanel>
 
             <TextBlock Text="Fast Attack Threshold (%)" ToolTip="The pedal percentage at which the brake application speed slows down." Margin="0,0,0,5" />
             <ui:NumberBox Value="{Binding CurrentProfile.BrakeThreshold, Converter={StaticResource PercentageConverter}, UpdateSourceTrigger=PropertyChanged}" Minimum="0" Maximum="100" ToolTip="The pedal percentage at which the brake application speed slows down." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
