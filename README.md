@@ -71,7 +71,7 @@ It translates real-time mouse movement into ultra-smooth virtual wheel angles an
 ### 🚀 Quick Start Guide
 
 1. **Install vJoy:** Download and install the [vJoy Driver](https://github.com/jshafer817/vJoy/releases).
-2. **Launch vWheel Hub.**
+2. **Download vWheel Hub from Releases. Exctract archive then launch vWheel Hub.**
 3. **Configure vJoy:** Click **Auto-Configure vJoy** in the diagnostic section to set up Device #1 automatically if needed.
 4. **Set Up Controls & Launch Game:** Launch your sim racing game — Auto-Detect will identify the game process automatically (or select your context manually). Once detected and plugin status is clear, fine-tune sensitivity, response curves, and keybindings to your liking.
 5. **Activate Hub:** Toggle **Is Active** or press your assigned hotkey.
