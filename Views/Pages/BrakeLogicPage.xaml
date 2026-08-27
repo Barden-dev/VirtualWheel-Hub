@@ -8,16 +8,27 @@
       xmlns:conv="clr-namespace:SimRacingHub.Converters" Title="BrakeLogicPage">
     <Page.Resources>
         <conv:PercentageConverter x:Key="PercentageConverter" />
+
+        <Style x:Key="AbsLearningButtonStyle" TargetType="ui:Button" BasedOn="{StaticResource {x:Type ui:Button}}">
+            <Setter Property="Appearance" Value="Secondary" />
+            <Setter Property="Padding" Value="10,5" />
+            <Setter Property="Opacity" Value="0.4" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding SupportsAbs}" Value="True">
+                    <Setter Property="Opacity" Value="1.0" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
     </Page.Resources>
     <StackPanel Margin="20">
-            <TextBlock Text="Brake Logic" FontSize="20" FontWeight="SemiBold" Margin="0,0,0,20"/>
+        <TextBlock Text="Brake Logic" FontSize="20" FontWeight="SemiBold" Margin="0,0,0,20"/>
+        
+        <ui:ToggleSwitch IsEnabled="False" IsChecked="False" Content="Use Telemetry ABS Helper" ToolTip="Uses live game telemetry to detect wheel lockup and automatically release brake pressure." Margin="0,0,0,5" />
+        <TextBlock Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" TextWrapping="Wrap" MaxWidth="600" HorizontalAlignment="Left" Margin="0,0,0,6">
+            <Run Text="When enabled, the app reads live game telemetry to detect wheel lockups and automatically drops brake pressure to regain grip, simulating a real ABS system." />
             
-            <ui:ToggleSwitch IsEnabled="False" IsChecked="False" Content="Use Telemetry ABS Helper" ToolTip="Uses live game telemetry to detect wheel lockup and automatically release brake pressure." Margin="0,0,0,5" />
-            <TextBlock Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" TextWrapping="Wrap" MaxWidth="600" HorizontalAlignment="Left" Margin="0,0,0,6">
-                <Run Text="When enabled, the app reads live game telemetry to detect wheel lockups and automatically drops brake pressure to regain grip, simulating a real ABS system." />
-                
-                
-            </TextBlock>
+            
+        </TextBlock>
 
             <!-- Boosty Subscription Promo Card (Auto-injected for OpenSource build) -->
             <ui:Card Padding="12,10" Margin="0,4,0,28" Background="#2B1A28" BorderBrush="#5B2449" HorizontalAlignment="Left" Width="600">
@@ -47,31 +58,58 @@
                                Margin="10,0,0,0"/>
                 </Grid>
             </ui:Card>
-            <TextBlock Text="⚠️ Cannot be used together with Trail Braking. Enabling ABS Helper automatically disables Trail Braking." 
-                       Foreground="#F59E0B" FontSize="11.5" TextWrapping="Wrap" MaxWidth="600" HorizontalAlignment="Left" Margin="0,0,0,15" />
 
-            <StackPanel IsEnabled="{Binding CurrentProfile.UseAbsHelper}" Margin="0,0,0,15">
-                <TextBlock Text="ABS Slip Threshold (%)" ToolTip="Longitudinal tire lockup slip percentage required to trigger ABS brake release." Margin="0,0,0,5" />
-                <ui:NumberBox Value="{Binding CurrentProfile.AbsSlipThreshold, Converter={StaticResource PercentageConverter}, UpdateSourceTrigger=PropertyChanged}" Minimum="1" Maximum="50" ToolTip="Longitudinal tire lockup slip percentage required to trigger ABS brake release." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+        <TextBlock Text="⚠️ Cannot be used together with Trail Braking. Enabling ABS Helper automatically disables Trail Braking." 
+                   Foreground="#F59E0B" FontSize="11.5" TextWrapping="Wrap" MaxWidth="600" HorizontalAlignment="Left" Margin="0,0,0,15" />
 
-                <TextBlock Text="ABS Min Brake Pressure (%)" ToolTip="The lowest allowed brake pressure percentage while ABS is actively intervening." Margin="0,0,0,5" />
-                <ui:NumberBox Value="{Binding CurrentProfile.AbsMinScale, Converter={StaticResource PercentageConverter}, UpdateSourceTrigger=PropertyChanged}" Minimum="5" Maximum="80" ToolTip="The lowest allowed brake pressure percentage while ABS is actively intervening." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+        <StackPanel IsEnabled="{Binding CurrentProfile.UseAbsHelper}" Margin="0,0,0,15">
+            <TextBlock Text="ABS Slip Threshold (%)" ToolTip="Longitudinal tire lockup slip percentage required to trigger ABS brake release." Margin="0,0,0,5" />
+            <ui:NumberBox Value="{Binding CurrentProfile.AbsSlipThreshold, Converter={StaticResource PercentageConverter}, UpdateSourceTrigger=PropertyChanged}" Minimum="1" Maximum="50" ToolTip="Longitudinal tire lockup slip percentage required to trigger ABS brake release." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
 
-                <TextBlock Text="ABS Min Speed (km/h)" ToolTip="Minimum vehicle speed for ABS to activate. Below this speed, ABS is disabled to allow full stop." Margin="0,0,0,5" />
-                <ui:NumberBox Value="{Binding CurrentProfile.AbsMinSpeed, UpdateSourceTrigger=PropertyChanged}" Minimum="1" Maximum="100" ToolTip="Minimum vehicle speed for ABS to activate." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+            <TextBlock Text="ABS Drop Amount (%)" ToolTip="The maximum percentage of brake pressure to bleed off during wheel lockup (e.g. 10% drops brake from 100% to 90%)." Margin="0,0,0,5" />
+            <ui:NumberBox Value="{Binding CurrentProfile.AbsDropAmount, Converter={StaticResource PercentageConverter}, UpdateSourceTrigger=PropertyChanged}" Minimum="1" Maximum="80" ToolTip="The maximum percentage of brake pressure to bleed off during wheel lockup." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+
+            <TextBlock Text="ABS Bleed Speed (Reaction Rate)" ToolTip="Reaction rate at which brake pressure is bled off when lockup begins." Margin="0,0,0,5" />
+            <ui:NumberBox Value="{Binding CurrentProfile.AbsCutRate, UpdateSourceTrigger=PropertyChanged}" Minimum="1" Maximum="200" SmallChange="1" LargeChange="5" ToolTip="Reaction rate at which brake pressure is bled off when lockup begins." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+
+            <TextBlock Text="ABS Recovery Speed" ToolTip="Rate at which brake pressure smoothly returns after grip is regained without sudden lockup spikes." Margin="0,0,0,5" />
+            <ui:NumberBox Value="{Binding CurrentProfile.AbsRecoverRate, UpdateSourceTrigger=PropertyChanged}" Minimum="0.1" Maximum="50" SmallChange="0.5" LargeChange="2" ToolTip="Rate at which brake pressure smoothly returns after grip is regained." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+
+            <TextBlock Text="ABS Min Speed (km/h)" ToolTip="Minimum vehicle speed for ABS to activate. Below this speed, ABS is disabled to allow full stop." Margin="0,0,0,5" />
+            <ui:NumberBox Value="{Binding CurrentProfile.AbsMinSpeed, UpdateSourceTrigger=PropertyChanged}" Minimum="1" Maximum="100" ToolTip="Minimum vehicle speed for ABS to activate." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+        </StackPanel>
+
+        <StackPanel IsEnabled="{Binding SupportsAbs}" Margin="0,0,0,20">
+            <TextBlock Text="ABS Learning Data" FontWeight="SemiBold" Margin="0,0,0,5" />
+            <TextBlock Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" TextWrapping="Wrap" MaxWidth="600" HorizontalAlignment="Left" Margin="0,0,0,8"
+                       Text="The ABS helper learns the braking limit of every car you drive and keeps it on disk, sorted by game, class and car. If a car has learned badly - for example after laps on worn tyres - reset it and let the helper learn again from scratch." />
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                <ui:Button Content="Open ABS Cache Folder" Icon="{ui:SymbolIcon FolderOpen24}" Style="{StaticResource AbsLearningButtonStyle}" Margin="0,0,8,0"
+                           Command="{Binding OpenAbsCacheFolderCommand}" ToolTip="Opens the folder where the learned ABS limits are stored" />
+                <ui:Button Content="Reset Current Car" Icon="{ui:SymbolIcon ArrowReset24}" Style="{StaticResource AbsLearningButtonStyle}" Margin="0,0,8,0"
+                           Command="{Binding ResetAbsCarLearningCommand}" ToolTip="Clears the learned ABS limits of the car detected in this session (dry and wet)" />
+                <ui:Button Content="Reset All ABS Data" Icon="{ui:SymbolIcon Delete24}" Style="{StaticResource AbsLearningButtonStyle}"
+                           Command="{Binding ResetAllAbsLearningCommand}" ToolTip="Deletes the learned ABS limits of every car in every game. Traction control data is kept." />
             </StackPanel>
+            <TextBlock Text="{Binding AbsCachePath, Mode=OneWay}" Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                       FontSize="11" TextWrapping="Wrap" MaxWidth="600" HorizontalAlignment="Left" />
+        </StackPanel>
 
             <TextBlock Text="Fast Attack Threshold (%)" ToolTip="The pedal percentage at which the brake application speed slows down." Margin="0,0,0,5" />
             <ui:NumberBox Value="{Binding CurrentProfile.BrakeThreshold, Converter={StaticResource PercentageConverter}, UpdateSourceTrigger=PropertyChanged}" Minimum="0" Maximum="100" ToolTip="The pedal percentage at which the brake application speed slows down." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
             
-            <TextBlock Text="Attack Speed (Fast)" ToolTip="Speed at which brake is applied below the fast attack threshold." Margin="0,0,0,5" />
-            <ui:NumberBox Value="{Binding CurrentProfile.BrakeAttackFast, UpdateSourceTrigger=PropertyChanged}" Minimum="1" Maximum="32768" ToolTip="Speed at which brake is applied below the fast attack threshold." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+            <TextBlock Text="Fast Segment Time (seconds)" ToolTip="Time for brake to travel from 0% to the fast attack threshold." Margin="0,0,0,5" />
+            <ui:NumberBox Value="{Binding CurrentProfile.BrakeAttackFastSeconds, UpdateSourceTrigger=PropertyChanged}" Minimum="0.002" Maximum="65536" SmallChange="0.01" LargeChange="0.1" ToolTip="Time for the 0% to threshold segment. This setting is independent of Hub Rate." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
             
-            <TextBlock Text="Attack Speed (Slow)" ToolTip="Speed at which brake is applied above the threshold to avoid instant lockups." Margin="0,0,0,5" />
-            <ui:NumberBox Value="{Binding CurrentProfile.BrakeAttackSlow, UpdateSourceTrigger=PropertyChanged}" Minimum="1" Maximum="32768" ToolTip="Speed at which brake is applied above the threshold to avoid instant lockups." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+            <TextBlock Text="Slow Segment Time (seconds)" ToolTip="Time for brake to travel from the fast attack threshold to 100%." Margin="0,0,0,5" />
+            <ui:NumberBox Value="{Binding CurrentProfile.BrakeAttackSlowSeconds, UpdateSourceTrigger=PropertyChanged}" Minimum="0.002" Maximum="65536" SmallChange="0.01" LargeChange="0.1" ToolTip="Time for the threshold to 100% segment. This setting is independent of Hub Rate." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+            <TextBlock Foreground="{DynamicResource TextFillColorTertiaryBrush}" FontSize="11" Margin="0,-8,0,15">
+                <Run Text="Estimated Full Press Time: " />
+                <Run Text="{Binding CurrentProfile.BrakeEstimatedFullPressSeconds, Mode=OneWay, StringFormat={}{0:0.000} s}" />
+            </TextBlock>
             
-            <TextBlock Text="Release Rate (Decay)" ToolTip="Speed at which brake is released." Margin="0,0,0,5" />
-            <ui:NumberBox Value="{Binding CurrentProfile.BrakeDecay, UpdateSourceTrigger=PropertyChanged}" Minimum="1" Maximum="32768" ToolTip="Speed at which brake is released." Margin="0,0,0,20" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+            <TextBlock Text="Release Time (seconds)" ToolTip="Approximate time for brake to travel from 100% to 0%." Margin="0,0,0,5" />
+            <ui:NumberBox Value="{Binding CurrentProfile.BrakeDecaySeconds, UpdateSourceTrigger=PropertyChanged}" Minimum="0.002" Maximum="65536" SmallChange="0.01" LargeChange="0.1" ToolTip="Lower values release brake faster. This setting is independent of Hub Rate." Margin="0,0,0,20" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
 
             <TextBlock Text="Brake Non-Linearity (Gamma)" ToolTip="Curves brake response. Values &gt; 1.0 soften initial pedal travel to prevent trail braking lockups; values &lt; 1.0 give aggressive brake bite." Margin="0,0,0,5" />
             <ui:NumberBox Value="{Binding CurrentProfile.BrakeGamma, UpdateSourceTrigger=PropertyChanged}" Minimum="0.2" Maximum="3.0" SmallChange="0.05" LargeChange="0.10" ToolTip="Curves brake response." Margin="0,0,0,10" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />

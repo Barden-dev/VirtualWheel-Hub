@@ -9,7 +9,8 @@ namespace SimRacingHub.Services.Plugins
         MissingPlugin,
         OutdatedPlugin,
         GameNotFound,
-        GameRunning
+        GameRunning,
+        ConfigurationError
     }
 
     public class GamePluginDefinition

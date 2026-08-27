@@ -212,27 +212,112 @@
 
                     <StackPanel Grid.Column="1" VerticalAlignment="Center">
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,2">
-                            <TextBlock Text="{Binding GamePluginDiagnostic.GameDisplayName, StringFormat='Telemetry Plugin: {0}'}" FontWeight="SemiBold" FontSize="14" Margin="0,0,8,0"/>
-                            <TextBlock Text="{Binding GamePluginDiagnostic.Status, StringFormat='[{0}]'}" Foreground="#FCA5A5" FontSize="12" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding GamePluginDiagnostic.GameDisplayName, StringFormat='Optional telemetry: {0}'}" FontWeight="SemiBold" FontSize="14" Margin="0,0,8,0"/>
+                            <TextBlock Text="{Binding GamePluginDiagnostic.StatusText, StringFormat='[{0}]'}" Foreground="#FCA5A5" FontSize="12" VerticalAlignment="Center"/>
                         </StackPanel>
                         <TextBlock Text="{Binding GamePluginDiagnostic.StatusMessage}" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" TextWrapping="Wrap"/>
+                        <TextBlock Text="This component provides game telemetry for helpers. It does not control vJoy steering or pedals and is separate from the LMU input compatibility fix."
+                                   Foreground="{DynamicResource TextFillColorTertiaryBrush}" FontSize="11" TextWrapping="Wrap" Margin="0,4,0,0"/>
                     </StackPanel>
                 </Grid>
 
                 <WrapPanel Margin="38,4,0,0">
                     <ui:Button Command="{Binding InstallGamePluginCommand}" 
-                               Content="Auto-Install Plugin" 
+                               Content="Auto-Install Telemetry" 
                                Icon="Flash24" 
                                Appearance="Primary" 
                                Margin="0,0,8,8"
-                               ToolTip="Copies telemetry plugin DLL into game directory. If the game is currently running, the app will automatically close it and install the plugin."/>
+                               IsEnabled="{Binding GamePluginDiagnostic.CanAutoInstall}"
+                               ToolTip="Installs and verifies the telemetry component, then enables it in the game config when required. Running games are closed only after confirmation."/>
 
                     <ui:Button Command="{Binding LocateGameFolderCommand}" 
                                Content="Locate Game Folder" 
                                Icon="Folder24" 
                                Appearance="Secondary" 
                                Margin="0,0,8,8"
+                               Visibility="{Binding GamePluginDiagnostic.CanLocateGameFolder, Converter={StaticResource BooleanToVisibilityConverter}}"
                                ToolTip="Manually select game installation folder."/>
+                </WrapPanel>
+            </StackPanel>
+        </ui:Card>
+
+        <!-- LMU input compatibility fix -->
+        <ui:Card Padding="16,14" Margin="0,0,0,16"
+                 Visibility="{Binding LmuInputFix.ShouldShow, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">
+            <ui:Card.Style>
+                <Style TargetType="ui:Card">
+                    <Setter Property="Background" Value="#2D1A1A"/>
+                    <Setter Property="BorderBrush" Value="#6B2828"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding LmuInputFix.IsEnabled}" Value="True">
+                            <Setter Property="Background" Value="#182A1C"/>
+                            <Setter Property="BorderBrush" Value="#2A5C32"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ui:Card.Style>
+            <StackPanel>
+                <Grid Margin="0,0,0,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <ui:SymbolIcon Grid.Column="0" FontSize="24" VerticalAlignment="Top" Margin="0,2,14,0">
+                        <ui:SymbolIcon.Style>
+                            <Style TargetType="ui:SymbolIcon">
+                                <Setter Property="Symbol" Value="Warning24"/>
+                                <Setter Property="Foreground" Value="#F87171"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding LmuInputFix.IsEnabled}" Value="True">
+                                        <Setter Property="Symbol" Value="CheckmarkCircle24"/>
+                                        <Setter Property="Foreground" Value="#4ADE80"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ui:SymbolIcon.Style>
+                    </ui:SymbolIcon>
+
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,2">
+                            <TextBlock Text="LMU input compatibility" FontWeight="SemiBold" FontSize="14" Margin="0,0,8,0"/>
+                            <TextBlock Text="{Binding LmuInputFix.StatusText, StringFormat='[{0}]'}" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <TextBlock Text="{Binding LmuInputFix.DetailText}" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" TextWrapping="Wrap"/>
+                        <TextBlock Text="This is the setting that affects smooth vJoy steering and pedal input. It is separate from the optional telemetry plugin above."
+                                   Foreground="{DynamicResource TextFillColorTertiaryBrush}" FontSize="11" TextWrapping="Wrap" Margin="0,4,0,0"/>
+                        <TextBlock Text="{Binding LmuInputFix.ControlsPath}" Foreground="{DynamicResource TextFillColorTertiaryBrush}" FontSize="10.5" TextWrapping="Wrap" Margin="0,5,0,0"/>
+                    </StackPanel>
+                </Grid>
+
+                <WrapPanel Margin="38,4,0,0">
+                    <ui:Button Command="{Binding ApplyLmuInputFixCommand}"
+                               Content="Fix LMU input"
+                               Icon="Flash24"
+                               Appearance="Primary"
+                               Margin="0,0,8,8"
+                               ToolTip="Backs up current controls.json and enables DirectInput Fallback. LMU must be restarted afterward."
+                               Visibility="{Binding LmuInputFix.NeedsFix, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                    <ui:Button Command="{Binding RevertLmuInputFixCommand}"
+                               Content="Restore previous setting"
+                               Icon="ArrowUndo24"
+                               Appearance="Secondary"
+                               Margin="0,0,8,8"
+                               ToolTip="Restores the backup created immediately before the LMU input fix."
+                               Visibility="{Binding LmuInputFix.CanRevert, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                    <ui:Button Command="{Binding OpenLmuInputFixFileCommand}"
+                               Content="Open settings file"
+                               Icon="FolderOpen24"
+                               Appearance="Secondary"
+                               Margin="0,0,8,8"
+                               ToolTip="Opens LMU current controls.json for manual inspection."
+                               Visibility="{Binding LmuInputFix.IsAvailable, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                    <ui:Button Command="{Binding RefreshLmuInputFixStatusCommand}"
+                               Content="Re-check"
+                               Icon="ArrowClockwise24"
+                               Appearance="Secondary"
+                               Margin="0,0,8,8"
+                               ToolTip="Checks the current LMU input setting again."/>
                 </WrapPanel>
             </StackPanel>
         </ui:Card>
@@ -316,9 +401,63 @@
                     
                     <ui:ToggleSwitch IsChecked="{Binding AutoDetectOnStartup, UpdateSourceTrigger=PropertyChanged}" Content="Auto-detect games on launch" ToolTip="Automatically enables game auto-detection when vWheel Hub starts up." Margin="0,0,0,20" />
 
-                    <TextBlock Text="Hub Processing Rate (Hz)" ToolTip="Controls physics update frequency per second." Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,5"/>
-                    <ui:NumberBox Value="{Binding CurrentProfile.PollingRate, UpdateSourceTrigger=PropertyChanged}" Minimum="10" Maximum="5000" SmallChange="50" LargeChange="100" ClearButtonEnabled="False" Width="150" HorizontalAlignment="Left" Margin="0,0,0,5"/>
-                    <TextBlock Text="Recommended: 400 Hz for ACC, 200 Hz for LMU. Reduce if CPU usage is high." Foreground="{DynamicResource TextFillColorTertiaryBrush}" FontSize="11"/>
+                    <TextBlock Text="Hub Output Rate (Hz)" ToolTip="Controls how often the complete steering, pedal, button state is sent to vJoy (50–1000 Hz)." Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,5"/>
+                    <ui:NumberBox Value="{Binding CurrentProfile.PollingRate, UpdateSourceTrigger=PropertyChanged}" Minimum="50" Maximum="1000" SmallChange="50" LargeChange="100" ClearButtonEnabled="False" Width="150" HorizontalAlignment="Left" Margin="0,0,0,5" ToolTip="Controls the complete vJoy report rate for steering, pedals, and buttons. Mouse movement is accumulated between reports without being discarded."/>
+                    <TextBlock Text="Higher rates reduce latency. Lower the rate if a game handles frequent DirectInput reports poorly or CPU usage is high." Foreground="{DynamicResource TextFillColorTertiaryBrush}" FontSize="11" TextWrapping="Wrap" MaxWidth="430"/>
+                </StackPanel>
+            </ui:Card>
+        </StackPanel>
+
+        <StackPanel Margin="0,0,0,30">
+            <TextBlock Text="Menu &amp; Telemetry Integration" FontSize="16" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,10"/>
+            <ui:Card Background="{DynamicResource ControlFillColorDefaultBrush}" HorizontalAlignment="Left" MinWidth="450" MaxWidth="650">
+                <StackPanel>
+                    <ui:ToggleSwitch IsEnabled="False"
+                                     Content="Pause Controls When In Menu (Telemetry)" 
+                                     ToolTip="Automatically suspends steering, pedals, and shifters when the game is paused, in menus, or in the garage." 
+                                     IsChecked="False" Margin="0,0,0,5"/>
+                    <TextBlock Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" TextWrapping="Wrap" MaxWidth="600" HorizontalAlignment="Left" Margin="0,0,0,16">
+                        <Run Text="When enabled, entering the pause menu or garage freezes steering in place, releases throttle and brake (0%), and ignores shifter inputs." />
+                    </TextBlock>
+
+                    <ui:ToggleSwitch IsEnabled="False"
+                                     Content="Auto-Unlock Mouse Cursor In Menu" 
+                                     ToolTip="Automatically releases cursor lock when in menus or paused, and re-engages lock when driving on track." 
+                                     IsChecked="False" Margin="0,0,0,5"/>
+                    <TextBlock Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" TextWrapping="Wrap" MaxWidth="600" HorizontalAlignment="Left">
+                        <Run Text="When enabled, your mouse cursor is automatically freed when opening game menus and re-locked when returning to active driving." />
+                        
+                        
+                    </TextBlock>
+
+            <!-- Boosty Subscription Promo Card (Auto-injected for OpenSource build) -->
+            <ui:Card Padding="12,10" Margin="0,4,0,28" Background="#2B1A28" BorderBrush="#5B2449" HorizontalAlignment="Left" Width="600">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <ui:SymbolIcon Grid.Column="0" Symbol="Heart24" Foreground="#EC4899" FontSize="20" VerticalAlignment="Center" Margin="0,0,10,0"/>
+
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock Text="Boosty Subscription Feature" FontWeight="SemiBold" FontSize="12.5" Foreground="#F472B6"/>
+                        <TextBlock Text="This telemetry feature is available for Boosty subscribers." 
+                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11.5" TextWrapping="Wrap"/>
+                    </StackPanel>
+
+                    <ui:Button Grid.Column="2" 
+                               Command="{Binding DataContext.OpenBoostyCommand, RelativeSource={RelativeSource AncestorType=Page}}" 
+                               Content="Unlock on Boosty" 
+                               Icon="Open24" 
+                               Appearance="Primary" 
+                               Padding="10,5" 
+                               FontSize="12" 
+                               VerticalAlignment="Center" 
+                               Margin="10,0,0,0"/>
+                </Grid>
+            </ui:Card>
                 </StackPanel>
             </ui:Card>
         </StackPanel>

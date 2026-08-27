@@ -3,25 +3,37 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
-        
-        <ui:Button x:Name="BindButton" 
-                   Content="{Binding DisplayText, RelativeSource={RelativeSource AncestorType=UserControl}}" 
-                   Click="BindButton_Click" 
-                   PreviewKeyDown="BindButton_PreviewKeyDown" 
-                   PreviewMouseDown="BindButton_PreviewMouseDown"
-                   LostFocus="BindButton_LostFocus"
-                   Appearance="Primary"
-                   HorizontalAlignment="Stretch" />
-                   
-        <ui:Button Grid.Column="1" 
-                   Icon="{ui:SymbolIcon Dismiss24}" 
-                   Click="ClearButton_Click" 
-                   Margin="5,0,0,0" 
+
+        <Border x:Name="ConflictBorder"
+                BorderBrush="Transparent" BorderThickness="1" CornerRadius="4" Padding="1">
+            <ui:Button x:Name="BindButton"
+                       Content="{Binding DisplayText, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                       Click="BindButton_Click"
+                       PreviewKeyDown="BindButton_PreviewKeyDown"
+                       PreviewMouseDown="BindButton_PreviewMouseDown"
+                       LostFocus="BindButton_LostFocus"
+                       Appearance="Primary"
+                       HorizontalAlignment="Stretch" />
+        </Border>
+
+        <ui:Button Grid.Column="1"
+                   Icon="{ui:SymbolIcon Dismiss24}"
+                   Click="ClearButton_Click"
+                   Margin="5,0,0,0"
                    Appearance="Secondary"
                    ToolTip="Unbind" />
+
+        <TextBlock x:Name="ConflictTextBlock"
+                   Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                   Foreground="#FCA5A5" FontSize="10" TextWrapping="Wrap"
+                   Visibility="Collapsed" Margin="2,3,0,0" />
     </Grid>
 </UserControl>

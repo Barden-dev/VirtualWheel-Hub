@@ -13,12 +13,27 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <Version>1.1</Version>
+    <AssemblyVersion>$(Version).0.0</AssemblyVersion>
+    <FileVersion>$(Version).0.0</FileVersion>
+    <InformationalVersion>$(Version)</InformationalVersion>
+    <Company>Barden-dev</Company>
+    <Copyright>Copyright (c) 2026 Barden-dev. All Rights Reserved.</Copyright>
+  </PropertyGroup>
+
   <ItemGroup>
     <Resource Include="icon.ico" />
     <Resource Include="Assets\Icons\*.png" />
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="tests\**" />
+    <Compile Remove="vWheelHub.Tests\**" />
+    <Page Remove="tests\**" />
+    <Page Remove="vWheelHub.Tests\**" />
+    <ApplicationDefinition Remove="tests\**" />
+    <ApplicationDefinition Remove="vWheelHub.Tests\**" />
     <None Include="templates\**" />
   </ItemGroup>
 
@@ -34,6 +49,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Assets\Plugins\**\*.*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Assets\BeamNG\**\*.*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Profiles\**\*.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

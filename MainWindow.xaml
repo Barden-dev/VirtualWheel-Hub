@@ -267,7 +267,7 @@
 
                                 <!-- Right: Master Hub Controls -->
                                 <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                    <ui:ToggleSwitch IsChecked="{Binding LockMouse}" Content="Lock Mouse" ToolTip="Locks and centers the mouse cursor inside the screen while driving." Margin="0,0,14,0" VerticalAlignment="Center" />
+                                    <ui:ToggleSwitch IsChecked="{Binding LockMouse}" Content="Lock Mouse" ToolTip="Keeps the mouse cursor at its current position while driving." Margin="0,0,14,0" VerticalAlignment="Center" />
                                     <Border CornerRadius="6" Padding="8,3" Background="{DynamicResource ControlFillColorDefaultBrush}" BorderBrush="{DynamicResource SurfaceStrokeColorDefaultBrush}" BorderThickness="1">
                                         <ui:ToggleSwitch IsChecked="{Binding IsActive}" Content="HUB ACTIVE" FontWeight="Bold" ToolTip="Toggles mouse/keyboard input interception and vJoy axis output." VerticalAlignment="Center" />
                                     </Border>
@@ -342,27 +342,27 @@
                                 </Grid.RowDefinitions>
                                 
                                 <TextBlock Grid.Row="0" Grid.Column="0" Text="Steer" VerticalAlignment="Center" />
-                                <local:MonitorBar Grid.Row="0" Grid.Column="1" Minimum="-32768" Maximum="32768" Value="{Binding SteerValue}" Height="10" Margin="0,0,0,5" Foreground="Gray"
-                                                  AbsLimit1="{Binding ResolvedProfile.OutSteerMin}" AbsLimit1Name="VJoy Steer Min"
-                                                  AbsLimit2="{Binding ResolvedProfile.OutSteerMax}" AbsLimit2Name="VJoy Steer Max"
-                                                  SymLock="{Binding ResolvedProfile.CarSteeringLock}" SymLockName="Car Steering Lock" 
-                                                  SymRange="{Binding ResolvedProfile.GlobalSteeringRange}"
-                                                  IsSymLockEnabled="{Binding ResolvedProfile.UseSteeringLockClamp}"/>
+                                <local:MonitorBar x:Name="SteerMonitorBar" Grid.Row="0" Grid.Column="1" Minimum="0" Maximum="32768" Value="{Binding SteerValue}" Height="10" Margin="0,0,0,5" Foreground="Gray"
+                                                  AbsLimit1="{Binding ResolvedProfile.OutSteerMin, Mode=OneWay}" AbsLimit1Name="VJoy Steer Min"
+                                                  AbsLimit2="{Binding ResolvedProfile.OutSteerMax, Mode=OneWay}" AbsLimit2Name="VJoy Steer Max"
+                                                  SymLock="{Binding ResolvedProfile.CarSteeringLock, Mode=OneWay}" SymLockName="Car Steering Lock" 
+                                                  SymRange="{Binding ResolvedProfile.GlobalSteeringRange, Mode=OneWay}"
+                                                  IsSymLockEnabled="{Binding ResolvedProfile.UseSteeringLockClamp, Mode=OneWay}"/>
                                 
                                 <TextBlock Grid.Row="1" Grid.Column="0" Text="Gas" VerticalAlignment="Center" />
-                                <local:MonitorBar Grid.Row="1" Grid.Column="1" Minimum="-32768" Maximum="32768" Value="{Binding GasValue}" Height="10" Margin="0,0,0,5" Foreground="LimeGreen"
-                                                  AbsLimit1="{Binding ResolvedProfile.OutGasMin}" AbsLimit1Name="VJoy Gas Min"
-                                                  AbsLimit2="{Binding ResolvedProfile.OutGasMax}" AbsLimit2Name="VJoy Gas Max"
-                                                  PctLimit1="{Binding ResolvedProfile.GasThreshold}" PctLimit1Name="Turbo Gas Threshold"
-                                                  InvertPct="{Binding ResolvedProfile.InvertGas}"/>
+                                <local:MonitorBar x:Name="GasMonitorBar" Grid.Row="1" Grid.Column="1" Minimum="0" Maximum="32768" Value="{Binding GasValue}" Height="10" Margin="0,0,0,5" Foreground="LimeGreen"
+                                                  AbsLimit1="{Binding ResolvedProfile.OutGasMin, Mode=OneWay}" AbsLimit1Name="VJoy Gas Min"
+                                                  AbsLimit2="{Binding ResolvedProfile.OutGasMax, Mode=OneWay}" AbsLimit2Name="VJoy Gas Max"
+                                                  PctLimit1="{Binding ResolvedProfile.GasThreshold, Mode=OneWay}" PctLimit1Name="Fast Attack Threshold"
+                                                  InvertPct="{Binding ResolvedProfile.InvertGas, Mode=OneWay}"/>
                                 
                                 <TextBlock Grid.Row="2" Grid.Column="0" Text="Brake" VerticalAlignment="Center" />
-                                <local:MonitorBar Grid.Row="2" Grid.Column="1" Minimum="-32768" Maximum="32768" Value="{Binding BrakeValue}" Height="10" Foreground="Red"
-                                                  AbsLimit1="{Binding ResolvedProfile.OutBrakeMin}" AbsLimit1Name="VJoy Brake Min"
-                                                  AbsLimit2="{Binding ResolvedProfile.OutBrakeMax}" AbsLimit2Name="VJoy Brake Max"
-                                                  PctLimit1="{Binding ResolvedProfile.BrakeThreshold}" PctLimit1Name="Brake Threshold (Fast/Slow Attack)"
-                                                  PctLimit2="{Binding ResolvedProfile.TbMinLimit}" PctLimit2Name="Trail Braking Limit"
-                                                  InvertPct="{Binding ResolvedProfile.InvertBrake}"/>
+                                <local:MonitorBar x:Name="BrakeMonitorBar" Grid.Row="2" Grid.Column="1" Minimum="0" Maximum="32768" Value="{Binding BrakeValue}" Height="10" Foreground="Red"
+                                                  AbsLimit1="{Binding ResolvedProfile.OutBrakeMin, Mode=OneWay}" AbsLimit1Name="VJoy Brake Min"
+                                                  AbsLimit2="{Binding ResolvedProfile.OutBrakeMax, Mode=OneWay}" AbsLimit2Name="VJoy Brake Max"
+                                                  PctLimit1="{Binding ResolvedProfile.BrakeThreshold, Mode=OneWay}" PctLimit1Name="Brake Threshold (Fast/Slow Attack)"
+                                                  PctLimit2="{Binding ResolvedProfile.TbMinLimit, Mode=OneWay}" PctLimit2Name="Trail Braking Limit"
+                                                  InvertPct="{Binding ResolvedProfile.InvertBrake, Mode=OneWay}"/>
                             </Grid>
                         </StackPanel>
                     </Border>

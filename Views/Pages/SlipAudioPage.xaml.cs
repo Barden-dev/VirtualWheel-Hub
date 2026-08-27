@@ -1,4 +1,5 @@
 using System.Windows.Controls;
+using SimRacingHub.Core;
 using SimRacingHub.ViewModels;
 
 namespace SimRacingHub.Views.Pages
@@ -43,31 +44,23 @@ namespace SimRacingHub.Views.Pages
 
         private void SimulateSlide(int freq, int dur)
         {
+            freq = Math.Clamp(freq, 37, 32767);
+            dur = Math.Clamp(dur, 10, 500);
+
             try
             {
-                if (freq >= 37 && freq <= 32767 && dur > 0)
+                var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+                while (stopwatch.ElapsedMilliseconds < 500)
                 {
-                    long startTicks = System.Diagnostics.Stopwatch.GetTimestamp();
-                    double elapsed = 0;
-                    while (elapsed < 0.5)
-                    {
-                        System.Console.Beep(freq, dur);
-                        
-                        // Используем точный таймер вместо Thread.Sleep, чтобы избежать 
-                        // наложения звуков из-за неточности системного таймера Windows.
-                        // Гарантированная пауза 25 мс между писками.
-                        long pauseStart = System.Diagnostics.Stopwatch.GetTimestamp();
-                        while ((System.Diagnostics.Stopwatch.GetTimestamp() - pauseStart) / (double)System.Diagnostics.Stopwatch.Frequency < 0.025)
-                        {
-                            System.Threading.Thread.SpinWait(50);
-                        }
-                        
-                        long currentTicks = System.Diagnostics.Stopwatch.GetTimestamp();
-                        elapsed = (currentTicks - startTicks) / (double)System.Diagnostics.Stopwatch.Frequency;
-                    }
+                    System.Console.Beep(freq, dur);
+
+                    System.Threading.Thread.Sleep(25);
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                AppLogger.Instance.LogWarning($"Could not play the audio cue preview: {ex.Message}");
+            }
         }
     }
 }

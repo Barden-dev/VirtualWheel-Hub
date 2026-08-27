@@ -44,33 +44,33 @@
                 </Grid>
             </ui:Card>
         
-        <StackPanel IsEnabled="{Binding ResolvedProfile.EnableSlipAudio}" Margin="0,5,0,10">
+        <StackPanel IsEnabled="{Binding CurrentProfile.EnableSlipAudio}" Margin="0,5,0,10">
             <TextBlock Text="Audio Min Speed (km/h)" ToolTip="Minimum vehicle speed for slip audio alerts to trigger." Margin="0,0,0,5" />
-            <ui:NumberBox Value="{Binding ResolvedProfile.SlipAudioMinSpeed, UpdateSourceTrigger=PropertyChanged}" Minimum="5" Maximum="150" ToolTip="Minimum vehicle speed for slip audio alerts to trigger." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+            <ui:NumberBox Value="{Binding CurrentProfile.SlipAudioMinSpeed, UpdateSourceTrigger=PropertyChanged}" Minimum="5" Maximum="150" ToolTip="Minimum vehicle speed for slip audio alerts to trigger." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
 
             <TextBlock Text="Understeer Pitch (Hz)" ToolTip="Audio pitch for front tire slip (understeer)." Margin="0,0,0,5" />
-            <ui:NumberBox Value="{Binding ResolvedProfile.SlipAudioUnderFreq, UpdateSourceTrigger=PropertyChanged}" ToolTip="Audio pitch for front tire slip (understeer)." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+            <ui:NumberBox Value="{Binding CurrentProfile.SlipAudioUnderFreq, UpdateSourceTrigger=PropertyChanged}" ToolTip="Audio pitch for front tire slip (understeer)." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
             
             <TextBlock Text="Understeer Pulse (ms)" ToolTip="How long each beep lasts during front tire slip (understeer)." Margin="0,0,0,5" />
             <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
-                <ui:NumberBox Value="{Binding ResolvedProfile.SlipAudioUnderDur, UpdateSourceTrigger=PropertyChanged}" ToolTip="How long each beep lasts during front tire slip (understeer)." ClearButtonEnabled="False" Width="300" />
+                <ui:NumberBox Value="{Binding CurrentProfile.SlipAudioUnderDur, UpdateSourceTrigger=PropertyChanged}" ToolTip="How long each beep lasts during front tire slip (understeer)." ClearButtonEnabled="False" Width="300" />
                 <ui:Button Content="Preview" Icon="{ui:SymbolIcon Play24}" Margin="10,0,0,0" Click="PreviewUndersteer_Click" />
             </StackPanel>
 
             <TextBlock Text="Understeer Threshold (m/s)" ToolTip="Lateral slip velocity of front tires required to trigger understeer beep." Margin="0,0,0,5" />
-            <ui:NumberBox Value="{Binding ResolvedProfile.SlipAudioUnderThreshold, UpdateSourceTrigger=PropertyChanged}" Minimum="0.5" Maximum="10.0" SmallChange="0.1" LargeChange="0.5" ToolTip="Lateral slip velocity of front tires required to trigger understeer beep." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+            <ui:NumberBox Value="{Binding CurrentProfile.SlipAudioUnderThreshold, UpdateSourceTrigger=PropertyChanged}" Minimum="0.5" Maximum="10.0" SmallChange="0.1" LargeChange="0.5" ToolTip="Lateral slip velocity of front tires required to trigger understeer beep." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
             
             <TextBlock Text="Oversteer Pitch (Hz)" ToolTip="Audio pitch for rear tire slip (oversteer)." Margin="0,0,0,5" />
-            <ui:NumberBox Value="{Binding ResolvedProfile.SlipAudioOverFreq, UpdateSourceTrigger=PropertyChanged}" ToolTip="Audio pitch for rear tire slip (oversteer)." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+            <ui:NumberBox Value="{Binding CurrentProfile.SlipAudioOverFreq, UpdateSourceTrigger=PropertyChanged}" ToolTip="Audio pitch for rear tire slip (oversteer)." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
             
             <TextBlock Text="Oversteer Pulse (ms)" ToolTip="How long each beep lasts during rear tire slip (oversteer)." Margin="0,0,0,5" />
             <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
-                <ui:NumberBox Value="{Binding ResolvedProfile.SlipAudioOverDur, UpdateSourceTrigger=PropertyChanged}" ToolTip="How long each beep lasts during rear tire slip (oversteer)." ClearButtonEnabled="False" Width="300" />
+                <ui:NumberBox Value="{Binding CurrentProfile.SlipAudioOverDur, UpdateSourceTrigger=PropertyChanged}" ToolTip="How long each beep lasts during rear tire slip (oversteer)." ClearButtonEnabled="False" Width="300" />
                 <ui:Button Content="Preview" Icon="{ui:SymbolIcon Play24}" Margin="10,0,0,0" Click="PreviewOversteer_Click" />
             </StackPanel>
 
             <TextBlock Text="Oversteer Threshold (m/s)" ToolTip="Lateral slip velocity of rear tires required to trigger oversteer beep." Margin="0,0,0,5" />
-            <ui:NumberBox Value="{Binding ResolvedProfile.SlipAudioOverThreshold, UpdateSourceTrigger=PropertyChanged}" Minimum="0.5" Maximum="10.0" SmallChange="0.1" LargeChange="0.5" ToolTip="Lateral slip velocity of rear tires required to trigger oversteer beep." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+            <ui:NumberBox Value="{Binding CurrentProfile.SlipAudioOverThreshold, UpdateSourceTrigger=PropertyChanged}" Minimum="0.5" Maximum="10.0" SmallChange="0.1" LargeChange="0.5" ToolTip="Lateral slip velocity of rear tires required to trigger oversteer beep." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
         </StackPanel>
 
         <ui:ToggleSwitch IsEnabled="False" IsChecked="False" Content="Enable TC Audio Beeps" ToolTip="Plays an audio beep when telemetry detects Traction Control intervention. Requires Smart Traction Control to be enabled." Margin="0,15,0,5" />
@@ -107,13 +107,13 @@
                 </Grid>
             </ui:Card>
 
-        <StackPanel IsEnabled="{Binding ResolvedProfile.EnableTcAudio}" Margin="0,5,0,10">
+        <StackPanel IsEnabled="{Binding CurrentProfile.EnableTcAudio}" Margin="0,5,0,10">
             <TextBlock Text="TC Pitch (Hz)" ToolTip="Audio pitch for Traction Control intervention." Margin="0,0,0,5" />
-            <ui:NumberBox Value="{Binding ResolvedProfile.TcAudioFreq, UpdateSourceTrigger=PropertyChanged}" ToolTip="Audio pitch for Traction Control intervention." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+            <ui:NumberBox Value="{Binding CurrentProfile.TcAudioFreq, UpdateSourceTrigger=PropertyChanged}" ToolTip="Audio pitch for Traction Control intervention." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
             
             <TextBlock Text="TC Pulse (ms)" ToolTip="How long each beep lasts during Traction Control intervention." Margin="0,0,0,5" />
             <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
-                <ui:NumberBox Value="{Binding ResolvedProfile.TcAudioDur, UpdateSourceTrigger=PropertyChanged}" ToolTip="How long each beep lasts during Traction Control intervention." ClearButtonEnabled="False" Width="300" />
+                <ui:NumberBox Value="{Binding CurrentProfile.TcAudioDur, UpdateSourceTrigger=PropertyChanged}" ToolTip="How long each beep lasts during Traction Control intervention." ClearButtonEnabled="False" Width="300" />
                 <ui:Button Content="Preview" Icon="{ui:SymbolIcon Play24}" Margin="10,0,0,0" Click="PreviewTc_Click" />
             </StackPanel>
         </StackPanel>

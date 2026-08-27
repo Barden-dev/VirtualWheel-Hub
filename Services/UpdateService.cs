@@ -1,5 +1,6 @@
 using System;
 using System.Net.Http;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -23,7 +24,40 @@ namespace SimRacingHub.Services
 
     public class UpdateService
     {
-        public const string CurrentVersion = "1.0.20";
+        public static readonly string CurrentVersion = ResolveCurrentVersion();
+
+        private static string ResolveCurrentVersion()
+        {
+            try
+            {
+                var assembly = Assembly.GetExecutingAssembly();
+
+                string? informational = assembly
+                    .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
+                    .InformationalVersion;
+                if (!string.IsNullOrWhiteSpace(informational))
+                {
+                    int plusIndex = informational.IndexOf('+');
+                    string trimmed = plusIndex > 0 ? informational.Substring(0, plusIndex) : informational;
+                    if (trimmed.Length > 0) return trimmed;
+                }
+
+                var version = assembly.GetName().Version;
+                if (version != null)
+                {
+                    if (version.Build > 0)
+                        return $"{version.Major}.{version.Minor}.{version.Build}";
+                    return $"{version.Major}.{version.Minor}";
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[UpdateService] Could not read assembly version: {ex.Message}");
+            }
+
+            return "0.0.0";
+        }
+
         public static bool IsProVersion { get; set; } = false;
 
         public const string GitHubRepoUrl = "https://github.com/Barden-dev/vWheel-Hub";

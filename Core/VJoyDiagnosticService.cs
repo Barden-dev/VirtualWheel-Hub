@@ -35,6 +35,8 @@ namespace SimRacingHub.Core
         public int MinRequiredButtons { get; set; } = 2;
         public bool SystemDllSynced { get; set; }
 
+        public string DllSyncAdvice { get; set; } = string.Empty;
+
         public bool IsValid => IsDllPresent && 
                                IsDriverInstalled && 
                                (DeviceStatusRaw == VJoyWrapper.VJD_STAT_FREE || DeviceStatusRaw == VJoyWrapper.VJD_STAT_OWN) && 
@@ -53,20 +55,39 @@ namespace SimRacingHub.Core
 
     public class VJoyDiagnosticService
     {
+        private static bool _dllSyncAttempted;
+
         public VJoyDiagnosticResult PerformDiagnostic(VJoyRequirements? requirements = null)
         {
             requirements ??= new VJoyRequirements();
-            var result = new VJoyDiagnosticResult
-            {
-                TargetDeviceId = requirements.DeviceId,
-                MinRequiredButtons = requirements.MinRequiredButtons
-            };
 
             string appDir = AppDomain.CurrentDomain.BaseDirectory;
             string localDllPath = Path.Combine(appDir, "vJoyInterface.dll");
 
             // 1. Smart System Sync for vJoyInterface.dll
-            TrySyncSystemDll(localDllPath, result);
+            string dllAdvice = TrySyncSystemDll(localDllPath, out bool synced);
+
+            var result = PerformDiagnosticCore(requirements, localDllPath);
+            result.SystemDllSynced = synced;
+            result.DllSyncAdvice = dllAdvice;
+
+            if (!string.IsNullOrEmpty(dllAdvice))
+            {
+                result.ActionableAdvice = string.IsNullOrEmpty(result.ActionableAdvice)
+                    ? dllAdvice
+                    : result.ActionableAdvice + " " + dllAdvice;
+            }
+
+            return result;
+        }
+
+        private VJoyDiagnosticResult PerformDiagnosticCore(VJoyRequirements requirements, string localDllPath)
+        {
+            var result = new VJoyDiagnosticResult
+            {
+                TargetDeviceId = requirements.DeviceId,
+                MinRequiredButtons = requirements.MinRequiredButtons
+            };
 
             result.IsDllPresent = File.Exists(localDllPath);
             if (!result.IsDllPresent)
@@ -154,8 +175,13 @@ namespace SimRacingHub.Core
             return result;
         }
 
-        private void TrySyncSystemDll(string localDllPath, VJoyDiagnosticResult result)
+        private string TrySyncSystemDll(string localDllPath, out bool synced)
         {
+            synced = false;
+
+            if (_dllSyncAttempted) return string.Empty;
+            _dllSyncAttempted = true;
+
             try
             {
                 string[] potentialSystemPaths = new[]
@@ -165,39 +191,44 @@ namespace SimRacingHub.Core
                     Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "vJoyInterface.dll")
                 };
 
-                foreach (var sysPath in potentialSystemPaths)
+                string? sysPath = potentialSystemPaths.FirstOrDefault(File.Exists);
+                if (sysPath == null) return string.Empty;
+
+                if (!File.Exists(localDllPath))
                 {
-                    if (File.Exists(sysPath))
-                    {
-                        var sysInfo = new FileInfo(sysPath);
-                        bool needCopy = false;
-
-                        if (!File.Exists(localDllPath))
-                        {
-                            needCopy = true;
-                        }
-                        else
-                        {
-                            var localInfo = new FileInfo(localDllPath);
-                            if (sysInfo.Length != localInfo.Length || sysInfo.LastWriteTimeUtc > localInfo.LastWriteTimeUtc)
-                            {
-                                needCopy = true;
-                            }
-                        }
-
-                        if (needCopy)
-                        {
-                            File.Copy(sysPath, localDllPath, overwrite: true);
-                            result.SystemDllSynced = true;
-                            AppLogger.Instance.LogInfo($"Synced system vJoyInterface.dll from '{sysPath}' to local folder.");
-                        }
-                        break;
-                    }
+                    File.Copy(sysPath, localDllPath, overwrite: false);
+                    synced = true;
+                    AppLogger.Instance.LogInfo($"Copied vJoyInterface.dll from the vJoy installation ('{sysPath}') - it was missing next to the application.");
+                    return string.Empty;
                 }
+
+                string localVersion = DescribeDllVersion(localDllPath);
+                string systemVersion = DescribeDllVersion(sysPath);
+                if (string.Equals(localVersion, systemVersion, StringComparison.OrdinalIgnoreCase)) return string.Empty;
+
+                string advice = $"Note: the vJoyInterface.dll next to vWheel Hub ({localVersion}) differs from the one in your vJoy installation ({systemVersion}). If vJoy misbehaves, replace the file in the application folder with '{sysPath}' manually.";
+                AppLogger.Instance.LogWarning(advice);
+                return advice;
             }
             catch (Exception ex)
             {
-                AppLogger.Instance.LogError("Failed to sync system vJoyInterface.dll", ex);
+                AppLogger.Instance.LogWarning($"Could not compare vJoyInterface.dll with the system copy: {ex.Message}");
+                return string.Empty;
+            }
+        }
+
+        private static string DescribeDllVersion(string path)
+        {
+            try
+            {
+                string? version = System.Diagnostics.FileVersionInfo.GetVersionInfo(path).FileVersion;
+                if (!string.IsNullOrWhiteSpace(version)) return $"v{version}";
+
+                return $"{new FileInfo(path).Length} bytes";
+            }
+            catch
+            {
+                return "unknown";
             }
         }
 
@@ -230,7 +261,7 @@ namespace SimRacingHub.Core
                     Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "vJoy", "vJoyConfig.exe")
                 };
 
-                string exePath = potentialPaths.FirstOrDefault(File.Exists);
+                string? exePath = potentialPaths.FirstOrDefault(File.Exists);
                 if (exePath == null)
                 {
                     exePath = "vJoyConf.exe";
@@ -243,8 +274,13 @@ namespace SimRacingHub.Core
                     Verb = "runas" // Triggers Windows UAC prompt for Admin rights
                 };
 
-                System.Diagnostics.Process.Start(psi);
+                System.Diagnostics.Process.Start(psi)?.Dispose();
                 return true;
+            }
+            catch (System.ComponentModel.Win32Exception ex) when (ex.NativeErrorCode == 1223)
+            {
+                AppLogger.Instance.LogWarning("Administrator permission was declined, so vJoyConf.exe was not started.");
+                return false;
             }
             catch (Exception ex)
             {
@@ -253,7 +289,7 @@ namespace SimRacingHub.Core
             }
         }
 
-        public static (bool Success, string Message) TryAutoConfigureVJoy(uint deviceId = 1)
+        public static async System.Threading.Tasks.Task<(bool Success, string Message)> TryAutoConfigureVJoy(uint deviceId = 1)
         {
             try
             {
@@ -265,7 +301,7 @@ namespace SimRacingHub.Core
                     Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "vJoy", "vJoyConfig.exe")
                 };
 
-                string exePath = potentialPaths.FirstOrDefault(File.Exists);
+                string? exePath = potentialPaths.FirstOrDefault(File.Exists);
                 if (exePath == null)
                 {
                     exePath = "vJoyConfig.exe";
@@ -280,13 +316,33 @@ namespace SimRacingHub.Core
                     Verb = "runas" // Triggers Windows UAC prompt for Admin rights
                 };
 
-                var process = System.Diagnostics.Process.Start(psi);
-                if (process != null)
+                using var process = System.Diagnostics.Process.Start(psi);
+                if (process == null)
                 {
-                    process.WaitForExit(10000); // wait up to 10 seconds
-                    return (true, $"vJoy Device #{deviceId} configured successfully with X, Y, Z axes & 8 buttons.");
+                    return (false, "Could not start vJoyConfig.exe.");
                 }
-                return (false, "Could not start vJoyConfig.exe process.");
+
+                using var cts = new System.Threading.CancellationTokenSource(TimeSpan.FromSeconds(15));
+                try
+                {
+                    await process.WaitForExitAsync(cts.Token);
+                }
+                catch (OperationCanceledException)
+                {
+                    return (false, "vJoyConfig.exe is still running after 15 seconds. Finish it manually, then run the check again.");
+                }
+
+                if (process.ExitCode != 0)
+                {
+                    AppLogger.Instance.LogWarning($"vJoyConfig.exe exited with code {process.ExitCode}.");
+                    return (false, $"vJoyConfig.exe finished with error code {process.ExitCode}. Open vJoyConf.exe and configure Device #{deviceId} manually (axes X, Y, Z and 8 buttons).");
+                }
+
+                return (true, $"vJoy Device #{deviceId} configured successfully with X, Y, Z axes & 8 buttons.");
+            }
+            catch (System.ComponentModel.Win32Exception ex) when (ex.NativeErrorCode == 1223)
+            {
+                return (false, "Administrator permission was declined, so vJoy was not configured.");
             }
             catch (Exception ex)
             {
@@ -307,7 +363,7 @@ namespace SimRacingHub.Core
                     Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "vJoy")
                 };
 
-                string folderPath = potentialFolderPaths.FirstOrDefault(Directory.Exists);
+                string? folderPath = potentialFolderPaths.FirstOrDefault(Directory.Exists);
                 if (folderPath != null)
                 {
                     System.Diagnostics.Process.Start("explorer.exe", folderPath);

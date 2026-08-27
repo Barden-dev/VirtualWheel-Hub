@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace SimRacingHub.Core
 {
@@ -116,34 +117,88 @@ namespace SimRacingHub.Core
             }
         }
 
+        private string CleanupKey => $"vjoy-device-{_id}";
+
+        private int _consecutiveFailures;
+        private volatile Exception? _lastError;
+
+        public int ConsecutiveFailures => Volatile.Read(ref _consecutiveFailures);
+
+        public bool IsHealthy => Volatile.Read(ref _consecutiveFailures) == 0;
+
+        public Exception? LastError => _lastError;
+
         public bool Acquire()
         {
             int status = GetDeviceStatus(_id);
             if (status == VJD_STAT_FREE || status == VJD_STAT_OWN)
             {
-                return AcquireVJD(_id);
+                if (!AcquireVJD(_id)) return false;
+
+                CrashSafety.Register(CleanupKey, Release);
+                Volatile.Write(ref _consecutiveFailures, 0);
+                _lastError = null;
+                return true;
             }
             return false;
         }
 
         public void Release()
         {
+            CrashSafety.Unregister(CleanupKey);
+
             try
             {
                 RelinquishVJD(_id);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                AppLogger.Instance.LogError($"Could not release vJoy device {_id}", ex);
+            }
         }
 
-        public void UpdateAxesAndButtons(int steer, int gas, int brake, bool shiftDown, bool shiftUp)
+        public bool TryReacquire()
         {
-            SetAxis(steer, _id, HID_USAGE_X);
-            SetAxis(gas, _id, HID_USAGE_Y);
-            SetAxis(brake, _id, HID_USAGE_Z);
+            Release();
 
-            SetBtn(shiftDown, _id, 1);
-            SetBtn(shiftUp, _id, 2);
+            if (Acquire()) return true;
+
+            AppLogger.Instance.LogWarning($"Could not re-acquire vJoy device {_id} (status: {DescribeStatus(GetDeviceStatus(_id))})");
+            return false;
         }
+
+        public bool UpdateAxesAndButtons(int steer, int gas, int brake, bool shiftDown, bool shiftUp)
+        {
+            bool ok;
+
+            try
+            {
+                ok = SetAxis(steer, _id, HID_USAGE_X);
+                ok &= SetAxis(gas, _id, HID_USAGE_Y);
+                ok &= SetAxis(brake, _id, HID_USAGE_Z);
+                ok &= SetBtn(shiftDown, _id, 1);
+                ok &= SetBtn(shiftUp, _id, 2);
+            }
+            catch (Exception ex)
+            {
+                _lastError = ex;
+                ok = false;
+            }
+
+            if (ok) Volatile.Write(ref _consecutiveFailures, 0);
+            else Interlocked.Increment(ref _consecutiveFailures);
+
+            return ok;
+        }
+
+        public static string DescribeStatus(int status) => status switch
+        {
+            VJD_STAT_OWN => "owned by this application",
+            VJD_STAT_FREE => "free",
+            VJD_STAT_BUSY => "owned by another application",
+            VJD_STAT_MISS => "missing or not configured",
+            _ => "unknown"
+        };
 
         public void Dispose()
         {

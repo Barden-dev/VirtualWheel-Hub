@@ -119,13 +119,29 @@ namespace SimRacingHub.Core
             _state.Steering = 0;
         }
 
-        public void UpdatePedals(bool isGasPressed, bool isBrakePressed, bool isTurboGas, bool isTurboBrake)
+        public void UpdatePedals(bool isGasPressed, bool isBrakePressed, bool isTurboGas, bool isTurboBrake, double dtSeconds)
         {
-            UpdateBrake(isBrakePressed, isTurboBrake, isTurboGas);
-            UpdateGas(isGasPressed, isBrakePressed, isTurboGas);
+            double dtFactor = GetPedalDtFactor(dtSeconds);
+            UpdateBrake(isBrakePressed, isTurboBrake, isTurboGas, dtFactor);
+            UpdateGas(isGasPressed, isBrakePressed, isTurboGas, dtFactor);
         }
 
-        private void UpdateBrake(bool isBrakePressed, bool isTurboBrake, bool isTurboGas)
+        private double GetPedalDtFactor(double dtSeconds)
+        {
+            if (!double.IsFinite(dtSeconds) || dtSeconds <= 0.0)
+            {
+                int pollingRate = Math.Clamp(_profile.PollingRate, 50, 1000);
+                dtSeconds = 1.0 / pollingRate;
+            }
+
+            // A debugger pause or a system stall must not turn into a giant
+            // one-frame pedal jump. 20 ms is also the valid step at the minimum
+            // supported Hub Rate of 50 Hz.
+            dtSeconds = Math.Min(dtSeconds, 0.020);
+            return dtSeconds;
+        }
+
+        private void UpdateBrake(bool isBrakePressed, bool isTurboBrake, bool isTurboGas, double dtFactor)
         {
             double fullRange = 65536.0;
             double steeringMin = -32768.0;
@@ -135,16 +151,15 @@ namespace SimRacingHub.Core
             double brakeLimitVal = steeringMax;
 
             double currentBrakePct = (_state.BrakeVal - steeringMin) / fullRange;
-
             if (isBrakePressed)
             {
                 if (currentBrakePct < _profile.BrakeThreshold)
                 {
-                    _state.BrakeVal += _profile.BrakeAttackFast;
+                    _state.BrakeVal += _profile.BrakeAttackFast * dtFactor;
                 }
                 else
                 {
-                    _state.BrakeVal += _profile.BrakeAttackSlow;
+                    _state.BrakeVal += _profile.BrakeAttackSlow * dtFactor;
                 }
 
                 if (!isTurboBrake && _state.BrakeVal > brakeLimitVal)
@@ -154,14 +169,14 @@ namespace SimRacingHub.Core
             }
             else
             {
-                _state.BrakeVal -= _profile.BrakeDecay;
+                _state.BrakeVal -= _profile.BrakeDecay * dtFactor;
             }
 
             if (!isTurboGas && !isTurboBrake)
             {
                 if (_state.BrakeVal > brakeLimitVal)
                 {
-                    _state.BrakeVal = Math.Max(brakeLimitVal, _state.BrakeVal - _profile.TbDecay);
+                    _state.BrakeVal = Math.Max(brakeLimitVal, _state.BrakeVal - (_profile.TbDecay * dtFactor));
                 }
             }
 
@@ -169,7 +184,7 @@ namespace SimRacingHub.Core
             else if (_state.BrakeVal < steeringMin) _state.BrakeVal = steeringMin;
         }
 
-        private void UpdateGas(bool isGasPressed, bool isBrakePressed, bool isTurboGas)
+        private void UpdateGas(bool isGasPressed, bool isBrakePressed, bool isTurboGas, double dtFactor)
         {
             double fullRange = 65536.0;
             double steeringMin = -32768.0;
@@ -177,31 +192,30 @@ namespace SimRacingHub.Core
 
             bool shouldApplyGas = isBrakePressed ? isTurboGas : isGasPressed;
             double currentGasPct = (_state.GasVal - steeringMin) / fullRange;
-
             if (shouldApplyGas)
             {
                 if (isTurboGas)
                 {
-                    _state.GasVal += _profile.GasAttackTurbo;
+                    _state.GasVal += _profile.GasAttackTurbo * dtFactor;
                 }
                 else if (currentGasPct < _profile.GasThreshold)
                 {
-                    _state.GasVal += _profile.GasAttackFast;
+                    _state.GasVal += _profile.GasAttackFast * dtFactor;
                 }
                 else
                 {
-                    _state.GasVal += _profile.GasAttackSlow;
+                    _state.GasVal += _profile.GasAttackSlow * dtFactor;
                 }
             }
             else
             {
                 if (isBrakePressed)
                 {
-                    _state.GasVal -= _profile.GasInstantCut;
+                    _state.GasVal -= _profile.GasInstantCut * dtFactor;
                 }
                 else
                 {
-                    _state.GasVal -= _profile.GasDecay;
+                    _state.GasVal -= _profile.GasDecay * dtFactor;
                 }
             }
 
@@ -214,20 +228,33 @@ namespace SimRacingHub.Core
             return (int)Math.Round(outMin + ((val - inMin) / (inMax - inMin)) * (outMax - outMin));
         }
 
-        public (int steer, int gas, int brake) GetMappedOutputs()
+        /// <summary>
+        /// Maps steering without touching pedal state.  The dedicated steering
+        /// loop uses this cheap path at 1 kHz; gas/brake curves are not evaluated
+        /// for every mouse sample.
+        /// </summary>
+        public int GetMappedSteering()
         {
-            // Steering Gamma
             double rawSteerNorm = _state.Steering / 32768.0;
-            if (rawSteerNorm > 1.0) rawSteerNorm = 1.0;
-            else if (rawSteerNorm < -1.0) rawSteerNorm = -1.0;
+            rawSteerNorm = Math.Clamp(rawSteerNorm, -1.0, 1.0);
 
             double steerGamma = _profile.SteeringGamma <= 0 ? 1.0 : _profile.SteeringGamma;
             double curvedSteerNorm = Math.Sign(rawSteerNorm) * Math.Pow(Math.Abs(rawSteerNorm), steerGamma);
             double finalSteering = (curvedSteerNorm * 32768.0) + _profile.SteeringOffset;
-            if (finalSteering > 32768) finalSteering = 32768;
-            else if (finalSteering < -32768) finalSteering = -32768;
+            finalSteering = Math.Clamp(finalSteering, -32768.0, 32768.0);
 
             int mappedSteer = MapAxis(finalSteering, -32768, 32768, _profile.OutSteerMin, _profile.OutSteerMax);
+            if (_profile.InvertSteering)
+            {
+                mappedSteer = _profile.OutSteerMax - (mappedSteer - _profile.OutSteerMin);
+            }
+
+            return mappedSteer;
+        }
+
+        public (int steer, int gas, int brake) GetMappedOutputs()
+        {
+            int mappedSteer = GetMappedSteering();
 
             // Gas Gamma
             double rawGasNorm = (_state.GasVal - (-32768.0)) / 65536.0;
@@ -270,11 +297,6 @@ namespace SimRacingHub.Core
                 mappedBrake = (int)Math.Round(rawBrake);
             }
 
-            if (_profile.InvertSteering)
-            {
-                mappedSteer = _profile.OutSteerMax - (mappedSteer - _profile.OutSteerMin);
-            }
-            
             if (_profile.InvertGas)
             {
                 mappedGas = _profile.OutGasMax - (mappedGas - _profile.OutGasMin);

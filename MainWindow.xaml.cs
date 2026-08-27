@@ -31,6 +31,10 @@ namespace SimRacingHub
             DataContext = viewModel;
             LoadWindowSettings(viewModel);
             
+            SteerMonitorBar.MarkerDragged += MonitorBar_MarkerDragged;
+            GasMonitorBar.MarkerDragged += MonitorBar_MarkerDragged;
+            BrakeMonitorBar.MarkerDragged += MonitorBar_MarkerDragged;
+            
             this.Closing += MainWindow_Closing;
             this.Activated += (s, e) =>
             {
@@ -51,6 +55,14 @@ namespace SimRacingHub
             };
         }
 
+        private void MonitorBar_MarkerDragged(string markerName, double value)
+        {
+            if (DataContext is MainViewModel vm)
+            {
+                vm.OnMonitorMarkerDragged(markerName, value);
+            }
+        }
+
         private void LoadWindowSettings(MainViewModel viewModel)
         {
             try
@@ -64,9 +76,17 @@ namespace SimRacingHub
                         Height = Math.Max(600, settings.Height);
                         if (!double.IsNaN(settings.Left) && !double.IsNaN(settings.Top))
                         {
-                            WindowStartupLocation = WindowStartupLocation.Manual;
-                            Left = settings.Left;
-                            Top = settings.Top;
+                            if (IsRectVisibleOnDesktop(settings.Left, settings.Top, Width, Height))
+                            {
+                                WindowStartupLocation = WindowStartupLocation.Manual;
+                                Left = settings.Left;
+                                Top = settings.Top;
+                            }
+                            else
+                            {
+                                WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                                AppLogger.Instance.LogWarning($"Saved window position ({settings.Left:F0}, {settings.Top:F0}) is outside the current desktop area, so the window was centered.");
+                            }
                         }
                         WindowState = settings.WindowState;
                         if (viewModel != null)
@@ -82,7 +102,21 @@ namespace SimRacingHub
             }
         }
 
-        private void MainWindow_Closing(object sender, CancelEventArgs e)
+        private static bool IsRectVisibleOnDesktop(double left, double top, double width, double height)
+        {
+            var desktop = new Rect(
+                SystemParameters.VirtualScreenLeft,
+                SystemParameters.VirtualScreenTop,
+                SystemParameters.VirtualScreenWidth,
+                SystemParameters.VirtualScreenHeight);
+
+            var window = new Rect(left, top, Math.Max(1, width), Math.Max(1, height));
+            window.Intersect(desktop);
+
+            return !window.IsEmpty && window.Width >= 120 && window.Height >= 40;
+        }
+
+        private void MainWindow_Closing(object? sender, CancelEventArgs e)
         {
             try
             {
@@ -96,11 +130,14 @@ namespace SimRacingHub
                     WindowState = this.WindowState,
                     IsOutputMonitorExpanded = vm?.IsOutputMonitorExpanded ?? false
                 };
-                File.WriteAllText(SettingsFile, JsonConvert.SerializeObject(settings));
+                string tempPath = SettingsFile + ".tmp";
+                File.WriteAllText(tempPath, JsonConvert.SerializeObject(settings, Formatting.Indented));
+                File.Move(tempPath, SettingsFile, overwrite: true);
             }
             catch (Exception ex)
             {
                 AppLogger.Instance.LogError("Failed to save window settings", ex);
+                TryDeleteTempSettings();
             }
             finally
             {
@@ -108,6 +145,18 @@ namespace SimRacingHub
                 {
                     vm.Shutdown();
                 }
+            }
+        }
+
+        private static void TryDeleteTempSettings()
+        {
+            try
+            {
+                string tempPath = SettingsFile + ".tmp";
+                if (File.Exists(tempPath)) File.Delete(tempPath);
+            }
+            catch
+            {
             }
         }
 

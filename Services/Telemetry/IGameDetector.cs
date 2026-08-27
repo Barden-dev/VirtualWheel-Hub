@@ -4,8 +4,8 @@ namespace SimRacingHub.Services.Telemetry
     {
         string GameName { get; }
         bool IsRunning { get; }
-        string GetCurrentClass();
-        string GetCurrentCar();
+        string? GetCurrentClass();
+        string? GetCurrentCar();
         void Update();
     }
 }

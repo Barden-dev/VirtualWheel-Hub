@@ -14,5 +14,5 @@ namespace SimRacingHub.Services.Telemetry
         string Id,
         string DisplayName,
         bool IsSupported,
-        string UnavailableReason = null);
+        string? UnavailableReason = null);
 }

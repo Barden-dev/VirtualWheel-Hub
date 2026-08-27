@@ -5,7 +5,8 @@ namespace SimRacingHub.Models
 {
     public class ProfileSharePackage
     {
-        public int SchemaVersion { get; set; } = 1;
+        public const int CurrentSchemaVersion = 2;
+        public int SchemaVersion { get; set; } = CurrentSchemaVersion;
         public string AppVersion { get; set; } = UpdateService.CurrentVersion;
         public string Name { get; set; } = string.Empty;
         public string Author { get; set; } = string.Empty;

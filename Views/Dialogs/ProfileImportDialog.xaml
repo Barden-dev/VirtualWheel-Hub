@@ -148,11 +148,11 @@
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Grid.Column="0">
-                                        <TextBlock x:Name="ParamThrottleDynamicsText" Text="Throttle: Fast 666 / Slow 222" FontSize="11.5" Margin="0,2,0,2"/>
+                                        <TextBlock x:Name="ParamThrottleDynamicsText" Text="Throttle: Fast 0.100s / Slow 0.300s" FontSize="11.5" Margin="0,2,0,2"/>
                                         <TextBlock x:Name="ParamThrottleGammaText" Text="Throttle Gamma: 1.00" FontSize="11.5" Margin="0,2,0,2"/>
                                     </StackPanel>
                                     <StackPanel Grid.Column="1">
-                                        <TextBlock x:Name="ParamBrakeDynamicsText" Text="Brake: Fast 1000 / Slow 250" FontSize="11.5" Margin="0,2,0,2"/>
+                                        <TextBlock x:Name="ParamBrakeDynamicsText" Text="Brake: Fast 0.050s / Slow 0.250s" FontSize="11.5" Margin="0,2,0,2"/>
                                         <TextBlock x:Name="ParamBrakeGammaText" Text="Brake Gamma: 1.00" FontSize="11.5" Margin="0,2,0,2"/>
                                     </StackPanel>
                                 </Grid>

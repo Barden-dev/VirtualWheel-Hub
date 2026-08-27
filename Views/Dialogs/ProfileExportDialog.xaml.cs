@@ -34,7 +34,7 @@ namespace SimRacingHub.Views.Dialogs
         {
             return new ProfileSharePackage
             {
-                SchemaVersion = 1,
+                SchemaVersion = ProfileSharePackage.CurrentSchemaVersion,
                 AppVersion = UpdateService.CurrentVersion,
                 Name = !string.IsNullOrWhiteSpace(PresetNameBox.Text) ? PresetNameBox.Text.Trim() : "Preset",
                 Author = !string.IsNullOrWhiteSpace(AuthorBox.Text) ? AuthorBox.Text.Trim() : string.Empty,

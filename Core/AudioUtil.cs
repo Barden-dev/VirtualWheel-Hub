@@ -10,32 +10,41 @@ namespace SimRacingHub.Core
 
         public static void PlayErrorSound()
         {
-            try
-            {
-                if (!MessageBeep(0x00000010)) // MB_ICONHAND / MB_ICONERROR
-                {
-                    Console.Beep(600, 300);
-                }
-            }
-            catch
-            {
-                try { Console.Beep(600, 300); } catch { }
-            }
+            Play(0x00000010, 600, 300, "error"); // MB_ICONHAND / MB_ICONERROR
         }
 
         public static void PlaySuccessSound()
         {
+            Play(0x00000040, 1200, 200, "success"); // MB_ICONASTERISK / MB_ICONINFORMATION
+        }
+
+        private static void Play(uint messageBeepType, int fallbackFreq, int fallbackDur, string kind)
+        {
+            bool systemSoundPlayed = false;
             try
             {
-                if (!MessageBeep(0x00000040)) // MB_ICONASTERISK / MB_ICONINFORMATION
-                {
-                    Console.Beep(1200, 200);
-                }
+                systemSoundPlayed = MessageBeep(messageBeepType);
             }
-            catch
+            catch (Exception ex)
             {
-                try { Console.Beep(1200, 200); } catch { }
+                LogSoundFailure(kind, $"MessageBeep failed: {ex.Message}");
             }
+
+            if (systemSoundPlayed) return;
+
+            try
+            {
+                Console.Beep(fallbackFreq, fallbackDur);
+            }
+            catch (Exception ex)
+            {
+                LogSoundFailure(kind, ex.Message);
+            }
+        }
+
+        private static void LogSoundFailure(string kind, string reason)
+        {
+            AppLogger.Instance.LogInfo($"Could not play the {kind} sound: {reason}", showInStatusBar: false);
         }
     }
 }

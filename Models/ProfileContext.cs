@@ -9,17 +9,17 @@ namespace SimRacingHub.Models
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(DisplayPath))]
-        private string _game;
+        private string? _game;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(DisplayPath))]
-        private string _carClass;
+        private string? _carClass;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(DisplayPath))]
-        private string _car;
+        private string? _car;
 
-        public ProfileContext(string game = null, string carClass = null, string car = null)
+        public ProfileContext(string? game = null, string? carClass = null, string? car = null)
         {
             _isBulkUpdating = true;
             Game = game;
@@ -28,7 +28,7 @@ namespace SimRacingHub.Models
             _isBulkUpdating = false;
         }
 
-        partial void OnGameChanged(string oldValue, string newValue)
+        partial void OnGameChanged(string? oldValue, string? newValue)
         {
             if (_isBulkUpdating) return;
 
@@ -39,7 +39,7 @@ namespace SimRacingHub.Models
             }
         }
 
-        partial void OnCarClassChanged(string oldValue, string newValue)
+        partial void OnCarClassChanged(string? oldValue, string? newValue)
         {
             if (_isBulkUpdating) return;
 
@@ -49,7 +49,7 @@ namespace SimRacingHub.Models
             }
         }
 
-        public void Set(string game, string carClass, string car)
+        public void Set(string? game, string? carClass, string? car)
         {
             _isBulkUpdating = true;
             Game = game;
@@ -77,13 +77,14 @@ namespace SimRacingHub.Models
             }
         }
 
-        public bool Equals(ProfileContext other)
+        public bool Equals(ProfileContext? other)
         {
             if (other is null) return false;
+            if (ReferenceEquals(this, other)) return true;
             return Game == other.Game && CarClass == other.CarClass && Car == other.Car;
         }
         
-        public override bool Equals(object obj) => Equals(obj as ProfileContext);
+        public override bool Equals(object? obj) => obj is ProfileContext other && Equals(other);
         public override int GetHashCode() => HashCode.Combine(Game, CarClass, Car);
     }
 }

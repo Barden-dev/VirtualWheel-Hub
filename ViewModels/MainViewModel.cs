@@ -30,14 +30,19 @@ namespace SimRacingHub.ViewModels
         public ProfileSharingService ProfileSharingService => _profileSharingService;
         private GameDetectionService _gameDetection;
         public GameDetectionService GameDetection => _gameDetection;
+        private readonly LmuInputFixService _lmuInputFixService = new LmuInputFixService();
+        private string _lastWarnedLmuFixPath = string.Empty;
+
+        [ObservableProperty]
+        private LmuInputFixStatus _lmuInputFix = new LmuInputFixStatus();
 
         private readonly GamePluginManager _pluginManager = new GamePluginManager();
 
         [ObservableProperty]
-        private GamePluginDiagnosticResult _gamePluginDiagnostic;
+        private GamePluginDiagnosticResult _gamePluginDiagnostic = new();
 
         [ObservableProperty]
-        private VJoyDiagnosticResult _vJoyDiagnostic;
+        private VJoyDiagnosticResult _vJoyDiagnostic = new();
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(CanRecheck))]
@@ -69,6 +74,8 @@ namespace SimRacingHub.ViewModels
         public bool HasUnsavedChanges => _profileSession.HasUnsavedChanges;
         public bool IsNewProfile => _profileSession.IsNewProfile;
         public bool CanUndo => _profileSession.CanUndo;
+        public string BindingConflictMessage => _profileSession.BindingConflictMessage;
+        public bool HasBindingConflictMessage => !string.IsNullOrEmpty(BindingConflictMessage);
         
         [ObservableProperty]
         private ProfileContext _currentContext;
@@ -80,13 +87,14 @@ namespace SimRacingHub.ViewModels
         public bool SupportsTc => HasFeature("Tc");
         public bool SupportsSlipAudio => HasFeature("SlipAudio");
         public bool SupportsSpeedSens => HasFeature("SpeedSens");
+        public bool SupportsMenuControls => HasFeature("MenuControls");
         public bool SupportsTcAudio => HasFeature("TcAudio") && ResolvedProfile != null && ResolvedProfile.UseTcHelper;
 
         public int TotalProFeaturesCount
         {
             get
             {
-                var builtInProFeatures = new[] { "Abs", "Tc", "TcAudio", "SlipAudio", "SpeedSens", "TrailBraking" };
+                var builtInProFeatures = new[] { "Abs", "Tc", "TcAudio", "SlipAudio", "SpeedSens", "TrailBraking", "MenuControls" };
 
                 return _registry.GetAll()
                     .Where(i => i.Features != null)
@@ -102,6 +110,7 @@ namespace SimRacingHub.ViewModels
         public string TcSupportedGamesText => GetSupportedGamesText("Tc");
         public string SlipAudioSupportedGamesText => GetSupportedGamesText("SlipAudio");
         public string SpeedSensSupportedGamesText => GetSupportedGamesText("SpeedSens");
+        public string MenuControlsSupportedGamesText => GetSupportedGamesText("MenuControls");
 
         public bool HasFeature(string featureId)
         {
@@ -122,10 +131,6 @@ namespace SimRacingHub.ViewModels
             return $"Supported games: {string.Join(", ", games)}";
         }
 
-
-
-        public int[] AvailablePollingRates { get; } = new[] { 125, 250, 500, 1000 };
-
         [ObservableProperty]
         private ObservableCollection<string> _availableGames = new();
         [ObservableProperty]
@@ -135,7 +140,7 @@ namespace SimRacingHub.ViewModels
 
 
         
-        private ProfileContext _oldContext;
+        private ProfileContext? _oldContext;
         partial void OnCurrentContextChanged(ProfileContext value)
         {
             if (_oldContext != null)
@@ -153,11 +158,13 @@ namespace SimRacingHub.ViewModels
                 OnPropertyChanged(nameof(SupportsTc));
                 OnPropertyChanged(nameof(SupportsSlipAudio));
                 OnPropertyChanged(nameof(SupportsSpeedSens));
+                OnPropertyChanged(nameof(SupportsMenuControls));
                 OnPropertyChanged(nameof(SupportsTcAudio));
+                OnPropertyChanged(nameof(MenuControlsSupportedGamesText));
             });
         }
         
-        private void CurrentContext_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private void CurrentContext_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(ProfileContext.Game))
             {
@@ -165,7 +172,9 @@ namespace SimRacingHub.ViewModels
                 OnPropertyChanged(nameof(SupportsTc));
                 OnPropertyChanged(nameof(SupportsSlipAudio));
                 OnPropertyChanged(nameof(SupportsSpeedSens));
+                OnPropertyChanged(nameof(SupportsMenuControls));
                 OnPropertyChanged(nameof(SupportsTcAudio));
+                OnPropertyChanged(nameof(MenuControlsSupportedGamesText));
             }
             System.Windows.Application.Current?.Dispatcher.Invoke(() => 
             {
@@ -181,16 +190,15 @@ namespace SimRacingHub.ViewModels
             if (CurrentContext != null && !string.IsNullOrEmpty(CurrentContext.Game))
             {
                 GamePluginDiagnostic = _pluginManager.CheckPluginStatus(CurrentContext.Game);
-                if (GamePluginDiagnostic.Status == PluginStatus.MissingPlugin || GamePluginDiagnostic.Status == PluginStatus.OutdatedPlugin)
+                if (GamePluginDiagnostic.Status == PluginStatus.MissingPlugin ||
+                    GamePluginDiagnostic.Status == PluginStatus.OutdatedPlugin ||
+                    GamePluginDiagnostic.Status == PluginStatus.ConfigurationError)
                 {
                     if (_lastWarnedGameForMissingPlugin != CurrentContext.Game)
                     {
                         _lastWarnedGameForMissingPlugin = CurrentContext.Game;
-                        try
-                        {
-                            AudioUtil.PlayErrorSound();
-                        }
-                        catch { }
+
+                        AudioUtil.PlayErrorSound();
                     }
                 }
                 else
@@ -210,18 +218,158 @@ namespace SimRacingHub.ViewModels
         }
 
         [RelayCommand]
+        public void RefreshLmuInputFixStatus()
+        {
+            LmuInputFix = _lmuInputFixService.Check(CurrentContext?.Game);
+        }
+
+        [RelayCommand]
+        public void ApplyLmuInputFix()
+        {
+            RefreshLmuInputFixStatus();
+
+            if (!LmuInputFix.IsAvailable)
+            {
+                System.Windows.MessageBox.Show(
+                    LmuInputFix.DetailText,
+                    "LMU Input Fix",
+                    System.Windows.MessageBoxButton.OK,
+                    System.Windows.MessageBoxImage.Warning);
+                return;
+            }
+
+            if (_pluginManager.IsGameRunning("Le Mans Ultimate"))
+            {
+                System.Windows.MessageBox.Show(
+                    "Le Mans Ultimate is currently running. Close the game completely and try again. Its controls file must not be edited while the game is running.",
+                    "Close LMU first",
+                    System.Windows.MessageBoxButton.OK,
+                    System.Windows.MessageBoxImage.Warning);
+                return;
+            }
+
+            var confirmation = System.Windows.MessageBox.Show(
+                "vWheel Hub will change only \"DirectInput Fallback\" in current controls.json.\n\nA backup will be created first. LMU must be restarted completely after the fix. Continue?",
+                "Fix LMU input",
+                System.Windows.MessageBoxButton.YesNo,
+                System.Windows.MessageBoxImage.Question);
+
+            if (confirmation != System.Windows.MessageBoxResult.Yes) return;
+
+            var result = _lmuInputFixService.Apply();
+            RefreshLmuInputFixStatus();
+
+            if (result.Success && LmuInputFix.CanRevert)
+            {
+                RefreshGamePluginStatus();
+                string telemetryNote = GamePluginDiagnostic.IsActionRequired
+                    ? "\n\nThe optional LMU telemetry plugin still needs attention on the Dashboard. This does not undo the input fix; only telemetry-based helpers may be unavailable."
+                    : string.Empty;
+                var launch = System.Windows.MessageBox.Show(
+                    result.Message + telemetryNote + "\n\nLaunch Le Mans Ultimate now?",
+                    "LMU input fixed",
+                    System.Windows.MessageBoxButton.YesNo,
+                    System.Windows.MessageBoxImage.Information);
+
+                if (launch == System.Windows.MessageBoxResult.Yes)
+                {
+                    try
+                    {
+                        Process.Start(new ProcessStartInfo("steam://run/2399420") { UseShellExecute = true });
+                    }
+                    catch (Exception ex)
+                    {
+                        AppLogger.Instance.LogError("Failed to launch LMU through Steam", ex);
+                    }
+                }
+            }
+            else
+            {
+                System.Windows.MessageBox.Show(
+                    result.Message,
+                    result.Success ? "LMU input settings" : "LMU input fix failed",
+                    System.Windows.MessageBoxButton.OK,
+                    result.Success ? System.Windows.MessageBoxImage.Information : System.Windows.MessageBoxImage.Error);
+            }
+        }
+
+        [RelayCommand]
+        public void RevertLmuInputFix()
+        {
+            RefreshLmuInputFixStatus();
+
+            if (!LmuInputFix.CanRevert)
+            {
+                System.Windows.MessageBox.Show(
+                    "There is no safe backup created by vWheel Hub for the current LMU controls file.",
+                    "LMU Input Fix",
+                    System.Windows.MessageBoxButton.OK,
+                    System.Windows.MessageBoxImage.Information);
+                return;
+            }
+
+            var confirmation = System.Windows.MessageBox.Show(
+                "The current controls.json saved immediately before the fix will be restored.\n\nRestore is allowed only if LMU has not changed the file since the fix was applied. Continue?",
+                "Revert LMU input fix",
+                System.Windows.MessageBoxButton.YesNo,
+                System.Windows.MessageBoxImage.Warning);
+
+            if (confirmation != System.Windows.MessageBoxResult.Yes) return;
+
+            var result = _lmuInputFixService.Revert();
+            RefreshLmuInputFixStatus();
+
+            System.Windows.MessageBox.Show(
+                result.Message,
+                result.Success ? "LMU input fix reverted" : "LMU input revert failed",
+                System.Windows.MessageBoxButton.OK,
+                result.Success ? System.Windows.MessageBoxImage.Information : System.Windows.MessageBoxImage.Warning);
+        }
+
+        [RelayCommand]
+        public void OpenLmuInputFixFile()
+        {
+            _lmuInputFixService.OpenControlsFile();
+        }
+
+        private bool? ConfirmCloseRunningGame(string gameId)
+        {
+            if (!_pluginManager.IsGameRunning(gameId)) return false;
+
+            string displayName = _pluginManager.GetDisplayName(gameId);
+            var answer = System.Windows.MessageBox.Show(
+                $"{displayName} is running.\n\nA full game restart is required for telemetry setup. Close {displayName} now and install it?",
+                "Telemetry Plugin Setup",
+                System.Windows.MessageBoxButton.YesNo,
+                System.Windows.MessageBoxImage.Warning);
+
+            return answer == System.Windows.MessageBoxResult.Yes ? true : null;
+        }
+
+        private bool ConfirmForceCloseGame(string displayName)
+        {
+            var dispatcher = System.Windows.Application.Current?.Dispatcher;
+            if (dispatcher == null) return false;
+
+            return dispatcher.Invoke(() => System.Windows.MessageBox.Show(
+                $"{displayName} did not close within 10 seconds.\n\nForce it to close now? Any unsaved progress in the game will be lost.",
+                "Telemetry Plugin Setup",
+                System.Windows.MessageBoxButton.YesNo,
+                System.Windows.MessageBoxImage.Warning) == System.Windows.MessageBoxResult.Yes);
+        }
+
+        [RelayCommand]
         public void InstallGamePlugin()
         {
             if (CurrentContext == null || string.IsNullOrEmpty(CurrentContext.Game)) return;
 
-            var (success, msg) = _pluginManager.InstallPlugin(CurrentContext.Game, autoCloseGame: true);
+            bool? autoClose = ConfirmCloseRunningGame(CurrentContext.Game);
+            if (autoClose == null) return;
+
+            var (success, msg) = _pluginManager.InstallPlugin(CurrentContext.Game, autoCloseGame: autoClose.Value);
             if (success)
             {
-                try
-                {
-                    AudioUtil.PlaySuccessSound();
-                }
-                catch { }
+                AudioUtil.PlaySuccessSound();
                 System.Windows.MessageBox.Show(msg, "Telemetry Plugin Setup", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
             }
             else
@@ -244,14 +392,14 @@ namespace SimRacingHub.ViewModels
             if (dialog.ShowDialog() == true)
             {
                 string selectedFolder = dialog.FolderName;
-                var (success, msg) = _pluginManager.InstallPlugin(CurrentContext.Game, selectedFolder, autoCloseGame: true);
+
+                bool? autoClose = ConfirmCloseRunningGame(CurrentContext.Game);
+                if (autoClose == null) return;
+
+                var (success, msg) = _pluginManager.InstallPlugin(CurrentContext.Game, selectedFolder, autoCloseGame: autoClose.Value);
                 if (success)
                 {
-                    try
-                    {
-                        AudioUtil.PlaySuccessSound();
-                    }
-                    catch { }
+                    AudioUtil.PlaySuccessSound();
                     System.Windows.MessageBox.Show(msg, "Telemetry Plugin Setup", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
                 }
                 else
@@ -304,23 +452,15 @@ namespace SimRacingHub.ViewModels
 
         public void SaveAppSettings()
         {
-            try
+            new AppSettings
             {
-                var settings = new
-                {
-                    AutoStartHub = AutoStartHub,
-                    AutoDetectOnStartup = AutoDetectOnStartup
-                };
-                System.IO.File.WriteAllText(StoragePaths.AppSettingsPath, Newtonsoft.Json.JsonConvert.SerializeObject(settings, Newtonsoft.Json.Formatting.Indented));
-            }
-            catch (Exception ex)
-            {
-                AppLogger.Instance.LogError("Failed to save app settings", ex);
-            }
+                AutoStartHub = AutoStartHub,
+                AutoDetectOnStartup = AutoDetectOnStartup
+            }.Save();
         }
 
         [ObservableProperty]
-        private ProfileContext _pendingContext;
+        private ProfileContext? _pendingContext;
 
         public MainViewModel(ProfileManager profileManager, WindowManager windowManager, GameIntegrationRegistry registry, VJoyDiagnosticService vJoyDiagnosticService, UpdateService updateService)
         {
@@ -329,6 +469,8 @@ namespace SimRacingHub.ViewModels
             _registry = registry;
             _vJoyDiagnosticService = vJoyDiagnosticService;
             _updateService = updateService;
+
+            _pluginManager.ConfirmForceClose = ConfirmForceCloseGame;
 
             _ = RunVJoyDiagnosticAsync();
             _ = CheckForUpdatesAsync();
@@ -343,10 +485,21 @@ namespace SimRacingHub.ViewModels
                 OnPropertyChanged(nameof(CanUndo));
                 RevertProfileCommand.NotifyCanExecuteChanged();
             };
+            _profileSession.BindingConflictChanged += (s, e) =>
+            {
+                OnPropertyChanged(nameof(BindingConflictMessage));
+                OnPropertyChanged(nameof(HasBindingConflictMessage));
+            };
             
             _hubRuntime = new HubRuntime(registry, windowManager);
+            _hubRuntime.OnFault += OnHubFault;
+            _hubRuntime.OnMouseLockStateChanged += (locked) =>
+            {
+                System.Windows.Application.Current?.Dispatcher.InvokeAsync(() => LockMouse = locked);
+            };
+
             _hotkeyService = new HotkeyService();
-            
+
             _hotkeyService.OnToggleHub += () => 
             {
                 System.Windows.Application.Current?.Dispatcher.Invoke(() => IsActive = !IsActive);
@@ -376,6 +529,10 @@ namespace SimRacingHub.ViewModels
                     {
                         PendingContext = ctx;
                         AppLogger.Instance.LogInfo($"Auto-detected '{ctx.DisplayPath}', but you have unsaved changes.");
+                        if (string.Equals(ctx.Game, "Universal", StringComparison.OrdinalIgnoreCase) && LockMouse)
+                        {
+                            LockMouse = false;
+                        }
                     });
                 }
                 else
@@ -384,6 +541,10 @@ namespace SimRacingHub.ViewModels
                     {
                         PendingContext = null;
                         CurrentContext = ctx;
+                        if (string.Equals(ctx.Game, "Universal", StringComparison.OrdinalIgnoreCase) && LockMouse)
+                        {
+                            LockMouse = false;
+                        }
                     });
                 }
             };
@@ -393,32 +554,9 @@ namespace SimRacingHub.ViewModels
             // By default false, bound to UI toggle
             LockMouse = false;
             
-            try
-            {
-                if (System.IO.File.Exists(StoragePaths.AppSettingsPath))
-                {
-                    var settings = Newtonsoft.Json.JsonConvert.DeserializeObject<System.Collections.Generic.Dictionary<string, bool>>(System.IO.File.ReadAllText(StoragePaths.AppSettingsPath));
-                    if (settings != null)
-                    {
-                        if (settings.TryGetValue("AutoStartHub", out bool autoStart))
-                        {
-                            AutoStartHub = autoStart;
-                        }
-                        if (settings.TryGetValue("AutoDetectOnStartup", out bool autoDetectStartup))
-                        {
-                            _autoDetectOnStartup = autoDetectStartup;
-                        }
-                        else if (settings.TryGetValue("EnableAutoDetect", out bool autoDetectLegacy))
-                        {
-                            _autoDetectOnStartup = autoDetectLegacy;
-                        }
-                    }
-                }
-            }
-            catch (Exception ex) 
-            { 
-                AppLogger.Instance.LogError("Failed to load app settings", ex);
-            }
+            var appSettings = AppSettings.Load();
+            _autoStartHub = appSettings.AutoStartHub;
+            _autoDetectOnStartup = appSettings.ResolvedAutoDetectOnStartup;
             
             _gameDetection.AutoDetectEnabled = AutoDetectOnStartup;
             if (AutoDetectOnStartup)
@@ -532,7 +670,14 @@ namespace SimRacingHub.ViewModels
                     _vJoyDiagnosticLoopCts = null;
                 }
             }
-            catch { }
+            catch (ObjectDisposedException)
+            {
+                _vJoyDiagnosticLoopCts = null;
+            }
+            catch (Exception ex)
+            {
+                AppLogger.Instance.LogError("Failed to stop the periodic vJoy check", ex);
+            }
         }
 
         [RelayCommand]
@@ -575,8 +720,17 @@ namespace SimRacingHub.ViewModels
 
             if (dialogResult == System.Windows.MessageBoxResult.Yes)
             {
-                var (success, msg) = VJoyDiagnosticService.TryAutoConfigureVJoy(1);
-                AppLogger.Instance.LogInfo($"Auto-configure vJoy result: {success} - {msg}");
+                var (success, msg) = await VJoyDiagnosticService.TryAutoConfigureVJoy(1);
+
+                if (success)
+                {
+                    AppLogger.Instance.LogInfo(msg);
+                }
+                else
+                {
+                    AppLogger.Instance.LogWarning(msg);
+                }
+
                 await RunVJoyDiagnosticAsync();
             }
         }
@@ -685,22 +839,42 @@ namespace SimRacingHub.ViewModels
         {
             _lastUiUpdateTimestamp = 0;
 
-            if (VJoyDiagnostic == null)
+            RefreshLmuInputFixStatus();
+            if (LmuInputFix.NeedsFix &&
+                !string.Equals(_lastWarnedLmuFixPath, LmuInputFix.ControlsPath, StringComparison.OrdinalIgnoreCase))
             {
-                VJoyDiagnostic = _vJoyDiagnosticService.PerformDiagnostic();
+                _lastWarnedLmuFixPath = LmuInputFix.ControlsPath;
+                var continueWithoutFix = System.Windows.MessageBox.Show(
+                    "LMU has DirectInput Fallback disabled. With vJoy, this may cause steering and pedal axes to stutter or jump.\n\nClose LMU and use 'Fix LMU input' on the Dashboard to enable the compatible input path. Continue without the fix for now?",
+                    "LMU input compatibility",
+                    System.Windows.MessageBoxButton.YesNo,
+                    System.Windows.MessageBoxImage.Warning);
+
+                if (continueWithoutFix != System.Windows.MessageBoxResult.Yes)
+                {
+                    IsActive = false;
+                    return;
+                }
             }
 
-            if (!VJoyDiagnostic.IsValid)
+            var diag = VJoyDiagnostic;
+            if (diag == null || !diag.IsValid)
+            {
+                diag = _vJoyDiagnosticService.PerformDiagnostic();
+                VJoyDiagnostic = diag;
+            }
+
+            if (!diag.IsValid)
             {
                 IsActive = false;
-                AppLogger.Instance.LogError($"Cannot start Hub: {VJoyDiagnostic.SummaryMessage}. {VJoyDiagnostic.ActionableAdvice}");
+                AppLogger.Instance.LogError($"Cannot start Hub: {diag.SummaryMessage}. {diag.ActionableAdvice}");
 
                 _ = System.Windows.Application.Current?.Dispatcher.InvokeAsync(() =>
                 {
                     var uiBox = new Wpf.Ui.Controls.MessageBox
                     {
                         Title = "vJoy Configuration Error",
-                        Content = $"{VJoyDiagnostic.SummaryMessage}\n\nInstructions:\n{VJoyDiagnostic.ActionableAdvice}",
+                        Content = $"{diag.SummaryMessage}\n\nInstructions:\n{diag.ActionableAdvice}",
                         CloseButtonText = "OK"
                     };
                     _ = uiBox.ShowDialogAsync();
@@ -716,9 +890,9 @@ namespace SimRacingHub.ViewModels
             }
         }
 
-        public double NormalizedSteer => Math.Max(-1.0, Math.Min(1.0, SteerValue / 32768.0));
-        public double NormalizedGas => Math.Max(0.0, Math.Min(1.0, (GasValue - (-32768.0)) / 65536.0));
-        public double NormalizedBrake => Math.Max(0.0, Math.Min(1.0, (BrakeValue - (-32768.0)) / 65536.0));
+        public double NormalizedSteer => Math.Max(-1.0, Math.Min(1.0, (SteerValue - 16384.0) / 16384.0));
+        public double NormalizedGas => Math.Max(0.0, Math.Min(1.0, GasValue / 32768.0));
+        public double NormalizedBrake => Math.Max(0.0, Math.Min(1.0, BrakeValue / 32768.0));
 
         private void ThrottledOutputCallback(int steer, int gas, int brake)
         {
@@ -741,12 +915,41 @@ namespace SimRacingHub.ViewModels
         private void StopHub()
         {
             _hubRuntime.Stop();
-            SteerValue = 0;
-            GasValue = -32768;
-            BrakeValue = -32768;
+            SteerValue = 16384;
+            GasValue = 0;
+            BrakeValue = 0;
             OnPropertyChanged(nameof(NormalizedSteer));
             OnPropertyChanged(nameof(NormalizedGas));
             OnPropertyChanged(nameof(NormalizedBrake));
+        }
+
+        private void OnHubFault(string reason)
+        {
+            var dispatcher = System.Windows.Application.Current?.Dispatcher;
+            if (dispatcher == null) return;
+
+            _ = dispatcher.InvokeAsync(() =>
+            {
+                if (IsActive)
+                {
+                    IsActive = false;
+                }
+                else
+                {
+                    StopHub();
+                }
+
+                AppLogger.Instance.LogError($"vWheel Hub stopped: {reason}");
+                AudioUtil.PlayErrorSound();
+
+                var uiBox = new Wpf.Ui.Controls.MessageBox
+                {
+                    Title = "vWheel Hub stopped",
+                    Content = $"{reason}\n\nCheck the log for details:\n{AppLogger.Instance.CurrentLogFilePath}",
+                    CloseButtonText = "OK"
+                };
+                _ = uiBox.ShowDialogAsync();
+            });
         }
         
         public void Shutdown()
@@ -772,9 +975,9 @@ namespace SimRacingHub.ViewModels
                 CurrentContext.Game = "Universal";
             }
 
-            string origGame = CurrentContext.Game;
-            string origClass = CurrentContext.CarClass;
-            string origCar = CurrentContext.Car;
+            string? origGame = CurrentContext.Game;
+            string? origClass = CurrentContext.CarClass;
+            string? origCar = CurrentContext.Car;
 
             string cleanGame = ProfileManager.SanitizeName(origGame);
             string cleanClass = ProfileManager.SanitizeName(origClass);
@@ -806,6 +1009,7 @@ namespace SimRacingHub.ViewModels
             }
             
             RefreshDropdownCollections();
+            RefreshLmuInputFixStatus();
         }
 
         private void RefreshDropdownCollections()
@@ -818,14 +1022,14 @@ namespace SimRacingHub.ViewModels
             }
             
             var newClasses = new List<string> { "" };
-            newClasses.AddRange(_profileManager.GetAvailableClasses(CurrentContext.Game == "Universal" ? "" : CurrentContext.Game));
+            newClasses.AddRange(_profileManager.GetAvailableClasses(CurrentContext.Game));
             if (!System.Linq.Enumerable.SequenceEqual(AvailableClasses, newClasses))
             {
                 AvailableClasses = new ObservableCollection<string>(newClasses);
             }
             
             var newCars = new List<string> { "" };
-            newCars.AddRange(_profileManager.GetAvailableCars(CurrentContext.Game == "Universal" ? "" : CurrentContext.Game, CurrentContext.CarClass));
+            newCars.AddRange(_profileManager.GetAvailableCars(CurrentContext.Game, CurrentContext.CarClass));
             if (!System.Linq.Enumerable.SequenceEqual(AvailableCars, newCars))
             {
                 AvailableCars = new ObservableCollection<string>(newCars);
@@ -835,7 +1039,7 @@ namespace SimRacingHub.ViewModels
         [RelayCommand]
         public void SaveProfile()
         {
-            _profileSession.SaveProfile(CurrentContext);
+            if (!_profileSession.SaveProfile(CurrentContext)) return;
             LoadCurrentContext();
         }
 
@@ -843,6 +1047,45 @@ namespace SimRacingHub.ViewModels
         public void RevertProfile()
         {
             _profileSession.RevertProfile();
+        }
+
+        public void OnMonitorMarkerDragged(string markerName, double value)
+        {
+            if (CurrentProfile == null) return;
+
+            switch (markerName)
+            {
+                case "VJoy Steer Min":
+                    CurrentProfile.OutSteerMin = (int)value;
+                    break;
+                case "VJoy Steer Max":
+                    CurrentProfile.OutSteerMax = (int)value;
+                    break;
+                case "Car Steering Lock":
+                    CurrentProfile.CarSteeringLock = (int)value;
+                    break;
+                case "VJoy Gas Min":
+                    CurrentProfile.OutGasMin = (int)value;
+                    break;
+                case "VJoy Gas Max":
+                    CurrentProfile.OutGasMax = (int)value;
+                    break;
+                case "Fast Attack Threshold":
+                    CurrentProfile.GasThreshold = value;
+                    break;
+                case "VJoy Brake Min":
+                    CurrentProfile.OutBrakeMin = (int)value;
+                    break;
+                case "VJoy Brake Max":
+                    CurrentProfile.OutBrakeMax = (int)value;
+                    break;
+                case "Brake Threshold (Fast/Slow Attack)":
+                    CurrentProfile.BrakeThreshold = value;
+                    break;
+                case "Trail Braking Limit":
+                    CurrentProfile.TbMinLimit = value;
+                    break;
+            }
         }
 
         [RelayCommand]
@@ -879,7 +1122,8 @@ namespace SimRacingHub.ViewModels
         {
             if (CurrentProfile != null)
             {
-                CurrentProfile.TbDecay = Profile.DefaultTbDecay;
+                var defaults = Profile.CreateDefault(CurrentContext?.Game ?? "Universal");
+                CurrentProfile.TbDecay = defaults.TbDecay ?? Profile.DefaultTbDecay * 1000.0;
             }
         }
 
@@ -916,7 +1160,7 @@ namespace SimRacingHub.ViewModels
                 var package = dialog.Package;
                 if (dialog.ResultAction == ProfileImportAction.SaveToTargetSlot && package.TargetContext != null)
                 {
-                    _profileManager.SaveContext(package.TargetContext, package.Settings);
+                    if (!_profileManager.SaveContext(package.TargetContext, package.Settings)) return;
                     AppLogger.Instance.LogInfo($"Saved profile preset to slot: {package.TargetContext.DisplayPath}");
 
                     // If user is currently looking at this context, reload
@@ -951,6 +1195,115 @@ namespace SimRacingHub.ViewModels
             catch (Exception ex)
             {
                 AppLogger.Instance.LogError("Failed to open profiles folder", ex);
+            }
+        }
+
+        public string AbsCachePath => SimRacingHub.Services.Telemetry.AdaptiveGridCache.RootDirectory(
+            SimRacingHub.Services.Telemetry.HelperKind.Abs);
+
+        public string TcCachePath => SimRacingHub.Services.Telemetry.AdaptiveGridCache.RootDirectory(
+            SimRacingHub.Services.Telemetry.HelperKind.Tc);
+
+        [RelayCommand]
+        public void OpenAbsCacheFolder() => OpenLearningFolder(SimRacingHub.Services.Telemetry.HelperKind.Abs);
+
+        [RelayCommand]
+        public void OpenTcCacheFolder() => OpenLearningFolder(SimRacingHub.Services.Telemetry.HelperKind.Tc);
+
+        [RelayCommand]
+        public void ResetAbsCarLearning() => ResetCarLearning(SimRacingHub.Services.Telemetry.HelperKind.Abs);
+
+        [RelayCommand]
+        public void ResetTcCarLearning() => ResetCarLearning(SimRacingHub.Services.Telemetry.HelperKind.Tc);
+
+        [RelayCommand]
+        public void ResetAllAbsLearning() => ResetAllLearning(SimRacingHub.Services.Telemetry.HelperKind.Abs);
+
+        [RelayCommand]
+        public void ResetAllTcLearning() => ResetAllLearning(SimRacingHub.Services.Telemetry.HelperKind.Tc);
+
+        private bool IsHelperAvailable(SimRacingHub.Services.Telemetry.HelperKind kind) =>
+            kind == SimRacingHub.Services.Telemetry.HelperKind.Abs ? SupportsAbs : SupportsTc;
+
+        private void OpenLearningFolder(SimRacingHub.Services.Telemetry.HelperKind kind)
+        {
+            if (!IsHelperAvailable(kind)) return;
+
+            try
+            {
+                string path = SimRacingHub.Services.Telemetry.AdaptiveGridCache.RootDirectory(kind);
+                if (!System.IO.Directory.Exists(path))
+                {
+                    System.IO.Directory.CreateDirectory(path);
+                }
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("explorer.exe", path) { UseShellExecute = true });
+            }
+            catch (Exception ex)
+            {
+                AppLogger.Instance.LogError("Failed to open the learning cache folder", ex);
+            }
+        }
+
+        private void ResetCarLearning(SimRacingHub.Services.Telemetry.HelperKind kind)
+        {
+            if (!IsHelperAvailable(kind)) return;
+
+            try
+            {
+                string label = SimRacingHub.Services.Telemetry.AdaptiveGridCache.KindName(kind);
+                string? carName = SimRacingHub.Services.Telemetry.AdaptiveGridCache.CurrentCarIfActive;
+
+                if (string.IsNullOrEmpty(carName))
+                {
+                    System.Windows.MessageBox.Show(
+                        "No car has been detected yet in this session." + Environment.NewLine + Environment.NewLine +
+                        "Start the hub in a game, get into the car, then use this button. " +
+                        $"You can also delete single files with \"Open {label} Cache Folder\".",
+                        $"Reset {label} learning", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+                    return;
+                }
+
+                var confirm = System.Windows.MessageBox.Show(
+                    $"Reset the learned {label} limits for \"{carName}\"?" + Environment.NewLine + Environment.NewLine +
+                    "Both the dry and the wet data for this car are cleared. Other cars and the other helper are not affected." + Environment.NewLine + Environment.NewLine +
+                    "This cannot be undone.",
+                    $"Reset {label} learning", System.Windows.MessageBoxButton.YesNo, System.Windows.MessageBoxImage.Warning);
+
+                if (confirm != System.Windows.MessageBoxResult.Yes) return;
+
+                if (SimRacingHub.Services.Telemetry.AdaptiveGridCache.ResetCurrentCarIfActive(kind))
+                {
+                    AudioUtil.PlaySuccessSound();
+                }
+            }
+            catch (Exception ex)
+            {
+                AppLogger.Instance.LogError("Failed to reset the learning data for the current car", ex);
+            }
+        }
+
+        private void ResetAllLearning(SimRacingHub.Services.Telemetry.HelperKind kind)
+        {
+            if (!IsHelperAvailable(kind)) return;
+
+            try
+            {
+                string label = SimRacingHub.Services.Telemetry.AdaptiveGridCache.KindName(kind);
+
+                var confirm = System.Windows.MessageBox.Show(
+                    $"Reset the learned {label} limits for every car?" + Environment.NewLine + Environment.NewLine +
+                    $"All {label} data is deleted and the helper starts learning from scratch in every car. The other helper is not affected." + Environment.NewLine + Environment.NewLine +
+                    "This cannot be undone.",
+                    $"Reset all {label} learning", System.Windows.MessageBoxButton.YesNo, System.Windows.MessageBoxImage.Warning);
+
+                if (confirm != System.Windows.MessageBoxResult.Yes) return;
+
+                SimRacingHub.Services.Telemetry.AdaptiveGridCache.ResetAll(kind);
+                AudioUtil.PlaySuccessSound();
+            }
+            catch (Exception ex)
+            {
+                AppLogger.Instance.LogError("Failed to reset all learning data", ex);
             }
         }
     }

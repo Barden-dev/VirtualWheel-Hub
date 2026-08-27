@@ -46,19 +46,19 @@
         <TextBlock Text="⚠️ Cannot be used together with Telemetry ABS Helper. Enabling Trail Braking automatically disables Telemetry ABS Helper." 
                    Foreground="#F59E0B" FontSize="11.5" TextWrapping="Wrap" MaxWidth="600" HorizontalAlignment="Left" Margin="0,0,0,20" />
         
-        <StackPanel IsEnabled="False">
+        <StackPanel IsEnabled="{Binding CurrentProfile.EnableTrailBraking}">
             <TextBlock Text="Trail Braking Intensity" ToolTip="How strongly the brake pressure is reduced when turning the steering wheel." Margin="0,0,0,5" />
-            <ui:NumberBox Value="{Binding ResolvedProfile.TbIntensity, UpdateSourceTrigger=PropertyChanged}" ToolTip="How strongly the brake pressure is reduced when turning the steering wheel." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+            <ui:NumberBox Value="{Binding CurrentProfile.TbIntensity, UpdateSourceTrigger=PropertyChanged}" ToolTip="How strongly the brake pressure is reduced when turning the steering wheel." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
             
             <TextBlock Text="Trail Braking Min Limit (%)" ToolTip="The lowest allowed brake pressure percentage during a turn." Margin="0,0,0,5" />
-            <ui:NumberBox Value="{Binding ResolvedProfile.TbMinLimit, Converter={StaticResource PercentageConverter}, UpdateSourceTrigger=PropertyChanged}" Minimum="0" Maximum="100" ToolTip="The lowest allowed brake pressure percentage during a turn." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+            <ui:NumberBox Value="{Binding CurrentProfile.TbMinLimit, Converter={StaticResource PercentageConverter}, UpdateSourceTrigger=PropertyChanged}" Minimum="0" Maximum="100" ToolTip="The lowest allowed brake pressure percentage during a turn." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
             
-            <TextBlock Text="Trail Braking Decay (units/tick)" ToolTip="Rate of brake release per step (1–32768). Recommended: 500–3000." Margin="0,0,0,5" />
+            <TextBlock Text="Trail Braking Release Time (seconds)" ToolTip="Full-range-equivalent brake release time while trail braking is active." Margin="0,0,0,5" />
             <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                <ui:NumberBox Value="{Binding ResolvedProfile.TbDecay, UpdateSourceTrigger=PropertyChanged}" Minimum="1" Maximum="32768" ToolTip="Rate of brake release per step (1–32768). Recommended: 500–3000." ClearButtonEnabled="False" Width="200" HorizontalAlignment="Left" Margin="0,0,10,0" />
+                <ui:NumberBox Value="{Binding CurrentProfile.TbDecaySeconds, UpdateSourceTrigger=PropertyChanged}" Minimum="0.002" Maximum="65536" SmallChange="0.01" LargeChange="0.1" ToolTip="Lower values reduce brake pressure faster. This setting is independent of Hub Rate." ClearButtonEnabled="False" Width="200" HorizontalAlignment="Left" Margin="0,0,10,0" />
                 <ui:Button Content="Reset to Default" Command="{Binding ResetTbDecayCommand}" Appearance="Secondary" FontSize="12" Padding="8,4" VerticalAlignment="Center"/>
             </StackPanel>
-            <TextBlock Text="Rate of brake release per step (1–32768). Recommended: 500–3000 (default: 2960)." Foreground="{DynamicResource TextFillColorTertiaryBrush}" FontSize="11" Margin="0,0,0,15"/>
+            <TextBlock Text="Changing Hub Rate does not change the resulting pedal behavior." Foreground="{DynamicResource TextFillColorTertiaryBrush}" FontSize="11" Margin="0,0,0,15"/>
         </StackPanel>
     </StackPanel>
 </Page>

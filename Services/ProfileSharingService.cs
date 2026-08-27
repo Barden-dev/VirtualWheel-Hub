@@ -3,6 +3,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Text;
 using Newtonsoft.Json;
+using SimRacingHub.Core;
 using SimRacingHub.Models;
 
 namespace SimRacingHub.Services
@@ -10,6 +11,10 @@ namespace SimRacingHub.Services
     public class ProfileSharingService
     {
         public const string CodecPrefixV1 = "VWH1-";
+
+        private const int MaxDecompressedBytes = 1 * 1024 * 1024;
+        private const int MaxCompressedBytes = 1 * 1024 * 1024;
+        private const int MaxShareFileBytes = 2 * 1024 * 1024;
 
         public string ExportToShareCode(ProfileSharePackage package)
         {
@@ -34,23 +39,61 @@ namespace SimRacingHub.Services
 
             shareCode = shareCode.Trim();
 
-            if (shareCode.StartsWith(CodecPrefixV1, StringComparison.OrdinalIgnoreCase))
+            if (!shareCode.StartsWith(CodecPrefixV1, StringComparison.OrdinalIgnoreCase))
             {
-                string base64 = shareCode.Substring(CodecPrefixV1.Length).Trim();
-                byte[] compressedBytes = Convert.FromBase64String(base64);
-
-                using var inputStream = new MemoryStream(compressedBytes);
-                using var deflateStream = new DeflateStream(inputStream, CompressionMode.Decompress);
-                using var outputStream = new MemoryStream();
-                
-                deflateStream.CopyTo(outputStream);
-                string json = Encoding.UTF8.GetString(outputStream.ToArray());
-
-                return JsonConvert.DeserializeObject<ProfileSharePackage>(json);
+                return ImportFromRawJson(shareCode);
             }
 
-            // Fallback: If someone pasted raw JSON or uncompressed code
-            return ImportFromRawJson(shareCode);
+            try
+            {
+                string base64 = shareCode.Substring(CodecPrefixV1.Length).Trim();
+
+                if ((long)(base64.Length / 4) * 3 > MaxCompressedBytes)
+                {
+                    AppLogger.Instance.LogWarning("This share code is far too large to be a profile preset. Import cancelled.");
+                    return null;
+                }
+
+                var compressed = new byte[base64.Length / 4 * 3 + 3];
+                if (!Convert.TryFromBase64String(base64, compressed, out int compressedLength))
+                {
+                    AppLogger.Instance.LogWarning("This share code is damaged or incomplete. Ask for it again and paste it in one piece.");
+                    return null;
+                }
+
+                string? json = TryDecompress(compressed, compressedLength);
+                if (json == null) return null;
+
+                return ImportFromRawJson(json);
+            }
+            catch (Exception ex)
+            {
+                AppLogger.Instance.LogError("This share code could not be read. Import cancelled.", ex);
+                return null;
+            }
+        }
+
+        private static string? TryDecompress(byte[] compressed, int length)
+        {
+            using var input = new MemoryStream(compressed, 0, length, writable: false);
+            using var deflateStream = new DeflateStream(input, CompressionMode.Decompress);
+            using var outputStream = new MemoryStream();
+
+            var buffer = new byte[8192];
+            int read;
+            while ((read = deflateStream.Read(buffer, 0, buffer.Length)) > 0)
+            {
+                if (outputStream.Length + read > MaxDecompressedBytes)
+                {
+                    AppLogger.Instance.LogWarning(
+                        $"This share code unpacks to more than {MaxDecompressedBytes / (1024 * 1024)} MB, which no profile preset does. Import cancelled.");
+                    return null;
+                }
+
+                outputStream.Write(buffer, 0, read);
+            }
+
+            return Encoding.UTF8.GetString(outputStream.ToArray());
         }
 
         public string ExportToJson(ProfileSharePackage package)
@@ -68,6 +111,8 @@ namespace SimRacingHub.Services
                 var package = JsonConvert.DeserializeObject<ProfileSharePackage>(jsonText);
                 if (package != null && package.Settings != null && (package.SchemaVersion > 0 || package.TargetContext != null))
                 {
+                    int fallbackRate = Profile.CreateDefault(package.TargetContext?.Game ?? "Universal").PollingRate ?? 1000;
+                    package.Settings.MigrateToCurrentSchema(fallbackRate);
                     return package;
                 }
 
@@ -75,9 +120,10 @@ namespace SimRacingHub.Services
                 var rawProfile = JsonConvert.DeserializeObject<Profile>(jsonText);
                 if (rawProfile != null)
                 {
+                    rawProfile.MigrateToCurrentSchema(rawProfile.PollingRate ?? 1000);
                     return new ProfileSharePackage
                     {
-                        SchemaVersion = 1,
+                        SchemaVersion = ProfileSharePackage.CurrentSchemaVersion,
                         Name = rawProfile.Name ?? "Imported Profile",
                         Author = "Unknown",
                         Description = "Imported from legacy profile format",
@@ -96,9 +142,27 @@ namespace SimRacingHub.Services
 
         public ProfileSharePackage? ImportFromFile(string filePath)
         {
-            if (!File.Exists(filePath)) return null;
+            string content;
 
-            string content = File.ReadAllText(filePath);
+            try
+            {
+                if (!File.Exists(filePath)) return null;
+
+                var info = new FileInfo(filePath);
+                if (info.Length > MaxShareFileBytes)
+                {
+                    AppLogger.Instance.LogWarning(
+                        $"'{info.Name}' is larger than {MaxShareFileBytes / (1024 * 1024)} MB, which no profile preset is. Import cancelled.");
+                    return null;
+                }
+
+                content = File.ReadAllText(filePath);
+            }
+            catch (Exception ex)
+            {
+                AppLogger.Instance.LogError($"'{Path.GetFileName(filePath)}' could not be read. Import cancelled.", ex);
+                return null;
+            }
 
             // Check if file contains Share Code or JSON
             if (content.Trim().StartsWith(CodecPrefixV1, StringComparison.OrdinalIgnoreCase))

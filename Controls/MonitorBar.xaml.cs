@@ -12,6 +12,9 @@ namespace SimRacingHub.Controls
         private Line? _draggedLine = null;
         private DependencyProperty? _draggedProperty = null;
         private MarkerType _draggedMarkerType;
+        private string? _draggedMarkerName = null;
+
+        public event Action<string, double>? MarkerDragged;
 
         public MonitorBar()
         {
@@ -27,22 +30,22 @@ namespace SimRacingHub.Controls
         public static readonly DependencyProperty ValueProperty = DependencyProperty.Register("Value", typeof(double), typeof(MonitorBar), new PropertyMetadata(0.0));
         public double Value { get { return (double)GetValue(ValueProperty); } set { SetValue(ValueProperty, value); } }
 
-        public static readonly DependencyProperty AbsLimit1Property = DependencyProperty.Register("AbsLimit1", typeof(double), typeof(MonitorBar), new FrameworkPropertyMetadata(double.NaN, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnLimitChanged));
+        public static readonly DependencyProperty AbsLimit1Property = DependencyProperty.Register("AbsLimit1", typeof(double), typeof(MonitorBar), new PropertyMetadata(double.NaN, OnLimitChanged));
         public double AbsLimit1 { get { return (double)GetValue(AbsLimit1Property); } set { SetValue(AbsLimit1Property, value); } }
 
-        public static readonly DependencyProperty AbsLimit2Property = DependencyProperty.Register("AbsLimit2", typeof(double), typeof(MonitorBar), new FrameworkPropertyMetadata(double.NaN, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnLimitChanged));
+        public static readonly DependencyProperty AbsLimit2Property = DependencyProperty.Register("AbsLimit2", typeof(double), typeof(MonitorBar), new PropertyMetadata(double.NaN, OnLimitChanged));
         public double AbsLimit2 { get { return (double)GetValue(AbsLimit2Property); } set { SetValue(AbsLimit2Property, value); } }
 
-        public static readonly DependencyProperty PctLimit1Property = DependencyProperty.Register("PctLimit1", typeof(double), typeof(MonitorBar), new FrameworkPropertyMetadata(double.NaN, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnLimitChanged));
+        public static readonly DependencyProperty PctLimit1Property = DependencyProperty.Register("PctLimit1", typeof(double), typeof(MonitorBar), new PropertyMetadata(double.NaN, OnLimitChanged));
         public double PctLimit1 { get { return (double)GetValue(PctLimit1Property); } set { SetValue(PctLimit1Property, value); } }
 
-        public static readonly DependencyProperty PctLimit2Property = DependencyProperty.Register("PctLimit2", typeof(double), typeof(MonitorBar), new FrameworkPropertyMetadata(double.NaN, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnLimitChanged));
+        public static readonly DependencyProperty PctLimit2Property = DependencyProperty.Register("PctLimit2", typeof(double), typeof(MonitorBar), new PropertyMetadata(double.NaN, OnLimitChanged));
         public double PctLimit2 { get { return (double)GetValue(PctLimit2Property); } set { SetValue(PctLimit2Property, value); } }
 
-        public static readonly DependencyProperty PctLimit3Property = DependencyProperty.Register("PctLimit3", typeof(double), typeof(MonitorBar), new FrameworkPropertyMetadata(double.NaN, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnLimitChanged));
+        public static readonly DependencyProperty PctLimit3Property = DependencyProperty.Register("PctLimit3", typeof(double), typeof(MonitorBar), new PropertyMetadata(double.NaN, OnLimitChanged));
         public double PctLimit3 { get { return (double)GetValue(PctLimit3Property); } set { SetValue(PctLimit3Property, value); } }
 
-        public static readonly DependencyProperty PctLimit4Property = DependencyProperty.Register("PctLimit4", typeof(double), typeof(MonitorBar), new FrameworkPropertyMetadata(double.NaN, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnLimitChanged));
+        public static readonly DependencyProperty PctLimit4Property = DependencyProperty.Register("PctLimit4", typeof(double), typeof(MonitorBar), new PropertyMetadata(double.NaN, OnLimitChanged));
         public double PctLimit4 { get { return (double)GetValue(PctLimit4Property); } set { SetValue(PctLimit4Property, value); } }
 
         public static readonly DependencyProperty InvertPctProperty = DependencyProperty.Register("InvertPct", typeof(bool), typeof(MonitorBar), new PropertyMetadata(false, OnLimitChanged));
@@ -66,7 +69,7 @@ namespace SimRacingHub.Controls
         public static readonly DependencyProperty PctLimit4NameProperty = DependencyProperty.Register("PctLimit4Name", typeof(string), typeof(MonitorBar), new PropertyMetadata(null));
         public string PctLimit4Name { get { return (string)GetValue(PctLimit4NameProperty); } set { SetValue(PctLimit4NameProperty, value); } }
 
-        public static readonly DependencyProperty SymLockProperty = DependencyProperty.Register("SymLock", typeof(double), typeof(MonitorBar), new FrameworkPropertyMetadata(double.NaN, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnLimitChanged));
+        public static readonly DependencyProperty SymLockProperty = DependencyProperty.Register("SymLock", typeof(double), typeof(MonitorBar), new PropertyMetadata(double.NaN, OnLimitChanged));
         public double SymLock { get { return (double)GetValue(SymLockProperty); } set { SetValue(SymLockProperty, value); } }
 
         public static readonly DependencyProperty SymRangeProperty = DependencyProperty.Register("SymRange", typeof(double), typeof(MonitorBar), new PropertyMetadata(900.0, OnLimitChanged));
@@ -120,6 +123,7 @@ namespace SimRacingHub.Controls
         {
             public DependencyProperty? Prop { get; set; }
             public MarkerType Type { get; set; }
+            public string? Name { get; set; }
         }
 
         private void DrawMarkerAbs(DependencyProperty prop, double limit, double canvasWidth, Brush color, string name)
@@ -133,7 +137,7 @@ namespace SimRacingHub.Controls
             Line? line = DrawMarkerLine(pct, canvasWidth, color, name);
             if (line != null)
             {
-                line.Tag = new MarkerData { Prop = prop, Type = MarkerType.Abs };
+                line.Tag = new MarkerData { Prop = prop, Type = MarkerType.Abs, Name = name };
             }
         }
 
@@ -159,7 +163,7 @@ namespace SimRacingHub.Controls
             Line? line = DrawMarkerLine(visualPct, canvasWidth, color, name);
             if (line != null)
             {
-                line.Tag = new MarkerData { Prop = prop, Type = MarkerType.Pct };
+                line.Tag = new MarkerData { Prop = prop, Type = MarkerType.Pct, Name = name };
             }
         }
 
@@ -186,13 +190,13 @@ namespace SimRacingHub.Controls
             Line? leftLine = DrawMarkerLine(leftVisualPct, canvasWidth, color, name + " (Left)");
             if (leftLine != null)
             {
-                leftLine.Tag = new MarkerData { Prop = prop, Type = MarkerType.SymLeft };
+                leftLine.Tag = new MarkerData { Prop = prop, Type = MarkerType.SymLeft, Name = name };
             }
             
             Line? rightLine = DrawMarkerLine(rightVisualPct, canvasWidth, color, name + " (Right)");
             if (rightLine != null)
             {
-                rightLine.Tag = new MarkerData { Prop = prop, Type = MarkerType.SymRight };
+                rightLine.Tag = new MarkerData { Prop = prop, Type = MarkerType.SymRight, Name = name };
             }
         }
 
@@ -238,9 +242,8 @@ namespace SimRacingHub.Controls
                 if (data != null && data.Prop != null)
                 {
                     _draggedProperty = data.Prop;
-                    
-                    // We can store MarkerType in a private field, replacing _isDraggingAbs
                     _draggedMarkerType = data.Type;
+                    _draggedMarkerName = data.Name;
                     
                     line.CaptureMouse();
                     e.Handled = true;
@@ -266,11 +269,14 @@ namespace SimRacingHub.Controls
 
                 _isDragging = true;
 
+                double finalValue = double.NaN;
+
                 if (_draggedMarkerType == MarkerType.Abs)
                 {
                     double range = Maximum - Minimum;
                     double val = Minimum + visualPct * range;
-                    SetValue(_draggedProperty, (double)(int)val);
+                    finalValue = (double)(int)val;
+                    SetValue(_draggedProperty, finalValue);
                 }
                 else if (_draggedMarkerType == MarkerType.SymLeft || _draggedMarkerType == MarkerType.SymRight)
                 {
@@ -289,7 +295,8 @@ namespace SimRacingHub.Controls
                         double newLock = ratio * SymRange;
                         if (newLock < 0) newLock = 0;
                         if (newLock > SymRange) newLock = SymRange;
-                        SetValue(_draggedProperty, (double)(int)newLock);
+                        finalValue = (double)(int)newLock;
+                        SetValue(_draggedProperty, finalValue);
                     }
                 }
                 else if (_draggedMarkerType == MarkerType.Pct)
@@ -311,8 +318,14 @@ namespace SimRacingHub.Controls
                         if (inputPct < 0.0) inputPct = 0.0;
                         if (inputPct > 1.0) inputPct = 1.0;
                         
-                        SetValue(_draggedProperty, Math.Round(inputPct, 2));
+                        finalValue = Math.Round(inputPct, 2);
+                        SetValue(_draggedProperty, finalValue);
                     }
+                }
+
+                if (!double.IsNaN(finalValue) && _draggedMarkerName != null)
+                {
+                    MarkerDragged?.Invoke(_draggedMarkerName, finalValue);
                 }
 
                 _isDragging = false;
@@ -326,6 +339,7 @@ namespace SimRacingHub.Controls
                 _draggedLine.ReleaseMouseCapture();
                 _draggedLine = null;
                 _draggedProperty = null;
+                _draggedMarkerName = null;
                 RedrawMarkers(); // Redraw everything clean
             }
         }

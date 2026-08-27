@@ -8,11 +8,11 @@ namespace SimRacingHub.Services
 {
     public class HotkeyService : IDisposable
     {
-        public event Action OnToggleHub;
-        public event Action OnToggleLock;
+        public event Action? OnToggleHub;
+        public event Action? OnToggleLock;
         
-        private CancellationTokenSource _cts;
-        private ResolvedProfile _currentProfile;
+        private CancellationTokenSource? _cts;
+        private ResolvedProfile? _currentProfile;
 
         public void Start()
         {

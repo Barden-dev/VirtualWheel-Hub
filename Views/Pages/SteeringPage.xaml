@@ -29,11 +29,7 @@
         <!-- Mouse-specific settings -->
         <StackPanel Visibility="{Binding CurrentProfile.UseKeyboardOnlyMode, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
             <TextBlock Text="Mouse Sensitivity" ToolTip="Adjusts how fast the steering wheel turns when you move the mouse." Margin="0,0,0,5" />
-            <ui:NumberBox Value="{Binding CurrentProfile.MouseSensitivity, UpdateSourceTrigger=PropertyChanged}" SmallChange="0.2" LargeChange="0.5" Minimum="0.1" ToolTip="Adjusts how fast the steering wheel turns when you move the mouse." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
-            
-            <ui:ToggleSwitch Content="Freeze Steering When Cursor Unlocked" ToolTip="Prevents mouse movement from turning the steering wheel when the mouse cursor is unlocked." IsChecked="{Binding CurrentProfile.LockSteerWhenUnlocked, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,5"/>
-            <TextBlock Text="When enabled, moving the mouse cursor while unlocked will not turn the virtual steering wheel." 
-                       Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" TextWrapping="Wrap" MaxWidth="600" HorizontalAlignment="Left" Margin="0,0,0,20" />
+            <ui:NumberBox Value="{Binding CurrentProfile.MouseSensitivity, UpdateSourceTrigger=PropertyChanged}" SmallChange="0.2" LargeChange="0.5" Minimum="0.1" ToolTip="Adjusts how fast the steering wheel turns when you move the mouse." Margin="0,0,0,20" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
         </StackPanel>
 
         <!-- Keyboard-specific settings -->

@@ -21,10 +21,10 @@ namespace SimRacingHub.Views.Dialogs
         private readonly ProfileSharingService _sharingService;
         private readonly bool _isInitialized = false;
         
-        public ProfileSharePackage Package { get; private set; }
+        public ProfileSharePackage? Package { get; private set; }
         public ProfileImportAction ResultAction { get; private set; } = ProfileImportAction.None;
 
-        public ProfileImportDialog(ProfileContext currentContext, ProfileSharingService sharingService, ProfileSharePackage initialPackage = null)
+        public ProfileImportDialog(ProfileContext? currentContext, ProfileSharingService? sharingService, ProfileSharePackage? initialPackage = null)
         {
             _currentContext = currentContext ?? new ProfileContext("Universal");
             _sharingService = sharingService ?? new ProfileSharingService();
@@ -118,11 +118,11 @@ namespace SimRacingHub.Views.Dialogs
 
             if (SaveToTargetSlotButton != null)
             {
-                if (isSpecificTarget)
+                if (isSpecificTarget && package.TargetContext != null)
                 {
                     string targetCarName = !string.IsNullOrEmpty(package.TargetContext.Car) 
                         ? package.TargetContext.Car 
-                        : (!string.IsNullOrEmpty(package.TargetContext.CarClass) ? package.TargetContext.CarClass : package.TargetContext.Game);
+                        : (!string.IsNullOrEmpty(package.TargetContext.CarClass) ? package.TargetContext.CarClass : package.TargetContext.Game ?? string.Empty);
 
                     SaveToTargetSlotButton.Visibility = Visibility.Visible;
                     SaveToTargetSlotButton.IsEnabled = true;
@@ -169,13 +169,13 @@ namespace SimRacingHub.Views.Dialogs
 
             // 2. Pedals
             if (ParamThrottleDynamicsText != null)
-                ParamThrottleDynamicsText.Text = $"Throttle: Fast {p.GasAttackFast ?? 666:0} / Slow {p.GasAttackSlow ?? 222:0}";
+                ParamThrottleDynamicsText.Text = $"Throttle: Fast {p.GasAttackFastSeconds ?? 0:0.000}s / Slow {p.GasAttackSlowSeconds ?? 0:0.000}s";
             
             if (ParamThrottleGammaText != null)
                 ParamThrottleGammaText.Text = $"Throttle Gamma: {(p.GasGamma ?? 1.0):0.00}";
             
             if (ParamBrakeDynamicsText != null)
-                ParamBrakeDynamicsText.Text = $"Brake: Fast {p.BrakeAttackFast ?? 1000:0} / Slow {p.BrakeAttackSlow ?? 250:0}";
+                ParamBrakeDynamicsText.Text = $"Brake: Fast {p.BrakeAttackFastSeconds ?? 0:0.000}s / Slow {p.BrakeAttackSlowSeconds ?? 0:0.000}s";
             
             if (ParamBrakeGammaText != null)
                 ParamBrakeGammaText.Text = $"Brake Gamma: {(p.BrakeGamma ?? 1.0):0.00}";
@@ -218,7 +218,7 @@ namespace SimRacingHub.Views.Dialogs
         {
             if (!_isInitialized) return;
 
-            string text = ShareCodeInputBox?.Text?.Trim();
+            string? text = ShareCodeInputBox?.Text?.Trim();
             if (string.IsNullOrEmpty(text))
             {
                 if (InputStatusText != null) InputStatusText.Visibility = Visibility.Collapsed;
@@ -250,7 +250,7 @@ namespace SimRacingHub.Views.Dialogs
             {
                 if (Clipboard.ContainsText())
                 {
-                    string clip = Clipboard.GetText()?.Trim();
+                    string? clip = Clipboard.GetText()?.Trim();
                     if (!string.IsNullOrEmpty(clip))
                     {
                         if (ShareCodeInputBox != null) ShareCodeInputBox.Text = clip;

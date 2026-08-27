@@ -8,11 +8,23 @@
       xmlns:conv="clr-namespace:SimRacingHub.Converters" Title="GasLogicPage">
     <Page.Resources>
         <conv:PercentageConverter x:Key="PercentageConverter" />
+
+        <Style x:Key="TcLearningButtonStyle" TargetType="ui:Button" BasedOn="{StaticResource {x:Type ui:Button}}">
+            <Setter Property="Appearance" Value="Secondary" />
+            <Setter Property="Padding" Value="10,5" />
+            <Setter Property="Opacity" Value="0.4" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding SupportsTc}" Value="True">
+                    <Setter Property="Opacity" Value="1.0" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
     </Page.Resources>
+
     <StackPanel Margin="20">
-            <TextBlock Text="Gas Logic" FontSize="20" FontWeight="SemiBold" Margin="0,0,0,20"/>
-            
-            <ui:ToggleSwitch IsEnabled="False" IsChecked="False" Content="Enable Smart Traction Control" ToolTip="Uses telemetry to reduce wheelspin and prevent oversteer." Margin="0,0,0,5" />
+        <TextBlock Text="Gas Logic" FontSize="20" FontWeight="SemiBold" Margin="0,0,0,20"/>
+
+        <ui:ToggleSwitch IsEnabled="False" IsChecked="False" Content="Enable Smart Traction Control" ToolTip="Uses telemetry to reduce wheelspin and prevent oversteer." Margin="0,0,0,5" />
             <TextBlock Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" TextWrapping="Wrap" MaxWidth="600" HorizontalAlignment="Left" Margin="0,0,0,6">
                 <Run Text="When enabled, the app reads live game telemetry to detect rear wheel spin and automatically reduces throttle output to maintain traction and prevent oversteer under acceleration." />
                 
@@ -52,31 +64,57 @@
                 <TextBlock Text="TC Slip Threshold (%)" ToolTip="Rear wheelspin slip percentage over car speed required to trigger TC throttle cut." Margin="0,0,0,5" />
                 <ui:NumberBox Value="{Binding CurrentProfile.TcSlipThreshold, Converter={StaticResource PercentageConverter}, UpdateSourceTrigger=PropertyChanged}" Minimum="1" Maximum="50" ToolTip="Rear wheelspin slip percentage over car speed required to trigger TC throttle cut." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
 
-                <TextBlock Text="TC Min Throttle Limit (%)" ToolTip="The lowest allowed throttle percentage while TC is actively intervening." Margin="0,0,0,5" />
-                <ui:NumberBox Value="{Binding CurrentProfile.TcMinScale, Converter={StaticResource PercentageConverter}, UpdateSourceTrigger=PropertyChanged}" Minimum="5" Maximum="95" ToolTip="The lowest allowed throttle percentage while TC is actively intervening." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+                <TextBlock Text="TC Drop Amount (%)" ToolTip="The maximum percentage of throttle to cut during wheelspin (e.g. 15% drops throttle from 100% to 85%)." Margin="0,0,0,5" />
+                <ui:NumberBox Value="{Binding CurrentProfile.TcDropAmount, Converter={StaticResource PercentageConverter}, UpdateSourceTrigger=PropertyChanged}" Minimum="1" Maximum="80" ToolTip="The maximum percentage of throttle to cut during wheelspin." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+
+                <TextBlock Text="TC Bleed Speed (Reaction Rate)" ToolTip="Reaction rate at which throttle is reduced when wheelspin begins." Margin="0,0,0,5" />
+                <ui:NumberBox Value="{Binding CurrentProfile.TcCutRate, UpdateSourceTrigger=PropertyChanged}" Minimum="1" Maximum="200" SmallChange="1" LargeChange="5" ToolTip="Reaction rate at which throttle is reduced when wheelspin begins." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+
+                <TextBlock Text="TC Recovery Speed" ToolTip="Rate at which throttle smoothly returns after traction is regained without sudden wheelspin spikes." Margin="0,0,0,5" />
+                <ui:NumberBox Value="{Binding CurrentProfile.TcRecoverRate, UpdateSourceTrigger=PropertyChanged}" Minimum="0.1" Maximum="50" SmallChange="0.5" LargeChange="2" ToolTip="Rate at which throttle smoothly returns after traction is regained." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
 
                 <TextBlock Text="TC Min Speed (km/h)" ToolTip="Minimum vehicle speed for TC to intervene. Below this speed, TC allows higher throttle to help launch from standstill." Margin="0,0,0,5" />
                 <ui:NumberBox Value="{Binding CurrentProfile.TcMinSpeed, UpdateSourceTrigger=PropertyChanged}" Minimum="1" Maximum="50" ToolTip="Minimum vehicle speed for TC to intervene." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
             </StackPanel>
 
+            <StackPanel IsEnabled="{Binding SupportsTc}" Margin="0,0,0,20">
+                <TextBlock Text="TC Learning Data" FontWeight="SemiBold" Margin="0,0,0,5" />
+                <TextBlock Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" TextWrapping="Wrap" MaxWidth="600" HorizontalAlignment="Left" Margin="0,0,0,8"
+                           Text="The TC helper learns the traction limit of every car you drive and keeps it on disk, sorted by game, class and car. If a car has learned badly - for example after laps on worn tyres - reset it and let the helper learn again from scratch." />
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                    <ui:Button Content="Open TC Cache Folder" Icon="{ui:SymbolIcon FolderOpen24}" Style="{StaticResource TcLearningButtonStyle}" Margin="0,0,8,0"
+                               Command="{Binding OpenTcCacheFolderCommand}" ToolTip="Opens the folder where the learned TC limits are stored" />
+                    <ui:Button Content="Reset Current Car" Icon="{ui:SymbolIcon ArrowReset24}" Style="{StaticResource TcLearningButtonStyle}" Margin="0,0,8,0"
+                               Command="{Binding ResetTcCarLearningCommand}" ToolTip="Clears the learned TC limits of the car detected in this session (dry and wet)" />
+                    <ui:Button Content="Reset All TC Data" Icon="{ui:SymbolIcon Delete24}" Style="{StaticResource TcLearningButtonStyle}"
+                               Command="{Binding ResetAllTcLearningCommand}" ToolTip="Deletes the learned TC limits of every car in every game. ABS data is kept." />
+                </StackPanel>
+                <TextBlock Text="{Binding TcCachePath, Mode=OneWay}" Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                           FontSize="11" TextWrapping="Wrap" MaxWidth="600" HorizontalAlignment="Left" />
+            </StackPanel>
+
             <TextBlock Text="Fast Attack Threshold (%)" ToolTip="The pedal percentage at which the throttle application speed slows down." Margin="0,0,0,5" />
             <ui:NumberBox Value="{Binding CurrentProfile.GasThreshold, Converter={StaticResource PercentageConverter}, UpdateSourceTrigger=PropertyChanged}" Minimum="0" Maximum="100" ToolTip="The pedal percentage at which the throttle application speed slows down." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
             
-            <TextBlock Text="Attack Speed (Turbo)" ToolTip="Speed at which throttle is applied when holding down both primary and secondary throttle keys simultaneously." Margin="0,0,0,5" />
-            <ui:NumberBox Value="{Binding CurrentProfile.GasAttackTurbo, UpdateSourceTrigger=PropertyChanged}" Minimum="1" Maximum="32768" ToolTip="Speed at which throttle is applied when holding down both primary and secondary throttle keys simultaneously." Margin="0,0,0,4" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+            <TextBlock Text="Turbo Attack Time (seconds)" ToolTip="Approximate time for throttle to travel from 0% to 100% when both throttle keys are held." Margin="0,0,0,5" />
+            <ui:NumberBox Value="{Binding CurrentProfile.GasAttackTurboSeconds, UpdateSourceTrigger=PropertyChanged}" Minimum="0.002" Maximum="65536" SmallChange="0.01" LargeChange="0.1" ToolTip="Lower values apply throttle faster. This setting is independent of Hub Rate." Margin="0,0,0,4" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
             <TextBlock Text="Triggers when holding down both primary and secondary throttle keys simultaneously." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11.5" Margin="0,0,0,15" TextWrapping="Wrap" MaxWidth="600" HorizontalAlignment="Left" />
             
-            <TextBlock Text="Attack Speed (Fast)" ToolTip="Speed at which throttle is applied below the fast attack threshold." Margin="0,0,0,5" />
-            <ui:NumberBox Value="{Binding CurrentProfile.GasAttackFast, UpdateSourceTrigger=PropertyChanged}" Minimum="1" Maximum="32768" ToolTip="Speed at which throttle is applied below the fast attack threshold." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+            <TextBlock Text="Fast Segment Time (seconds)" ToolTip="Time for throttle to travel from 0% to the fast attack threshold." Margin="0,0,0,5" />
+            <ui:NumberBox Value="{Binding CurrentProfile.GasAttackFastSeconds, UpdateSourceTrigger=PropertyChanged}" Minimum="0.002" Maximum="65536" SmallChange="0.01" LargeChange="0.1" ToolTip="Time for the 0% to threshold segment. This setting is independent of Hub Rate." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
             
-            <TextBlock Text="Attack Speed (Slow)" ToolTip="Speed at which throttle is applied above the threshold to smooth out delivery." Margin="0,0,0,5" />
-            <ui:NumberBox Value="{Binding CurrentProfile.GasAttackSlow, UpdateSourceTrigger=PropertyChanged}" Minimum="1" Maximum="32768" ToolTip="Speed at which throttle is applied above the threshold to smooth out delivery." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+            <TextBlock Text="Slow Segment Time (seconds)" ToolTip="Time for throttle to travel from the fast attack threshold to 100%." Margin="0,0,0,5" />
+            <ui:NumberBox Value="{Binding CurrentProfile.GasAttackSlowSeconds, UpdateSourceTrigger=PropertyChanged}" Minimum="0.002" Maximum="65536" SmallChange="0.01" LargeChange="0.1" ToolTip="Time for the threshold to 100% segment. This setting is independent of Hub Rate." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+            <TextBlock Foreground="{DynamicResource TextFillColorTertiaryBrush}" FontSize="11" Margin="0,-8,0,15">
+                <Run Text="Estimated Full Press Time: " />
+                <Run Text="{Binding CurrentProfile.GasEstimatedFullPressSeconds, Mode=OneWay, StringFormat={}{0:0.000} s}" />
+            </TextBlock>
             
-            <TextBlock Text="Release Rate (Decay)" ToolTip="Speed at which throttle is released." Margin="0,0,0,5" />
-            <ui:NumberBox Value="{Binding CurrentProfile.GasDecay, UpdateSourceTrigger=PropertyChanged}" Minimum="1" Maximum="32768" ToolTip="Speed at which throttle is released." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+            <TextBlock Text="Release Time (seconds)" ToolTip="Approximate time for throttle to travel from 100% to 0%." Margin="0,0,0,5" />
+            <ui:NumberBox Value="{Binding CurrentProfile.GasDecaySeconds, UpdateSourceTrigger=PropertyChanged}" Minimum="0.002" Maximum="65536" SmallChange="0.01" LargeChange="0.1" ToolTip="Lower values release throttle faster. This setting is independent of Hub Rate." Margin="0,0,0,15" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
             
-            <TextBlock Text="Instant Cut Rate" ToolTip="Speed at which throttle is automatically released when braking." Margin="0,0,0,5" />
-            <ui:NumberBox Value="{Binding CurrentProfile.GasInstantCut, UpdateSourceTrigger=PropertyChanged}" Minimum="1" Maximum="32768" ToolTip="Speed at which throttle is automatically released when braking." Margin="0,0,0,20" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
+            <TextBlock Text="Brake Cut Time (seconds)" ToolTip="Approximate time for throttle to travel from 100% to 0% when braking." Margin="0,0,0,5" />
+            <ui:NumberBox Value="{Binding CurrentProfile.GasInstantCutSeconds, UpdateSourceTrigger=PropertyChanged}" Minimum="0.002" Maximum="65536" SmallChange="0.01" LargeChange="0.1" ToolTip="Lower values cut throttle faster while braking. This setting is independent of Hub Rate." Margin="0,0,0,20" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
 
             <TextBlock Text="Throttle Non-Linearity (Gamma)" ToolTip="Curves throttle response. Values &gt; 1.0 soften initial pedal travel for better traction control; values &lt; 1.0 give aggressive throttle response." Margin="0,0,0,5" />
             <ui:NumberBox Value="{Binding CurrentProfile.GasGamma, UpdateSourceTrigger=PropertyChanged}" Minimum="0.2" Maximum="3.0" SmallChange="0.05" LargeChange="0.10" ToolTip="Curves throttle response." Margin="0,0,0,10" ClearButtonEnabled="False" Width="300" HorizontalAlignment="Left" />
