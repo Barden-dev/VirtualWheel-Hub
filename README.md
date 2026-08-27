@@ -1,4 +1,4 @@
-# 🏎️ VirtualWheel Hub (Open Source / Free Version)
+# 🏎️ VirtualWheel Hub
 
 ---
 [![Version](https://img.shields.io/badge/version-v1.1-blue.svg)](https://github.com/Barden-dev/vWheel-Hub)
