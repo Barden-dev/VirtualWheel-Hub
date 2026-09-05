@@ -96,7 +96,7 @@ It translates real-time mouse movement into ultra-smooth virtual wheel angles an
 
 1. **Install the .NET 10 Desktop Runtime:** Download it from [dotnet.microsoft.com](https://dotnet.microsoft.com/download/dotnet/10.0) (**Desktop Runtime, x64**). Skip this step only if it is already installed.
 2. **Install vJoy:** Download and install the [vJoy Driver](https://github.com/jshafer817/vJoy/releases).
-3. **Launch vWheel Hub.**
+3. **Download the binary file from [Releases Page](https://github.com/Barden-dev/VirtualWheel-Hub/releases). Then launch vWheel Hub.**
 4. **Configure vJoy:** Click **Auto-Configure vJoy** in the diagnostic section to set up Device #1 automatically if needed.
 5. **Set Up LMU Compatibility Fix (if playing Le Mans Ultimate):** Click **Apply LMU Input Compatibility Fix** on the dashboard to enable 1000 Hz DirectInput Fallback.
 6. **Set Up Controls & Launch Game:** Launch your sim racing game — Auto-Detect will identify the game process automatically (or select your context manually). Once detected and plugin status is clear, fine-tune sensitivity, response curves, and keybindings to your liking.
