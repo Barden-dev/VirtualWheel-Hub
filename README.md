@@ -89,9 +89,8 @@ It translates real-time mouse movement into ultra-smooth virtual wheel angles an
 1. **Install vJoy:** Download and install the [vJoy Driver](https://github.com/jshafer817/vJoy/releases).
 2. **Download the binary file from [Releases](https://github.com/Barden-dev/VirtualWheel-Hub/releases). Then launch vWheel Hub.**
 3. **Configure vJoy:** Click **Auto-Configure vJoy** in the diagnostic section to set up Device #1 automatically if needed.
-4. **Set Up LMU Compatibility Fix (if playing Le Mans Ultimate):** Click **Apply LMU Input Compatibility Fix** on the dashboard to enable 1000 Hz DirectInput Fallback.
-5. **Set Up Controls & Launch Game:** Launch your sim racing game — Auto-Detect will identify the game process automatically (or select your context manually). Once detected and plugin status is clear, fine-tune sensitivity, response curves, and keybindings to your liking.
-6. **Activate Hub:** Toggle **Is Active** or press your assigned hotkey.
+4. **Set Up Controls & Launch Game:** Launch your sim racing game — Auto-Detect will identify the game process automatically (or select your context manually). Once detected and plugin status is clear, fine-tune sensitivity, response curves, and keybindings to your liking.
+5. **Activate Hub:** Toggle **Is Active** or press your assigned hotkey.
 
 ---
 
