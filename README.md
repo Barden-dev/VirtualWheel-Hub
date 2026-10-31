@@ -19,11 +19,11 @@ It translates real-time mouse movement into ultra-smooth virtual wheel angles an
 >
 > 🏎️ **Telemetry & Auto-Detection:** Telemetry features (ABS/TC Helpers, Speed-Sensitive Steering, Trail Braking, Audio Slip Cues, In-Menu Control Suspension) and automatic game detection are supported for:
 > * **Assetto Corsa** — Full Support (Telemetry & Auto-Detect)
-> * **Assetto Corsa Competizione (ACC)** — Full Support (Native Shared Memory Telemetry & Auto-Detect)
-> * **Assetto Corsa EVO (AC EVO)** — Full Support (Native Shared Memory Telemetry & Auto-Detect)
-> * **Le Mans Ultimate (LMU)** — Full Support (Shared Memory Plugin & Auto-Detect, supports 1000 Hz with DirectInput Fix)
+> * **Assetto Corsa Competizione** — Full Support (Native Shared Memory Telemetry & Auto-Detect)
+> * **Assetto Corsa EVO** — Full Support (Native Shared Memory Telemetry & Auto-Detect)
+> * **Le Mans Ultimate** — Full Support (Shared Memory Plugin & Auto-Detect, supports 1000 Hz with DirectInput Fix)
 > * **BeamNG.drive** — Full Support (Telemetry Mod & Auto-Detect)
-> * **Automobilista 2 (AMS2)** — Full Support (Telemetry & Auto-Detect)
+> * **Automobilista 2** — Full Support (Telemetry & Auto-Detect)
 > * **rFactor 2** — Experimental Support (Shared Memory Plugin & Auto-Detect)
 > * **iRacing** — Experimental Support (Auto-Detect Only)
 > * **Dirt Rally 2.0** — Experimental Support (Auto-Detect Only)
