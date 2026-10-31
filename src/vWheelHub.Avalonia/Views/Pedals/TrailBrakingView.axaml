@@ -1,0 +1,68 @@
+<UserControl xmlns:controls="clr-namespace:SimRacingHub.Avalonia.Controls" xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:pedalsVm="clr-namespace:SimRacingHub.Application.Features.Pedals;assembly=vWheelHub.Application" xmlns:conv="clr-namespace:SimRacingHub.Avalonia.Converters" mc:Ignorable="d" d:DesignWidth="850" d:DesignHeight="700" x:Class="SimRacingHub.Avalonia.Views.Pedals.TrailBrakingView" x:DataType="pedalsVm:TrailBrakingViewModel" x:CompileBindings="True" Foreground="{DynamicResource TextFillColorPrimaryBrush}">
+    <UserControl.Resources>
+        <conv:NullableNumericConverter x:Key="NumericConv"/>
+        <conv:RatioPercentConverter x:Key="PercentConv"/>
+        <conv:BooleanToBrushConverter x:Key="StatusBrushConv"/>
+    </UserControl.Resources>
+    <ScrollViewer Classes="hub-scroll" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <StackPanel Spacing="18" Margin="0,0,16,24">
+            <!-- Title & Subtitle Header -->
+            <StackPanel Spacing="4">
+                <TextBlock Name="TitleLabel" Text="{Binding PageTitle}" FontSize="24" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" IsVisible="False"/>
+                <TextBlock Name="DescriptionLabel" Text="{Binding Description}" FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+            </StackPanel>
+            <!-- SECTION: TRAIL BRAKING CONTROLS -->
+            <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="6" Padding="16">
+                <StackPanel Spacing="16">
+                    <!-- Master Trail Braking Toggle -->
+                    <Grid ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Column="0" Spacing="4">
+                            <ToggleSwitch Name="TrailBrakingSwitch" IsChecked="{Binding EffectiveTrailBrakingEnabled, Mode=TwoWay}" Content="{DynamicResource Ui_98c04661f1f2}" FontWeight="SemiBold" FontSize="13"/>
+                            <TextBlock Text="{DynamicResource Ui_91f36abf8342}" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                        </StackPanel>
+                        <Button Grid.Column="1" Name="ResetTrailBrakingEnableButton" Classes="setting-revert" controls:SettingRevert.Session="{Binding ProfileSession}" controls:SettingRevert.PropertyName="EnableTrailBraking" Content="{DynamicResource Ui_RestoreSetting}" ToolTip.Tip="{DynamicResource Ui_RestoreSettingHint}"/>
+                    </Grid>
+                    <!-- Parameters (Active when Enabled) -->
+                    <StackPanel Spacing="14" IsEnabled="{Binding EffectiveTrailBrakingEnabled}">
+                        <!-- Intensity Factor -->
+                        <Border Background="{DynamicResource ControlFillColorDefaultBrush}" BorderBrush="{DynamicResource CardBackgroundFillColorDefaultBrush}" BorderThickness="1" CornerRadius="6" Padding="14">
+                            <Grid ColumnDefinitions="*,Auto,Auto">
+                                <StackPanel Grid.Column="0" Spacing="2">
+                                    <TextBlock Text="{DynamicResource Ui_cf2045189856}" FontWeight="SemiBold" FontSize="12" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextWrapping="Wrap"/>
+                                    <TextBlock Text="{DynamicResource Ui_a2d2ba9e4847}" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                </StackPanel>
+                                <NumericUpDown Grid.Column="1" Name="TbIntensityBox" Value="{Binding EffectiveTbIntensity, Converter={StaticResource NumericConv}, Mode=TwoWay}" Minimum="0.0" Maximum="10.0" Increment="0.1" FormatString="0.00" Width="150" Margin="12,0,8,0" VerticalAlignment="Center" FontSize="13" MinHeight="32"/>
+                                <Button Grid.Column="2" Name="ResetTbIntensityButton" Classes="setting-revert" controls:SettingRevert.Session="{Binding ProfileSession}" controls:SettingRevert.PropertyName="TbIntensity" Content="{DynamicResource Ui_RestoreSetting}" ToolTip.Tip="{DynamicResource Ui_RestoreSettingHint}"/>
+                            </Grid>
+                        </Border>
+                        <!-- Activation Threshold (MinLimit) -->
+                        <Border Background="{DynamicResource ControlFillColorDefaultBrush}" BorderBrush="{DynamicResource CardBackgroundFillColorDefaultBrush}" BorderThickness="1" CornerRadius="6" Padding="14">
+                            <Grid ColumnDefinitions="*,Auto,Auto">
+                                <StackPanel Grid.Column="0" Spacing="2">
+                                    <TextBlock Text="{DynamicResource Ui_c701a8607d51}" FontWeight="SemiBold" FontSize="12" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextWrapping="Wrap"/>
+                                    <TextBlock Text="{DynamicResource Ui_d5b82d4193ca}" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                </StackPanel>
+                                <NumericUpDown Grid.Column="1" Name="TrailBrakingThresholdBox" Value="{Binding EffectiveTrailBrakingThreshold, Converter={StaticResource PercentConv}, Mode=TwoWay}" Minimum="0.0" Maximum="100" Increment="1" FormatString="{DynamicResource Ui_NumberPercentFormat}" Width="150" Margin="12,0,8,0" VerticalAlignment="Center" FontSize="13" MinHeight="32"/>
+                                <Button Grid.Column="2" Name="ResetTrailBrakingThresholdButton" Classes="setting-revert" controls:SettingRevert.Session="{Binding ProfileSession}" controls:SettingRevert.PropertyName="TbMinLimit" Content="{DynamicResource Ui_RestoreSetting}" ToolTip.Tip="{DynamicResource Ui_RestoreSettingHint}"/>
+                            </Grid>
+                        </Border>
+                        <!-- Release Rate / Decay Seconds -->
+                        <Border Background="{DynamicResource ControlFillColorDefaultBrush}" BorderBrush="{DynamicResource CardBackgroundFillColorDefaultBrush}" BorderThickness="1" CornerRadius="6" Padding="14">
+                            <StackPanel Spacing="8">
+                                <Grid ColumnDefinitions="*,Auto,Auto">
+                                    <StackPanel Grid.Column="0" Spacing="2">
+                                        <TextBlock Text="{DynamicResource Ui_a665858de703}" FontWeight="SemiBold" FontSize="12" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextWrapping="Wrap"/>
+                                        <TextBlock Text="{DynamicResource Ui_6363d1b49d13}" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                    <NumericUpDown Grid.Column="1" Name="TrailBrakingReleaseRateBox" Value="{Binding EffectiveTrailBrakingReleaseRate, Converter={StaticResource NumericConv}, Mode=TwoWay}" Minimum="0.002" Maximum="65536" Increment="0.1" FormatString="{DynamicResource Ui_NumberSecondsFormat}" Width="150" Margin="12,0,8,0" VerticalAlignment="Center" FontSize="13" MinHeight="32"/>
+                                    <Button Name="ResetTbDecayButton" Grid.Column="2" Classes="setting-revert" controls:SettingRevert.Session="{Binding ProfileSession}" controls:SettingRevert.PropertyName="TbDecay" Content="{DynamicResource Ui_RestoreSetting}" ToolTip.Tip="{DynamicResource Ui_RestoreSettingHint}"/>
+                                </Grid>
+                                <TextBlock Name="HubRateHintLabel" Text="{Binding HubRateHint}" FontSize="11" Foreground="{DynamicResource TextFillColorTertiaryBrush}" TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

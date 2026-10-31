@@ -1,0 +1,73 @@
+﻿<Window xmlns:controls="clr-namespace:SimRacingHub.Avalonia.Controls" xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:dialogs="clr-namespace:SimRacingHub.Avalonia.Dialogs"
+        mc:Ignorable="d" d:DesignWidth="460" d:DesignHeight="220"
+        x:Class="SimRacingHub.Avalonia.Dialogs.MessageDialog"
+        x:DataType="dialogs:MessageDialogViewModel"
+        x:CompileBindings="True"
+        Title="{Binding Title}"
+        Width="460" MinWidth="380"
+        MaxHeight="600"
+        SizeToContent="Height"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource ControlFillColorDefaultBrush}"
+        Foreground="{DynamicResource TextFillColorPrimaryBrush}">
+
+    <Border BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="6" Padding="20">
+        <Grid RowDefinitions="Auto,*,Auto">
+            <!-- Header with Severity Icon and Title -->
+            <Grid Grid.Row="0" ColumnDefinitions="Auto,*" Margin="0,0,0,14">
+                <Border Grid.Column="0"
+                        Width="32" Height="32"
+                        CornerRadius="16"
+                        Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{Binding SeverityColor}"
+                        BorderThickness="1.5"
+                        Margin="0,0,12,0">
+                    <Panel><PathIcon Data="{StaticResource IconInfo}" IsVisible="{Binding IsInfo}" Foreground="{Binding SeverityColor}" Width="16" Height="16"/><PathIcon Data="{StaticResource IconWarning}" IsVisible="{Binding IsWarning}" Foreground="{Binding SeverityColor}" Width="16" Height="16"/><PathIcon Data="{StaticResource IconDismissCircle}" IsVisible="{Binding IsError}" Foreground="{Binding SeverityColor}" Width="16" Height="16"/></Panel>
+                </Border>
+                <TextBlock Grid.Column="1"
+                           Text="{Binding Title}"
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                           VerticalAlignment="Center"
+                           TextWrapping="Wrap" />
+            </Grid>
+
+            <!-- Message Body -->
+            <ScrollViewer Grid.Row="1" Name="MessageScrollViewer" MaxHeight="350" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="44,0,0,20">
+            <TextBlock
+                       Text="{Binding Message}"
+                       FontSize="13"
+                       Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                       TextWrapping="Wrap"
+                       LineHeight="20"
+                       />
+            </ScrollViewer>
+
+            <!-- Buttons -->
+            <StackPanel Grid.Row="2"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Spacing="10">
+                <Button Content="{Binding CancelText}"
+                        IsVisible="{Binding IsConfirm}"
+                        Command="{Binding CancelCommand}"
+                        BorderBrush="#475569"
+                        BorderThickness="1"
+                        CornerRadius="6"
+                        Padding="16,7" />
+                <Button Name="MessageConfirmButton" Classes="accent" Content="{Binding ConfirmText}"
+                        Command="{Binding ConfirmCommand}"
+                        Foreground="#FFFFFF"
+                        CornerRadius="6"
+                        Padding="18,7"
+                        FontWeight="SemiBold" />
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

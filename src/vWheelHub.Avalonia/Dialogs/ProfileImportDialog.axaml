@@ -1,0 +1,85 @@
+<Window xmlns:controls="clr-namespace:SimRacingHub.Avalonia.Controls" xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:dialogs="clr-namespace:SimRacingHub.Avalonia.Dialogs" mc:Ignorable="d" d:DesignWidth="620" d:DesignHeight="660" x:Class="SimRacingHub.Avalonia.Dialogs.ProfileImportDialog" x:DataType="dialogs:ProfileImportDialogViewModel" x:CompileBindings="True" Title="{DynamicResource Dialog_Import_Header}" Width="620" Height="660" MinWidth="540" MinHeight="500" WindowStartupLocation="CenterOwner" Background="{DynamicResource ControlFillColorDefaultBrush}" Foreground="{DynamicResource TextFillColorPrimaryBrush}">
+    <Border BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="6" Padding="20">
+        <Grid RowDefinitions="Auto,*,Auto">
+            <StackPanel Grid.Row="0" Margin="0,0,0,12">
+                <TextBlock Text="{DynamicResource Dialog_Import_Header}" FontSize="18" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,0,8"/>
+                <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="6" Padding="12,10">
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="{DynamicResource Ui_4df234690b03}" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                        <Grid ColumnDefinitions="*,Auto,Auto">
+                            <TextBox Grid.Column="0" Text="{Binding ShareCodeInput, Mode=TwoWay}" PlaceholderText="{DynamicResource Ui_7a43745238a2}" Background="{DynamicResource ControlFillColorDefaultBrush}" Foreground="{DynamicResource TextFillColorPrimaryBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" CornerRadius="6" Padding="8,6" Margin="0,0,8,0"/>
+                            <Button Grid.Column="1" Content="{DynamicResource Common_Paste}" Command="{Binding PasteClipboardCommand}" BorderBrush="#475569" BorderThickness="1" CornerRadius="6" Padding="12,6" Margin="0,0,6,0"/>
+                            <Button Grid.Column="2" Content="{DynamicResource Common_Browse}" Command="{Binding BrowseFileCommand}" BorderBrush="#475569" BorderThickness="1" CornerRadius="6" Padding="12,6"/>
+                        </Grid>
+                        <TextBlock IsVisible="{Binding HasInputStatusText}" Text="{Binding InputStatusText}" Foreground="{Binding StatusColor}" FontSize="11.5" TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+            <ScrollViewer Grid.Row="1" Margin="0,0,0,12">
+                <StackPanel>
+                    <Border IsVisible="{Binding IsEmptyState}" Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="6" Padding="32" Margin="0,10">
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <PathIcon Data="{StaticResource IconDocument}" Width="16" Height="16" Foreground="{DynamicResource TextFillColorTertiaryBrush}" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                            <TextBlock Text="{DynamicResource Ui_7a7633d3ca5f}" FontSize="15" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" HorizontalAlignment="Center" Margin="0,0,0,6"/>
+                            <TextBlock Text="{DynamicResource Ui_acc79880d626}" FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}" HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" MaxWidth="420"/>
+                        </StackPanel>
+                    </Border>
+                    <StackPanel IsVisible="{Binding HasLoadedPackage}" Spacing="10">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="{Binding PresetName}" FontSize="17" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                <TextBlock Text="{Binding AuthorSubtitle}" FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                            </StackPanel>
+                            <Border Grid.Column="1" Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{DynamicResource SystemAccentColorBrush}" BorderThickness="1" CornerRadius="4" Padding="8,3" VerticalAlignment="Top">
+                                <TextBlock Text="{Binding VersionBadge}" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource SystemAccentColorBrush}" TextWrapping="Wrap"/>
+                            </Border>
+                        </Grid>
+                        <Border IsVisible="{Binding HasDescription}" Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="6" Padding="10,8">
+                            <TextBlock Text="{Binding Description}" FontSize="11.5" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                        </Border>
+                        <Border Background="#14281E" BorderBrush="#22543D" BorderThickness="1" CornerRadius="6" Padding="12,10">
+                            <StackPanel>
+                                <TextBlock Text="{DynamicResource Dialog_Export_TargetConfig}" FontSize="10" FontWeight="SemiBold" Foreground="#86EFAC" Margin="0,0,0,2"/>
+                                <TextBlock Text="{Binding TargetContextText}" FontSize="13" FontWeight="SemiBold" Foreground="#F0FDF4"/>
+                            </StackPanel>
+                        </Border>
+                        <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="6" Padding="12,10">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="{DynamicResource Ui_754b0d2e9711}" FontWeight="SemiBold" FontSize="12.5" Foreground="{DynamicResource SystemAccentColorBrush}" Margin="0,0,0,2"/>
+                                <Grid ColumnDefinitions="*,*">
+                                    <StackPanel Grid.Column="0" Spacing="2">
+                                        <TextBlock Text="{Binding ParamSteerSensText}" FontSize="11.5" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                        <TextBlock Text="{Binding ParamSteerGammaText}" FontSize="11.5" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Spacing="2">
+                                        <TextBlock Text="{Binding ParamSteerLockText}" FontSize="11.5" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+                        <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="6" Padding="12,10">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="{DynamicResource Ui_6e80136eea32}" FontWeight="SemiBold" FontSize="12.5" Foreground="#4ADE80" Margin="0,0,0,2"/>
+                                <Grid ColumnDefinitions="*,*">
+                                    <StackPanel Grid.Column="0" Spacing="2">
+                                        <TextBlock Text="{Binding ParamThrottleDynamicsText}" FontSize="11.5" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                        <TextBlock Text="{Binding ParamThrottleGammaText}" FontSize="11.5" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Spacing="2">
+                                        <TextBlock Text="{Binding ParamBrakeDynamicsText}" FontSize="11.5" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                        <TextBlock Text="{Binding ParamBrakeGammaText}" FontSize="11.5" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+            <StackPanel Grid.Row="2" Spacing="8">
+                <Button IsVisible="{Binding IsSpecificTarget}" Content="{Binding SaveToTargetSlotButtonText}" IsEnabled="{Binding CanApply}" Command="{Binding SaveToTargetSlotCommand}" Background="#059669" Foreground="#FFFFFF" CornerRadius="6" Padding="14,8" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" FontWeight="SemiBold"/>
+                <Button Classes="accent" Content="{Binding ApplyToCurrentContextButtonText}" IsEnabled="{Binding CanApply}" Command="{Binding ApplyToCurrentCommand}" Foreground="#FFFFFF" CornerRadius="6" Padding="14,8" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" FontWeight="SemiBold"/>
+                <Button Content="{DynamicResource Common_Cancel}" Command="{Binding CancelCommand}" Background="Transparent" HorizontalAlignment="Right" Padding="14,6"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

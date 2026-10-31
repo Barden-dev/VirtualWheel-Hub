@@ -1,0 +1,306 @@
+<Window xmlns:loc="clr-namespace:SimRacingHub.Application.Localization;assembly=vWheelHub.Application" xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:chrome="clr-namespace:Avalonia.Controls.Chrome;assembly=Avalonia.Controls" xmlns:shell="clr-namespace:SimRacingHub.Application.Features.Shell;assembly=vWheelHub.Application" xmlns:nav="clr-namespace:SimRacingHub.Application.Features.Shell;assembly=vWheelHub.Application" xmlns:onboarding="clr-namespace:SimRacingHub.Avalonia.Onboarding"
+        xmlns:controls="clr-namespace:SimRacingHub.Avalonia.Controls" xmlns:conv="clr-namespace:SimRacingHub.Avalonia.Converters" xmlns:dashboardView="clr-namespace:SimRacingHub.Avalonia.Views.Dashboard" xmlns:profilesView="clr-namespace:SimRacingHub.Avalonia.Views.Profiles" xmlns:steeringView="clr-namespace:SimRacingHub.Avalonia.Views.Steering" xmlns:pedalsView="clr-namespace:SimRacingHub.Avalonia.Views.Pedals" xmlns:outputView="clr-namespace:SimRacingHub.Avalonia.Views.Output" xmlns:inputDevicesView="clr-namespace:SimRacingHub.Avalonia.Views.InputDevices" xmlns:keyBindingsView="clr-namespace:SimRacingHub.Avalonia.Views.KeyBindings" xmlns:appSettingsView="clr-namespace:SimRacingHub.Avalonia.Views.AppSettings" mc:Ignorable="d" d:DesignWidth="1100" d:DesignHeight="700" x:Class="SimRacingHub.Avalonia.MainWindow" x:DataType="shell:AppShellViewModel" x:CompileBindings="True" Title="{Binding WindowTitle}" Width="1180" Height="820" MinWidth="900" MinHeight="650" ExtendClientAreaToDecorationsHint="True" ExtendClientAreaTitleBarHeightHint="32" WindowDecorationsTheme="{DynamicResource HubWindowDecorations}" Background="{DynamicResource WindowBackgroundBrush}" Foreground="{DynamicResource TextFillColorPrimaryBrush}">
+    <Window.Resources>
+        <ControlTheme x:Key="HubWindowDecorations" TargetType="chrome:WindowDrawnDecorations" BasedOn="{StaticResource {x:Type chrome:WindowDrawnDecorations}}">
+            <Setter Property="DefaultTitleBarHeight" Value="32"/>
+            <Style Selector="^:has-titlebar /template/ Panel#PART_TitleTextPanel">
+                <Setter Property="IsVisible" Value="False"/>
+            </Style>
+            <Style Selector="^:has-fullscreen /template/ Button#PART_FullScreenButton">
+                <Setter Property="IsVisible" Value="False"/>
+            </Style>
+        </ControlTheme>
+        <x:Double x:Key="CaptionButtonHeight">32</x:Double>
+        <conv:PageIdEqualsConverter x:Key="PageEquals"/>
+        <conv:PageIdEqualsConverter x:Key="PageIdMatchConverter"/>
+
+        <ControlTheme x:Key="HubTitleLanguageButton" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="8,0"/>
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border Name="LanguageButtonSurface" Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="4" Padding="{TemplateBinding Padding}">
+                        <ContentPresenter Content="{TemplateBinding Content}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+            <Style Selector="^:pointerover /template/ Border#LanguageButtonSurface"><Setter Property="Background" Value="#333333"/></Style>
+            <Style Selector="^:pressed /template/ Border#LanguageButtonSurface"><Setter Property="Background" Value="#3B3B3B"/></Style>
+            <Style Selector="^:focus-visible /template/ Border#LanguageButtonSurface"><Setter Property="BorderBrush" Value="{DynamicResource SystemAccentColorBrush}"/></Style>
+        </ControlTheme>
+        <ControlTheme x:Key="HubLanguageMenuItem" TargetType="MenuItem">
+            <Setter Property="MinHeight" Value="34"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border Name="LanguageItemSurface" Background="Transparent" CornerRadius="4" Padding="10,7">
+                        <Grid ColumnDefinitions="20,*" ColumnSpacing="6">
+                            <TextBlock Text="✓" IsVisible="{TemplateBinding IsChecked}" Foreground="{DynamicResource SystemAccentColorBrush}" VerticalAlignment="Center"/>
+                            <ContentPresenter Grid.Column="1" Content="{TemplateBinding Header}" VerticalAlignment="Center"/>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+            <Style Selector="^:pointerover /template/ Border#LanguageItemSurface"><Setter Property="Background" Value="#383838"/></Style>
+            <Style Selector="^:selected /template/ Border#LanguageItemSurface"><Setter Property="Background" Value="#383838"/></Style>
+        </ControlTheme>
+        <ControlTheme x:Key="HubLanguageMenu" TargetType="MenuFlyoutPresenter" BasedOn="{StaticResource {x:Type MenuFlyoutPresenter}}">
+            <Setter Property="MinWidth" Value="200"/>
+            <Setter Property="MaxHeight" Value="320"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="Background" Value="#282828"/>
+            <Setter Property="BorderBrush" Value="#414141"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="8"/>
+        </ControlTheme>
+    </Window.Resources>
+
+    <Window.Styles>
+        <!-- Reserve caption space only when the platform actually embeds its controls. -->
+        <Style Selector="Border#HubTitleBar">
+            <Setter Property="Padding" Value="12,0"/>
+        </Style>
+        <Style Selector="Window[IsExtendedIntoWindowDecorations=True] Border#HubTitleBar">
+            <Setter Property="Padding" Value="12,0,148,0"/>
+        </Style>
+        <Style Selector="Window.sidebar-collapsed TextBlock.sidebar-label"><Setter Property="IsVisible" Value="False"/></Style>
+        <Style Selector="Window.sidebar-collapsed Border#Sidebar Button StackPanel"><Setter Property="Spacing" Value="0"/></Style>
+
+        <Style Selector="Button#SidebarToggle">
+            <Setter Property="ToolTip.Tip" Value="{DynamicResource Nav_CollapseSidebar}"/>
+            <Setter Property="AutomationProperties.Name" Value="{DynamicResource Nav_CollapseSidebar}"/>
+        </Style>
+        <Style Selector="Window.sidebar-collapsed Button#SidebarToggle">
+            <Setter Property="ToolTip.Tip" Value="{DynamicResource Nav_ExpandSidebar}"/>
+            <Setter Property="AutomationProperties.Name" Value="{DynamicResource Nav_ExpandSidebar}"/>
+        </Style>
+        <Style Selector="PathIcon#SidebarToggleIcon"><Setter Property="Data" Value="F0 M4,1 H12 A3,3 0 0 1 15,4 V12 A3,3 0 0 1 12,15 H4 A3,3 0 0 1 1,12 V4 A3,3 0 0 1 4,1 Z M7,3 V13 H12 A1,1 0 0 0 13,12 V4 A1,1 0 0 0 12,3 Z"/></Style>
+        <Style Selector="Window.sidebar-collapsed PathIcon#SidebarToggleIcon"><Setter Property="Data" Value="F0 M4,1 H12 A3,3 0 0 1 15,4 V12 A3,3 0 0 1 12,15 H4 A3,3 0 0 1 1,12 V4 A3,3 0 0 1 4,1 Z M4,3 A1,1 0 0 0 3,4 V12 A1,1 0 0 0 4,13 H5 V3 Z M7,3 V13 H12 A1,1 0 0 0 13,12 V4 A1,1 0 0 0 12,3 Z"/></Style>
+    </Window.Styles>
+    <Window.KeyBindings>
+        <KeyBinding Gesture="Ctrl+S" Command="{Binding SaveProfileCommand}"/>
+        <KeyBinding Gesture="Ctrl+Z" Command="{Binding RevertProfileCommand}"/>
+    </Window.KeyBindings>
+    <Panel>
+ <Grid Name="HubContent" RowDefinitions="Auto,Auto,Auto,*,Auto,Auto">
+        <Border Name="HubTitleBar" Grid.Row="0" Height="32" chrome:WindowDecorationProperties.ElementRole="TitleBar" Background="{DynamicResource WindowBackgroundBrush}">
+            <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding WindowTitle}" FontSize="12" TextWrapping="Wrap"/>
+                    <Border Name="EditionBadge" Background="{DynamicResource ControlFillColorDefaultBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="4" Padding="7,1" ToolTip.Tip="{DynamicResource Edition_Description}"><TextBlock Text="{Binding Edition}" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/></Border>
+    <Border IsVisible="{Binding IsPreviewMode}" Background="{DynamicResource PreviewBannerBackgroundBrush}" CornerRadius="4" Padding="7,2" ToolTip.Tip="{DynamicResource Ui_878e3ac30d94}">
+                        <TextBlock Text="{DynamicResource Ui_59e1f415bf9d}" FontSize="10" Foreground="{DynamicResource PreviewBannerTextBrush}"/>
+                    </Border>
+                </StackPanel>
+                <Button Name="TitleLanguageSelector" Click="TitleLanguageButtonClick" Grid.Column="1" Height="26" MinHeight="26"
+                       Margin="0,0,8,0" Theme="{StaticResource HubTitleLanguageButton}"
+                       chrome:WindowDecorationProperties.ElementRole="DecorationsElement"
+                       AutomationProperties.Name="{DynamicResource Ui_d1c76800f087}"
+                       ToolTip.Tip="{Binding AppSettings.CurrentLanguage.DisplayName}">
+        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+            <PathIcon Data="{StaticResource IconGlobe}" Width="13" Height="13" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+            <TextBlock Name="TitleLanguageCode" Text="{Binding AppSettings.SelectedLanguageCode}" FontSize="11" FontWeight="Medium" VerticalAlignment="Center"/>
+            <PathIcon Data="M 0,0 L 3,3 L 6,0" Width="6" Height="3" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+        </StackPanel>
+
+      </Button>
+            </Grid>
+        </Border>
+        <Border Grid.Row="1" IsVisible="{Binding HasFault}" Background="#7F1D1D" BorderBrush="#DC2626" BorderThickness="1" CornerRadius="6" Padding="12,8" Margin="16,8,16,0">
+            <Grid ColumnDefinitions="Auto,*">
+                <PathIcon Data="{StaticResource IconDismissCircle}" Width="16" Height="16" Grid.Column="0" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="1" Text="{Binding FaultMessage}" Foreground="#FECACA" FontWeight="SemiBold" FontSize="12" VerticalAlignment="Center" TextWrapping="Wrap"/>
+            </Grid>
+        </Border>
+        <Border Grid.Row="2" IsVisible="{Binding HasPendingContext}" Background="#78350F" BorderBrush="#F59E0B" BorderThickness="1" CornerRadius="6" Padding="12,8" Margin="16,8,16,0">
+            <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                    <TextBlock Text="{DynamicResource Ui_ecf9ffc12b60}" FontWeight="SemiBold" Foreground="#FDE68A" FontSize="12" TextWrapping="Wrap"/>
+                    <TextBlock Text="{DynamicResource Ui_dbeb8e7198d7}" Foreground="#FEF3C7" FontSize="11" TextWrapping="Wrap"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                    <Button Classes="accent" Content="{DynamicResource InfoBar_Btn_SaveAndSwitch}" Command="{Binding SaveAndSwitchToPendingContextCommand}" Padding="10,4" FontSize="11"/>
+                    <Button Content="{DynamicResource InfoBar_Btn_SwitchAndDiscard}" Command="{Binding SwitchToPendingContextCommand}" Padding="10,4" FontSize="11"/>
+                    <Button Content="{DynamicResource InfoBar_Btn_KeepCurrent}" Command="{Binding IgnorePendingContextCommand}" Background="Transparent" Foreground="#FDE68A" Padding="10,4" FontSize="11"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+        <Grid Grid.Row="3" Name="ShellWorkspace" ColumnDefinitions="185,*" Background="{DynamicResource WindowBackgroundBrush}">
+            <Border Name="Sidebar" ClipToBounds="True" Grid.Column="0" Padding="8,8,8,12" Background="{DynamicResource WindowBackgroundBrush}">
+                <Grid RowDefinitions="Auto,*,Auto"><Button Name="SidebarToggle" Click="SidebarToggle_Click" Width="32" Height="28" MinHeight="28" Padding="7,5"
+        HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+        Theme="{StaticResource HubTitleLanguageButton}" Margin="4,0,0,8">
+        <PathIcon Name="SidebarToggleIcon" Width="16" Height="16"/>
+    </Button>
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                        <StackPanel Name="PrimaryNavigation" Spacing="4">
+                            <Button ToolTip.Tip="{DynamicResource Ui_67b696468610}" AutomationProperties.Name="{DynamicResource Ui_67b696468610}" Name="NavigateDashboard" Classes="hub-nav" Classes.active="{Binding CurrentPageId, Converter={StaticResource PageEquals}, ConverterParameter={x:Static shell:PageId.Dashboard}}" Command="{Binding NavigateSectionCommand}" CommandParameter="{x:Static shell:NavigationSection.Dashboard}">
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <PathIcon Data="{StaticResource IconHomeFilled}" Width="16" Height="16"/>
+                                    <TextBlock Classes="sidebar-label" Text="{DynamicResource Ui_67b696468610}" FontWeight="Normal" FontSize="14"/>
+                                </StackPanel>
+                            </Button>
+                            <Button ToolTip.Tip="{DynamicResource Ui_535e52e4a261}" AutomationProperties.Name="{DynamicResource Ui_535e52e4a261}" Name="NavigateProfiles" Classes="hub-nav" Classes.active="{Binding CurrentPageId, Converter={StaticResource PageEquals}, ConverterParameter={x:Static shell:PageId.Profiles}}" Command="{Binding NavigateSectionCommand}" CommandParameter="{x:Static shell:NavigationSection.Profiles}">
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <PathIcon Data="{StaticResource IconFolderFilled}" Width="16" Height="16"/>
+                                    <TextBlock Classes="sidebar-label" Text="{DynamicResource Ui_535e52e4a261}" FontWeight="Normal" FontSize="14"/>
+                                </StackPanel>
+                            </Button>
+                            <Button ToolTip.Tip="{DynamicResource Nav_Controls}" AutomationProperties.Name="{DynamicResource Nav_Controls}" Name="NavigateControls" Classes="hub-nav" Classes.active="{Binding IsControlSection}" Command="{Binding NavigateSectionCommand}" CommandParameter="{x:Static shell:NavigationSection.Controls}">
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <PathIcon Data="{StaticResource IconControlsFilled}" Width="16" Height="16"/>
+                                    <TextBlock Classes="sidebar-label" Text="{DynamicResource Nav_Controls}" FontWeight="Normal" FontSize="14"/>
+                                </StackPanel>
+                            </Button>
+                            <Button ToolTip.Tip="{DynamicResource Ui_74a883a037bc}" AutomationProperties.Name="{DynamicResource Ui_74a883a037bc}" Name="NavigateApplication" Classes="hub-nav" Classes.active="{Binding IsApplicationSection}" Command="{Binding NavigateSectionCommand}" CommandParameter="{x:Static shell:NavigationSection.Application}">
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <PathIcon Data="{StaticResource IconSettingsFilled}" Width="16" Height="16"/>
+                                    <TextBlock Classes="sidebar-label" Text="{DynamicResource Ui_74a883a037bc}" FontWeight="Normal" FontSize="14"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </ScrollViewer>
+                    <StackPanel Grid.Row="2" Spacing="2" Margin="0,10,0,0">
+                        <Separator Margin="6,0,6,8" Background="{DynamicResource CardStrokeColorDefaultBrush}"/>
+                        <Button ToolTip.Tip="{DynamicResource Tour_Open}" AutomationProperties.Name="{DynamicResource Tour_Open}" Name="SidebarGettingStarted" Classes="hub-footer" Click="GettingStarted_Click"><StackPanel Orientation="Horizontal" Spacing="10"><PathIcon Data="{StaticResource IconGettingStartedFilled}" Width="16" Height="16"/><TextBlock Classes="sidebar-label" Text="{DynamicResource Tour_Open}" /></StackPanel></Button>
+     <Button ToolTip.Tip="{DynamicResource Ui_Documentation}" AutomationProperties.Name="{DynamicResource Ui_Documentation}" Name="SidebarWiki" Classes="hub-footer" Command="{Binding AppSettings.OpenWikiCommand}">
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <PathIcon Data="{StaticResource IconWikiFilled}" Width="16" Height="16"/>
+                                <TextBlock Classes="sidebar-label" Text="{DynamicResource Ui_Documentation}"/>
+                            </StackPanel>
+                        </Button>
+                        <Button ToolTip.Tip="{DynamicResource Ui_Community}" AutomationProperties.Name="{DynamicResource Ui_Community}" Name="SidebarDiscord" Classes="hub-footer" Command="{Binding AppSettings.OpenDiscordCommand}">
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <PathIcon Data="{StaticResource IconDiscord}" Width="16" Height="16"/>
+                                <TextBlock Classes="sidebar-label" Text="{DynamicResource Ui_Community}"/>
+                            </StackPanel>
+                        </Button>
+                        <Button ToolTip.Tip="{DynamicResource Ui_Support}" AutomationProperties.Name="{DynamicResource Ui_Support}" Name="SidebarBoosty" Classes="hub-footer" Command="{Binding AppSettings.OpenBoostyCommand}">
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <PathIcon Data="{StaticResource IconBoosty}" Width="16" Height="16"/>
+                                <TextBlock Classes="sidebar-label" Text="{DynamicResource Ui_Support}"/>
+                            </StackPanel>
+                        </Button>
+                        <Button ToolTip.Tip="{DynamicResource Ui_About}" AutomationProperties.Name="{DynamicResource Ui_About}" Name="SidebarAbout" Classes="hub-footer" Classes.active="{Binding CurrentPageId, Converter={StaticResource PageEquals}, ConverterParameter={x:Static shell:PageId.About}}" Command="{Binding NavigateCommand}" CommandParameter="{x:Static shell:PageId.About}">
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <PathIcon Data="{StaticResource IconAboutFilled}" Width="16" Height="16"/>
+                                <TextBlock Classes="sidebar-label" Text="{DynamicResource Ui_About}"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+            <Grid Name="SidebarContent" Grid.Column="1" RowDefinitions="Auto,Auto,*" Background="{DynamicResource LayerFillColorDefaultBrush}">
+                <Border Name="ProfileHeader" Grid.Row="0" IsVisible="{Binding IsProfilePage}" Margin="22,6,22,0" Padding="0,0,0,6" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="0,0,0,1">
+     <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
+      <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10" VerticalAlignment="Center" Margin="0,0,8,0">
+       <StackPanel Spacing="2" VerticalAlignment="Center">
+        <TextBlock Name="ProfilePathText" Text="{Binding ProfilePath}" FontSize="14" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding ProfilePath}"/>
+        <TextBlock Name="ProfileVehicleStatus" Text="{Binding VehicleStatusText}" IsVisible="{Binding IsVehicleStatusVisible}" Classes="hub-secondary" FontSize="11" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding VehicleStatusText}"/>
+       </StackPanel>
+       <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+        <Ellipse IsVisible="{Binding HasUnsavedChanges}" Fill="{DynamicResource SystemAccentColorBrush}" Width="6" Height="6"/>
+        <TextBlock Name="ProfileSaveStatus" Text="{Binding ProfileStatusText}" Classes="hub-secondary" FontSize="11" MaxWidth="140" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding ProfileStatusText}"/>
+       </StackPanel>
+      </Grid>
+<StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                            <Button Name="UndoProfileButton" Command="{Binding RevertProfileCommand}" IsEnabled="{Binding CanUndo}" ToolTip.Tip="{DynamicResource Ui_UndoHint}">
+                                <StackPanel Orientation="Horizontal" Spacing="7">
+                                    <PathIcon Data="{StaticResource IconArrowUndo}" Width="14" Height="14"/>
+                                    
+                                </StackPanel>
+                            </Button>
+                            <Button Name="SaveProfileButton" Classes="accent" Command="{Binding SaveProfileCommand}" IsEnabled="{Binding CanSaveProfile}" ToolTip.Tip="{DynamicResource Ui_SaveHint}">
+                                <StackPanel Orientation="Horizontal" Spacing="7">
+                                    <PathIcon Data="{StaticResource IconSave}" Width="14" Height="14"/>
+                                    
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+<StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center" Margin="12,0,0,0">
+                            <ToggleSwitch Name="MouseLockToggle" ToolTip.Tip="{DynamicResource CursorLock_Hint}" Content="{DynamicResource Header_LockMouse}" FontSize="12" IsEnabled="{Binding IsHubRunning}" IsChecked="{Binding IsLocked, Mode=OneWay}" Click="MouseLockToggle_Click"/>
+                            <ToggleSwitch Name="HubToggle" Content="{Binding HubStatusText}" FontSize="12" IsChecked="{Binding IsHubRunning, Mode=OneWay}" Click="HubToggle_Click"/>
+                        </StackPanel>
+<Grid Name="ProfileSaveErrorBanner" Grid.Row="1" Grid.ColumnSpan="3" IsVisible="{Binding HasProfileSaveError}" ColumnDefinitions="Auto,*" ColumnSpacing="8" Margin="0,10,0,0">
+                            <PathIcon Data="{StaticResource IconWarning}" Width="16" Height="16" Foreground="#FDE68A" VerticalAlignment="Center"/>
+                            <TextBlock Name="ProfileSaveErrorText" Grid.Column="1" Text="{DynamicResource Ui_ChangesSaveError}" Foreground="#FDE68A" TextWrapping="Wrap" FontSize="12"/>
+                        </Grid>
+     </Grid>
+    </Border>
+                <StackPanel Grid.Row="1" Margin="22,10,22,0" Spacing="0">
+                    <WrapPanel Name="ControlSectionNavigation" IsVisible="{Binding IsControlSection}">
+                        <Button Name="SectionAxes" Classes="hub-section-tab" Classes.active="{Binding IsAxesPage}" Content="{DynamicResource Ui_AxesControls}" Command="{Binding NavigateAxesCommand}"/>
+                        <Button Name="SectionTrailBraking" Classes="hub-section-tab" Classes.active="{Binding CurrentPageId, Converter={StaticResource PageEquals}, ConverterParameter={x:Static shell:PageId.TrailBraking}}" Content="{DynamicResource Page_TrailBraking_Title}" Command="{Binding NavigateCommand}" CommandParameter="{x:Static shell:PageId.TrailBraking}"/>
+<Button Name="SectionKeyBindings" Classes="hub-section-tab" Classes.active="{Binding CurrentPageId, Converter={StaticResource PageEquals}, ConverterParameter={x:Static shell:PageId.KeyBindings}}" Content="{DynamicResource Ui_NavKeys}" Command="{Binding NavigateCommand}" CommandParameter="{x:Static shell:PageId.KeyBindings}"/>
+      <Button Name="SectionControlAssignment" Classes="hub-section-tab" Classes.active="{Binding CurrentPageId, Converter={StaticResource PageEquals}, ConverterParameter={x:Static shell:PageId.ControlAssignment}}" Content="{DynamicResource OutputTest_Nav}" Command="{Binding NavigateCommand}" CommandParameter="{x:Static shell:PageId.ControlAssignment}"/>
+                        <Button Name="SectionSoundPreview" Classes="hub-section-tab" Classes.active="{Binding CurrentPageId, Converter={StaticResource PageEquals}, ConverterParameter={x:Static shell:PageId.SoundPreview}}" Content="{DynamicResource Offer_SoundTab}" Command="{Binding NavigateCommand}" CommandParameter="{x:Static shell:PageId.SoundPreview}"/>
+<Button Name="SectionInputDevices" Classes="hub-section-tab" Classes.active="{Binding CurrentPageId, Converter={StaticResource PageEquals}, ConverterParameter={x:Static shell:PageId.InputDevices}}" Content="{DynamicResource InputDevices_Title}" Command="{Binding NavigateCommand}" CommandParameter="{x:Static shell:PageId.InputDevices}"/>
+                        <Button Name="SectionOutput" Classes="hub-section-tab" Classes.active="{Binding CurrentPageId, Converter={StaticResource PageEquals}, ConverterParameter={x:Static shell:PageId.Output}}" Content="{DynamicResource Ui_71c8b87c75ad}" Command="{Binding NavigateCommand}" CommandParameter="{x:Static shell:PageId.Output}"/>
+                    </WrapPanel>
+                    <Border IsVisible="{Binding IsControlSection}" Height="1" Background="{DynamicResource CardStrokeColorDefaultBrush}" Margin="0,8,0,0"/>
+                    <StackPanel Name="AxesNavigation" IsVisible="{Binding IsAxesPage}" Spacing="0" Margin="0,4,0,0">
+                        
+                        <WrapPanel>
+                            <Button Name="AxesSteering" Classes="hub-section-tab" Classes.active="{Binding IsSteeringAxisSelected}" Content="{DynamicResource Ui_AxisSteering}" Command="{Binding SelectAxesTabCommand}" CommandParameter="{x:Static shell:AxisControlTab.Steering}"/>
+                            <Button Name="AxesThrottle" Classes="hub-section-tab" Classes.active="{Binding IsThrottleAxisSelected}" Content="{DynamicResource Ui_TabGas}" Command="{Binding SelectAxesTabCommand}" CommandParameter="{x:Static shell:AxisControlTab.Throttle}"/>
+                            <Button Name="AxesBrake" Classes="hub-section-tab" Classes.active="{Binding IsBrakeAxisSelected}" Content="{DynamicResource Ui_TabBrake}" Command="{Binding SelectAxesTabCommand}" CommandParameter="{x:Static shell:AxisControlTab.Brake}"/>
+                        </WrapPanel>
+                    </StackPanel>
+                    <WrapPanel Name="ApplicationSectionNavigation" IsVisible="{Binding IsApplicationSection}">
+                        <Button Name="SectionSettings" Classes="hub-section-tab" Classes.active="{Binding CurrentPageId, Converter={StaticResource PageEquals}, ConverterParameter={x:Static shell:PageId.Settings}}" Content="{DynamicResource Nav_General}" Command="{Binding NavigateCommand}" CommandParameter="{x:Static shell:PageId.Settings}"/>
+                        <Button Name="SectionDataPreview" Classes="hub-section-tab" Classes.active="{Binding CurrentPageId, Converter={StaticResource PageEquals}, ConverterParameter={x:Static shell:PageId.GameDataPreview}}" Content="{DynamicResource Offer_DataTab}" Command="{Binding NavigateCommand}" CommandParameter="{x:Static shell:PageId.GameDataPreview}"/>
+<Button Name="SectionAbout" Classes="hub-section-tab" Classes.active="{Binding CurrentPageId, Converter={StaticResource PageEquals}, ConverterParameter={x:Static shell:PageId.About}}" Content="{DynamicResource Ui_About}" Command="{Binding NavigateCommand}" CommandParameter="{x:Static shell:PageId.About}"/>
+                    </WrapPanel>
+                </StackPanel>
+                <Border Grid.Row="2" Padding="22,10,6,0">
+                    <Panel Classes="hub-pages"><Panel IsVisible="{Binding CurrentPageId, Converter={StaticResource PageEquals}, ConverterParameter={x:Static shell:PageId.SoundPreview}}"><ScrollViewer Classes="hub-scroll" VerticalScrollBarVisibility="Auto"><StackPanel Spacing="16" Margin="0,0,16,24"><controls:FeaturePreview Name="SoundOfferFront" Heading="{DynamicResource Offer_Front}" Summary="{DynamicResource Offer_SoundInfo}"><controls:FeaturePreview.Sample><StackPanel Spacing="10"><ToggleSwitch Content="{DynamicResource Offer_Enable}" IsChecked="False"/><Grid ColumnDefinitions="*,150" ColumnSpacing="12"><TextBlock Text="{DynamicResource Offer_Volume}" VerticalAlignment="Center" TextWrapping="Wrap"/><NumericUpDown Grid.Column="1" Value="25" Minimum="0" Maximum="1000"/></Grid><Grid ColumnDefinitions="*,150" ColumnSpacing="12"><TextBlock Text="{DynamicResource Offer_Pitch}" VerticalAlignment="Center" TextWrapping="Wrap"/><NumericUpDown Grid.Column="1" Value="280" Minimum="0" Maximum="1000"/></Grid></StackPanel></controls:FeaturePreview.Sample></controls:FeaturePreview><controls:FeaturePreview Name="SoundOfferRear" Heading="{DynamicResource Offer_Rear}" Summary="{DynamicResource Offer_SoundInfo}"><controls:FeaturePreview.Sample><StackPanel Spacing="10"><ToggleSwitch Content="{DynamicResource Offer_Enable}" IsChecked="False"/><Grid ColumnDefinitions="*,150" ColumnSpacing="12"><TextBlock Text="{DynamicResource Offer_Volume}" VerticalAlignment="Center" TextWrapping="Wrap"/><NumericUpDown Grid.Column="1" Value="25" Minimum="0" Maximum="1000"/></Grid><Grid ColumnDefinitions="*,150" ColumnSpacing="12"><TextBlock Text="{DynamicResource Offer_Pitch}" VerticalAlignment="Center" TextWrapping="Wrap"/><NumericUpDown Grid.Column="1" Value="280" Minimum="0" Maximum="1000"/></Grid></StackPanel></controls:FeaturePreview.Sample></controls:FeaturePreview><controls:FeaturePreview Name="SoundOfferTc" Heading="{DynamicResource Offer_Tc}" Summary="{DynamicResource Offer_SoundInfo}"><controls:FeaturePreview.Sample><StackPanel Spacing="10"><ToggleSwitch Content="{DynamicResource Offer_Enable}" IsChecked="False"/><Grid ColumnDefinitions="*,150" ColumnSpacing="12"><TextBlock Text="{DynamicResource Offer_Volume}" VerticalAlignment="Center" TextWrapping="Wrap"/><NumericUpDown Grid.Column="1" Value="25" Minimum="0" Maximum="1000"/></Grid><Grid ColumnDefinitions="*,150" ColumnSpacing="12"><TextBlock Text="{DynamicResource Offer_Pitch}" VerticalAlignment="Center" TextWrapping="Wrap"/><NumericUpDown Grid.Column="1" Value="280" Minimum="0" Maximum="1000"/></Grid></StackPanel></controls:FeaturePreview.Sample></controls:FeaturePreview></StackPanel></ScrollViewer></Panel><Panel IsVisible="{Binding CurrentPageId, Converter={StaticResource PageEquals}, ConverterParameter={x:Static shell:PageId.TrailBraking}}"><pedalsView:TrailBrakingView DataContext="{Binding TrailBraking}"/></Panel><Panel IsVisible="{Binding CurrentPageId, Converter={StaticResource PageEquals}, ConverterParameter={x:Static shell:PageId.GameDataPreview}}"><ScrollViewer Classes="hub-scroll" VerticalScrollBarVisibility="Auto"><StackPanel Spacing="16" Margin="0,0,16,24"><controls:FeaturePreview Name="DataOffer" Heading="{DynamicResource Offer_Data}" Summary="{DynamicResource Offer_DataInfo}"><controls:FeaturePreview.Sample><StackPanel Spacing="10"><TextBox Text="—" IsReadOnly="True"/><Button Content="{DynamicResource Offer_Prepare}"/></StackPanel></controls:FeaturePreview.Sample></controls:FeaturePreview></StackPanel></ScrollViewer></Panel>
+                        <Panel IsVisible="{Binding CurrentPageId, Converter={StaticResource PageIdMatchConverter}, ConverterParameter={x:Static nav:PageId.Dashboard}}">
+                            <dashboardView:DashboardView Name="TourDashboard" DataContext="{Binding Dashboard}"/>
+                        </Panel>
+                        <Panel IsVisible="{Binding CurrentPageId, Converter={StaticResource PageIdMatchConverter}, ConverterParameter={x:Static nav:PageId.Profiles}}">
+                            <profilesView:ProfilesView Name="TourProfiles" DataContext="{Binding Profiles}"/>
+                        </Panel>
+                        <Panel IsVisible="{Binding CurrentPageId, Converter={StaticResource PageIdMatchConverter}, ConverterParameter={x:Static nav:PageId.Steering}}">
+                            <steeringView:SteeringView Name="TourSteering" DataContext="{Binding Steering}" ShowPageHeader="False"/>
+                        </Panel>
+                        <Panel IsVisible="{Binding CurrentPageId, Converter={StaticResource PageIdMatchConverter}, ConverterParameter={x:Static nav:PageId.Pedals}}">
+                            <pedalsView:PedalsView DataContext="{Binding Pedals}" ShowPageHeader="False" ShowTabHeaders="False" SelectedTabIndex="{ReflectionBinding $parent[Window].DataContext.SelectedPedalTabIndex, Mode=TwoWay}"/>
+                        </Panel>
+                        <Panel IsVisible="{Binding CurrentPageId, Converter={StaticResource PageIdMatchConverter}, ConverterParameter={x:Static nav:PageId.KeyBindings}}">
+                            <keyBindingsView:KeyBindingsView Name="TourKeys" DataContext="{Binding KeyBindings}"/>
+                        </Panel>
+                    <Panel IsVisible="{Binding CurrentPageId, Converter={StaticResource PageIdMatchConverter}, ConverterParameter={x:Static nav:PageId.InputDevices}}">
+                        <inputDevicesView:InputDevicesView Name="InputDevicesPage" />
+                    </Panel>
+                    <Panel IsVisible="{Binding CurrentPageId, Converter={StaticResource PageIdMatchConverter}, ConverterParameter={x:Static nav:PageId.ControlAssignment}}">
+                        <outputView:OutputTestView Name="ControlAssignmentPage" />
+                    </Panel>
+                        <Panel IsVisible="{Binding CurrentPageId, Converter={StaticResource PageIdMatchConverter}, ConverterParameter={x:Static nav:PageId.Output}}">
+                            <outputView:OutputView Name="TourOutput" DataContext="{Binding Output}"/>
+                        </Panel>
+                        <Panel IsVisible="{Binding CurrentPageId, Converter={StaticResource PageIdMatchConverter}, ConverterParameter={x:Static nav:PageId.Settings}}">
+                            <appSettingsView:AppSettingsView Name="TourSettings" DataContext="{Binding AppSettings}"/>
+                        </Panel>
+                        <Panel IsVisible="{Binding CurrentPageId, Converter={StaticResource PageEquals}, ConverterParameter={x:Static shell:PageId.About}}">
+                            <appSettingsView:AboutView/>
+                        </Panel>
+                    </Panel>
+                </Border>
+            </Grid>
+        </Grid>
+        <controls:FluentOutputMonitor Name="OutputMonitor" Grid.Row="4" Margin="20,8,20,0"/>
+        <Border Grid.Row="5" Padding="22,7">
+            <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Text="{Binding RuntimeStatusText}" Classes="hub-secondary" TextTrimming="CharacterEllipsis"/>
+                <Button Grid.Column="1" Name="ProFeaturesLink" ToolTip.Tip="{Binding OfferDetails}" Command="{Binding AppSettings.OpenBoostyCommand}" Background="#261E26" BorderBrush="#63324F" Foreground="#F9A8D4" CornerRadius="4" Padding="9,2" MinHeight="24" FontSize="11"><TextBlock controls:LocalizedText.Value="{Binding OfferCount}" controls:LocalizedText.Format="{DynamicResource Offer_Count}"/></Button>
+            </Grid>
+        </Border>
+    </Grid>
+ <onboarding:GettingStartedOverlay Name="GettingStarted" IsVisible="False"/>
+ </Panel>
+</Window>

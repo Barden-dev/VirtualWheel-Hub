@@ -1,0 +1,205 @@
+<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:controls="clr-namespace:SimRacingHub.Avalonia.Controls">
+    <Styles.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://vWheelHub/Themes/FluentIcons.axaml"/>
+                <ResourceInclude Source="avares://vWheelHub/Themes/WinUiToggleSwitch.axaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <SolidColorBrush x:Key="WindowBackgroundBrush" Color="#202020"/>
+            <SolidColorBrush x:Key="LayerFillColorDefaultBrush" Color="#272727"/>
+            <SolidColorBrush x:Key="CardBackgroundFillColorDefaultBrush" Color="#2B2B2B"/>
+            <SolidColorBrush x:Key="CardStrokeColorDefaultBrush" Color="#3E3E3E"/>
+            <SolidColorBrush x:Key="ControlFillColorDefaultBrush" Color="#343434"/>
+            <SolidColorBrush x:Key="TextFillColorPrimaryBrush" Color="#F7F7F7"/>
+            <SolidColorBrush x:Key="TextFillColorSecondaryBrush" Color="#C4C4C4"/>
+            <SolidColorBrush x:Key="TextFillColorTertiaryBrush" Color="#999999"/>
+            <SolidColorBrush x:Key="TextOnAccentFillColorPrimaryBrush" Color="#003047"/>
+            <SolidColorBrush x:Key="SystemAccentColorBrush" Color="#60CDFF"/>
+            <SolidColorBrush x:Key="SystemAccentColorLightBrush" Color="#60CDFF"/>
+            <SolidColorBrush x:Key="PreviewBannerBackgroundBrush" Color="#38270A"/>
+            <SolidColorBrush x:Key="PreviewBannerBorderBrush" Color="#8A621C"/>
+            <SolidColorBrush x:Key="PreviewBannerTextBrush" Color="#FBBF24"/>
+            <SolidColorBrush x:Key="HubGasBrush" Color="#4ADE80"/>
+            <SolidColorBrush x:Key="HubBrakeBrush" Color="#F87171"/>
+            <SolidColorBrush x:Key="ButtonBackground" Color="#343434"/>
+            <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="#3B3B3B"/>
+            <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="#303030"/>
+            <SolidColorBrush x:Key="ButtonBorderBrush" Color="#454545"/>
+        </ResourceDictionary>
+    </Styles.Resources>
+    <Style Selector="Window">
+        <Setter Property="FontFamily" Value="{OnPlatform Windows='Segoe UI', Default='fonts:Inter', x:TypeArguments=FontFamily}"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="Background" Value="{DynamicResource WindowBackgroundBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
+    </Style>
+    <Style Selector="ToggleSwitch">
+        <Setter Property="Theme" Value="{StaticResource HubToggleSwitch}"/>
+    </Style>
+    <Style Selector="ToggleSwitch">
+        <Setter Property="OnContent" Value="{DynamicResource Ui_On}"/>
+        <Setter Property="OffContent" Value="{DynamicResource Ui_Off}"/>
+    </Style>
+    <Style Selector="Button.setting-revert">
+  <Setter Property="Background" Value="Transparent"/><Setter Property="BorderThickness" Value="0"/>
+  <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}"/>
+  <Setter Property="Width" Value="28"/><Setter Property="MinWidth" Value="28"/>
+  <Setter Property="Height" Value="24"/><Setter Property="MinHeight" Value="24"/>
+  <Setter Property="Margin" Value="4,0,0,0"/><Setter Property="Padding" Value="2"/>
+  <Setter Property="VerticalAlignment" Value="Center"/>
+  <Setter Property="AutomationProperties.Name" Value="{DynamicResource Ui_RestoreSetting}"/>
+  <Setter Property="ContentTemplate"><DataTemplate><PathIcon Data="{StaticResource IconArrowUndo}" Width="13" Height="13"/></DataTemplate></Setter>
+ </Style>
+    <Style Selector="Button.hub-footer">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        <Setter Property="Padding" Value="12,6"/>
+        <Setter Property="MinHeight" Value="30"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}"/>
+    </Style>
+    <Style Selector="Button.hub-footer.active">
+        <Setter Property="Background" Value="#383838"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
+    </Style>
+    <Style Selector="Button.hub-resource">
+        <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        <Setter Property="Padding" Value="16,14"/>
+        <Setter Property="CornerRadius" Value="6"/>
+    </Style>
+    <Style Selector="ListBox.hub-profile-list ListBoxItem:selected /template/ ContentPresenter">
+        <Setter Property="Background" Value="#383838"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource SystemAccentColorBrush}"/>
+        <Setter Property="BorderThickness" Value="3,0,0,0"/>
+        <Setter Property="CornerRadius" Value="4"/>
+    </Style>
+    <Style Selector="controls|KeyBindControl">
+        <Setter Property="NoneText" Value="{DynamicResource KeyBind_None}"/>
+        <Setter Property="PressAnyKeyText" Value="{DynamicResource KeyBind_PressAnyKey}"/>
+        <Setter Property="ConflictFormat" Value="{DynamicResource KeyBind_ConflictFormat}"/>
+    </Style>
+    <Style Selector="controls|AxisMonitorControl">
+        <Setter Property="SteeringLabel" Value="{DynamicResource Ui_AxisSteering}"/>
+        <Setter Property="ThrottleLabel" Value="{DynamicResource Ui_AxisGas}"/>
+        <Setter Property="BrakeLabel" Value="{DynamicResource Ui_AxisBrake}"/>
+    </Style>
+    <Style Selector="controls|ResponseCurveControl">
+        <Setter Property="InputLabel" Value="{DynamicResource Ui_Input}"/>
+        <Setter Property="OutputLabel" Value="{DynamicResource Ui_Output}"/>
+    </Style>
+    <Style Selector="Button.accent TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}"/>
+    </Style>
+    <Style Selector="Button.accent">
+        <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}"/>
+    </Style>
+    <Style Selector="Button.accent /template/ ContentPresenter">
+        <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}"/>
+    </Style>
+    <Style Selector="Button.accent:disabled TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorTertiaryBrush}"/>
+    </Style>
+    <Style Selector="Button.accent:disabled PathIcon">
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorTertiaryBrush}"/>
+    </Style>
+    <Style Selector="Button.accent:disabled /template/ ContentPresenter">
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorTertiaryBrush}"/>
+    </Style>
+    <Style Selector="Button.hub-nav">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="3,0,0,0"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="CornerRadius" Value="4"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        <Setter Property="Padding" Value="10,8"/>
+        <Setter Property="MinHeight" Value="38"/>
+    </Style>
+    <Style Selector="Button.hub-nav:pointerover">
+        <Setter Property="Background" Value="#303030"/>
+    </Style>
+    <Style Selector="Button.hub-nav.active">
+        <Setter Property="Background" Value="#383838"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource SystemAccentColorBrush}"/>
+    </Style>
+    <Style Selector="Border.hub-card">
+        <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="6"/>
+        <Setter Property="Padding" Value="14"/>
+    </Style>
+    <Style Selector="TextBlock.hub-secondary">
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}"/>
+        <Setter Property="FontSize" Value="12"/>
+    </Style>
+    <Style Selector="Button.hub-axis">
+        <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}"/>
+        <Setter Property="CornerRadius" Value="4"/>
+    </Style>
+    <Style Selector="Button.hub-axis:pointerover">
+        <Setter Property="Background" Value="#383838"/>
+    </Style>
+    <Style Selector="NumericUpDown">
+        <Setter Property="controls:NumericInputBehavior.Enabled" Value="True"/>
+        <Setter Property="MinWidth" Value="150"/><Setter Property="MinHeight" Value="32"/><Setter Property="FontSize" Value="13"/>
+        <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}"/>
+        <Setter Property="CornerRadius" Value="4"/>
+    </Style>
+    <Style Selector="NumericUpDown /template/ TextBox">
+        <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}"/>
+        <Setter Property="CornerRadius" Value="4"/>
+    </Style>
+    <Style Selector="Expander /template/ ToggleButton">
+        <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}"/>
+    </Style>
+    <Style Selector="controls|ResponseCurveControl">
+        <Setter Property="BackgroundBrush" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}"/>
+        <Setter Property="CurveBrush" Value="{DynamicResource SystemAccentColorBrush}"/>
+    </Style>
+    <Style Selector="controls|AxisMonitorControl">
+        <Setter Property="BackgroundBrush" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}"/>
+        <Setter Property="TrackBrush" Value="{DynamicResource ControlFillColorDefaultBrush}"/>
+        <Setter Property="TextBrush" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
+    </Style>
+    <Style Selector="Button.hub-section-tab">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0,0,0,2"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="CornerRadius" Value="0"/>
+        <Setter Property="Padding" Value="10,8"/>
+        <Setter Property="Margin" Value="0,0,8,4"/>
+        <Setter Property="MinHeight" Value="36"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}"/>
+    </Style>
+    <Style Selector="Button.hub-section-tab.active">
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource SystemAccentColorBrush}"/>
+    </Style>
+    <Style Selector="ScrollViewer.hub-scroll">
+        <Setter Property="controls:ScrollEdgeFade.Enabled" Value="True"/>
+    </Style>
+    <StyleInclude Source="avares://vWheelHub/Themes/Motion.axaml"/>
+    <StyleInclude Source="avares://vWheelHub/Themes/DisabledStates.axaml"/>
+    <!-- Clicking spinner chrome must not enter text editing. Only the inner TextBox takes focus. -->
+    <Style Selector="NumericUpDown">
+        <Setter Property="Focusable" Value="False"/>
+    </Style>
+    <Style Selector="NumericUpDown /template/ ButtonSpinner">
+        <Setter Property="Focusable" Value="False"/>
+    </Style>
+    <Style Selector="NumericUpDown /template/ ButtonSpinner /template/ RepeatButton">
+        <Setter Property="Focusable" Value="False"/>
+    </Style>
+</Styles>

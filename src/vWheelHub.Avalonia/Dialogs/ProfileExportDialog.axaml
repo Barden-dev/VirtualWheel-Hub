@@ -1,0 +1,135 @@
+<Window xmlns:controls="clr-namespace:SimRacingHub.Avalonia.Controls" xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:dialogs="clr-namespace:SimRacingHub.Avalonia.Dialogs"
+        mc:Ignorable="d" d:DesignWidth="520" d:DesignHeight="480"
+        x:Class="SimRacingHub.Avalonia.Dialogs.ProfileExportDialog"
+        x:DataType="dialogs:ProfileExportDialogViewModel"
+        x:CompileBindings="True"
+        Title="{DynamicResource Dialog_Export_SaveFileDialog_Title}"
+        Width="520" Height="480"
+        MinWidth="460" MinHeight="420"
+        WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource ControlFillColorDefaultBrush}"
+        Foreground="{DynamicResource TextFillColorPrimaryBrush}">
+
+    <Border BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="6" Padding="24">
+        <Grid RowDefinitions="Auto,*,Auto">
+            <!-- Header -->
+            <StackPanel Grid.Row="0" Margin="0,0,0,16">
+                <TextBlock Text="{DynamicResource Dialog_Export_SaveFileDialog_Title}"
+                           FontSize="18"
+                           FontWeight="SemiBold"
+                           Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                           Margin="0,0,0,4" />
+                <TextBlock Text="{DynamicResource Ui_6fc2adc0ceaa}"
+                           FontSize="12"
+                           Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" />
+            </StackPanel>
+
+            <!-- Form Content -->
+            <ScrollViewer Grid.Row="1" Margin="0,0,0,16">
+                <StackPanel Spacing="12">
+                    <!-- Target Context Card -->
+                    <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="6"
+                            Padding="12,10">
+                        <StackPanel>
+                            <TextBlock Text="{DynamicResource Dialog_Export_TargetConfig}"
+                                       FontSize="10"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                                       Margin="0,0,0,2" />
+                            <TextBlock Text="{Binding ContextDisplayText}"
+                                       FontSize="13"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource SystemAccentColorBrush}" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Preset Name Input -->
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="{DynamicResource Dialog_Export_PresetName}" FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" />
+                        <TextBox Text="{Binding PresetName, Mode=TwoWay}"
+                                 PlaceholderText="{DynamicResource Ui_aed8c1840cfe}"
+                                 Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                 BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                 CornerRadius="6"
+                                 Padding="10,7" />
+                    </StackPanel>
+
+                    <!-- Author Input -->
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="{DynamicResource Ui_d95082a2ee57}" FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" />
+                        <TextBox Text="{Binding Author, Mode=TwoWay}"
+                                 PlaceholderText="{DynamicResource Ui_f2213bcf1956}"
+                                 Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                 BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                 CornerRadius="6"
+                                 Padding="10,7" />
+                    </StackPanel>
+
+                    <!-- Description Input -->
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="{DynamicResource Ui_526e0087cc3f}" FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" />
+                        <TextBox Text="{Binding Description, Mode=TwoWay}"
+                                 PlaceholderText="{DynamicResource Ui_5f95c61312b0}"
+                                 AcceptsReturn="True"
+                                 TextWrapping="Wrap"
+                                 Height="60"
+                                 Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                 BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                 CornerRadius="6"
+                                 Padding="10,7" />
+                    </StackPanel>
+
+                    <!-- Status Notification Notice -->
+                    <Border IsVisible="{Binding HasStatusMessage}"
+                            Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{Binding StatusColor}"
+                            BorderThickness="1"
+                            CornerRadius="6"
+                            Padding="12,8">
+                        <TextBlock Text="{Binding StatusMessage}"
+                                   Foreground="{Binding StatusColor}"
+                                   FontSize="12"
+                                   FontWeight="SemiBold"
+                                   TextWrapping="Wrap" />
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- Bottom Actions -->
+            <Grid Grid.Row="2" ColumnDefinitions="Auto,Auto,*,Auto">
+                <Button Classes="accent" Grid.Column="0"
+                        Content="{DynamicResource Dialog_Export_CopyCode}"
+                        Command="{Binding CopyCodeCommand}"
+                        Foreground="#FFFFFF"
+                        CornerRadius="6"
+                        Padding="16,8"
+                        FontWeight="SemiBold"
+                        Margin="0,0,8,0" />
+
+                <Button Grid.Column="1"
+                        Content="{DynamicResource Ui_76b810fdf9d9}"
+                        Command="{Binding SaveFileCommand}"
+                        BorderBrush="#475569"
+                        BorderThickness="1"
+                        CornerRadius="6"
+                        Padding="16,8" />
+
+                <Button Grid.Column="3"
+                        Content="{DynamicResource Common_Close}"
+                        Command="{Binding CloseCommand}"
+                        Background="Transparent"
+                        Padding="12,8" />
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

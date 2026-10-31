@@ -1,0 +1,47 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>vWheelHub.Application</AssemblyName>
+    <RootNamespace>SimRacingHub.Application</RootNamespace>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Version>2.0</Version>
+    <AssemblyVersion>$(Version).0.0</AssemblyVersion>
+    <FileVersion>$(Version).0.0</FileVersion>
+    <InformationalVersion>$(Version)</InformationalVersion>
+    <Company>Barden-dev</Company>
+    <Copyright>Copyright (c) 2026 Barden-dev. All Rights Reserved.</Copyright>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Features/Profiles/ForzaCars.json" LogicalName="ForzaCars.json" />
+    <EmbeddedResource Include="Features/Profiles/ForzaCars.LICENSE.txt" LogicalName="ForzaCars.LICENSE.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\vWheelHub.Core\vWheelHub.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="vWheelHub.Application.Tests" />
+    <InternalsVisibleTo Include="vWheelHub.FreeEdition.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\supporters.json" Link="Resources\supporters.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <None Include="..\..\Resources\Localization\*.xaml" Link="Resources\Localization\%(Filename)%(Extension)">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

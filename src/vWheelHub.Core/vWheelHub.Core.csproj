@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AssemblyName>vWheelHub.Core</AssemblyName>
+    <RootNamespace>SimRacingHub.Core</RootNamespace>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Version>2.0</Version>
+    <AssemblyVersion>$(Version).0.0</AssemblyVersion>
+    <FileVersion>$(Version).0.0</FileVersion>
+    <InformationalVersion>$(Version)</InformationalVersion>
+    <Company>Barden-dev</Company>
+    <Copyright>Copyright (c) 2026 Barden-dev. All Rights Reserved.</Copyright>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="../Shared/BridgeProtocol/WheelCalibrationState.cs" Link="Models/WheelCalibrationState.cs" />
+    <None Update="Preparation/Ams2/BOUNCYCASTLE-LICENSE.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" TargetPath="licenses/BOUNCYCASTLE-LICENSE.txt" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="vWheelHub.Application" />
+    <InternalsVisibleTo Include="vWheelHub.Application.Tests" />
+    <InternalsVisibleTo Include="vWheelHub.Tests" />
+    <InternalsVisibleTo Include="vWheelHub.Core.Tests" />
+    <InternalsVisibleTo Include="vWheelHub.Linux.Tests" />
+    <InternalsVisibleTo Include="vWheelHub.Cli.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+</Project>

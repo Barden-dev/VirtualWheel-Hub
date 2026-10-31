@@ -1,0 +1,161 @@
+<UserControl xmlns:controls="clr-namespace:SimRacingHub.Avalonia.Controls" xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:outputVm="clr-namespace:SimRacingHub.Application.Features.Output;assembly=vWheelHub.Application"
+             xmlns:keyVm="clr-namespace:SimRacingHub.Application.Features.KeyBindings;assembly=vWheelHub.Application"
+             xmlns:ctrl="clr-namespace:SimRacingHub.Avalonia.Controls"
+             mc:Ignorable="d" d:DesignWidth="850" d:DesignHeight="950"
+             x:Class="SimRacingHub.Avalonia.Views.KeyBindings.KeyBindingsView"
+             x:DataType="keyVm:KeyBindingsViewModel"
+             x:CompileBindings="True"
+             Foreground="{DynamicResource TextFillColorPrimaryBrush}">
+
+    <ScrollViewer Classes="hub-scroll" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <StackPanel Spacing="16" Margin="0,0,16,24">
+
+            <!-- Title & Top Toolbar -->
+            <StackPanel Spacing="12">
+                <StackPanel Spacing="4">
+                    <TextBlock Text="{DynamicResource Ui_23bf625ce5ab}" FontSize="24" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}"  IsVisible="False"/>
+                    <TextBlock Text="{DynamicResource Ui_5cffe59fd046}"
+                               FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" />
+                </StackPanel>
+                <WrapPanel>
+                    <Button Name="ResetBindingsButton" Content="{DynamicResource Ui_ResetKeys}"
+                            Command="{Binding ResetToDefaultsCommand}" Margin="0,0,8,4" />
+                    <Button Name="ClearBindingsButton" Content="{DynamicResource Ui_ClearKeys}"
+                            Command="{Binding ClearAllBindingsCommand}" Margin="0,0,0,4" />
+                </WrapPanel>
+            </StackPanel>
+
+            <!-- Conflict Warning Banner -->
+            <Border Name="ConflictBanner"
+                    IsVisible="{Binding HasConflict}"
+                    Background="#7F1D1D" BorderBrush="#DC2626" BorderThickness="1"
+                    CornerRadius="6" Padding="14,10">
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                    <PathIcon Data="{StaticResource IconWarning}" Width="16" Height="16" Grid.Column="0" Margin="0,0,10,0" VerticalAlignment="Center" />
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                        <TextBlock Text="{DynamicResource Ui_ef8f8f7a8374}" FontWeight="SemiBold" FontSize="12.5" Foreground="#FECACA" />
+                        <TextBlock Name="ConflictMessageText" Text="{Binding ConflictMessage}" FontSize="11.5" Foreground="#FCA5A5" TextWrapping="Wrap" />
+                    </StackPanel>
+                    <Button Name="ClearConflictButton"
+                            Grid.Column="2"
+                            Content="{DynamicResource Ui_144884bad664}"
+                            Command="{Binding ClearConflict}"
+                            Click="OnClearConflictClick"
+                            Background="#991B1B" Foreground="#FEF2F2"
+                            Padding="10,5" CornerRadius="4" FontSize="11"
+                            VerticalAlignment="Center" />
+                </Grid>
+            </Border>
+
+            <!-- Keyboard Steering Prerequisite Warning -->
+            <Border Name="KeyboardSteeringWarningBanner"
+                    IsVisible="{Binding !IsKeyboardSteeringEnabled}"
+                    Background="Transparent" BorderThickness="0" Padding="0">
+                    <TextBlock Name="KeyboardSteeringWarningText"
+                               Text="{Binding WarningText}"
+                               FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" VerticalAlignment="Center" />
+            </Border>
+
+            <!-- Capturing In Progress Banner -->
+            <Border Name="CapturingBanner"
+                    IsVisible="{Binding IsCapturing}"
+                    Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{DynamicResource SystemAccentColorBrush}" BorderThickness="1"
+                    CornerRadius="6" Padding="12,8">
+                <Grid ColumnDefinitions="*,Auto">
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                        <PathIcon Data="{StaticResource IconCircle}" Width="16" Height="16" VerticalAlignment="Center" />
+                        <TextBlock Text="{DynamicResource Ui_5fb0deaf49b5}"
+                                   FontSize="11.5" FontWeight="Medium" Foreground="#93C5FD" VerticalAlignment="Center" />
+                    </StackPanel>
+                    <Button Name="CancelCaptureButton"
+                            Grid.Column="1"
+                            Content="{DynamicResource Common_Cancel}"
+                            Command="{Binding CancelCaptureCommand}"
+                            Padding="10,4" CornerRadius="4" FontSize="11" />
+                </Grid>
+            </Border>
+
+            <!-- Main Actions Table Card -->
+            <Border Background="{DynamicResource LayerFillColorDefaultBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="6" Padding="16,14">
+                <StackPanel Spacing="10">
+
+                    <!-- Table Header -->
+                    <Grid ColumnDefinitions="220,*,*" Margin="12,0,12,6">
+                        <TextBlock Grid.Column="0" Text="{DynamicResource Ui_3580469d06f3}" FontWeight="SemiBold" FontSize="12" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextWrapping="Wrap" />
+                        <TextBlock Grid.Column="1" Text="{DynamicResource Ui_8f71e54796e7}" FontWeight="SemiBold" FontSize="12" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="6,0" TextWrapping="Wrap" />
+                        <TextBlock Grid.Column="2" Text="{DynamicResource Ui_51fc2ca654c7}" FontWeight="SemiBold" FontSize="12" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="6,0" TextWrapping="Wrap" />
+                    </Grid>
+
+                    <!-- Table Rows -->
+                    <ItemsControl Name="KeyBindingRowsControl" ItemsSource="{Binding Rows}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="keyVm:KeyBindingRowViewModel">
+                                <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" CornerRadius="6" Padding="12,10" MinHeight="52" Margin="0,3">
+                                    <Grid ColumnDefinitions="220,*,*">
+
+                                        <!-- Short action names stay visible; details are available on hover. -->
+                                        <TextBlock Grid.Column="0" Text="{Binding DisplayName}"
+                                                   FontWeight="SemiBold" FontSize="14"
+                                                   Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                                   TextWrapping="Wrap" Margin="0,0,12,0" VerticalAlignment="Center"
+                                                   ToolTip.Tip="{Binding ToolTip}" />
+
+                                        <!-- Column 1: Primary Slot -->
+                                        <ctrl:KeyBindControl Grid.Column="1"
+                                                             Margin="6,0"
+                                                             DataContext="{Binding Primary}"
+                                                             HorizontalAlignment="Stretch" />
+
+                                        <!-- Column 2: Secondary Slot -->
+                                        <ctrl:KeyBindControl Grid.Column="2"
+                                                             Margin="6,0"
+                                                             DataContext="{Binding Secondary}"
+                                                             HorizontalAlignment="Stretch" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                </StackPanel>
+            </Border>
+
+            <Border DataContext="{Binding VirtualButtons}" x:DataType="outputVm:OutputViewModel" Name="VirtualButtonsCard" Classes="hub-card" Padding="16">
+                <StackPanel Spacing="10">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                        <TextBlock Text="{DynamicResource Output_ButtonsTitle}" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                        <Button Grid.Column="1" Name="AddVirtualButtonButton" Content="{DynamicResource Output_ButtonsAdd}" Command="{Binding AddVirtualButtonCommand}"/>
+                    </Grid>
+                    <TextBlock Text="{DynamicResource Output_ButtonsHint}" TextWrapping="Wrap" Classes="hub-secondary" FontSize="12"/>
+                    <TextBlock Text="{Binding VirtualButtonError}" IsVisible="{Binding HasVirtualButtonError}" TextWrapping="Wrap"/>
+                    <Grid ColumnDefinitions="*,180,150,32" ColumnSpacing="10">
+                        <TextBlock Text="{DynamicResource Output_ButtonsName}"/>
+                        <TextBlock Grid.Column="1" Text="{DynamicResource Output_ButtonsKey}"/>
+                        <TextBlock Grid.Column="2" Text="{DynamicResource Output_ButtonsNumber}"/>
+                        <Border Grid.Column="3" Width="32"/>
+                    </Grid>
+                    <ItemsControl Name="VirtualButtonRowsControl" ItemsSource="{Binding VirtualButtonRows}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="outputVm:VirtualButtonRowViewModel">
+                                <StackPanel Spacing="4" Margin="0,6">
+                                    <Grid ColumnDefinitions="*,180,150,32" ColumnSpacing="10">
+                                        <TextBox Name="VirtualButtonName" Text="{Binding Name, Mode=TwoWay}" PlaceholderText="{DynamicResource Output_ButtonsName}" VerticalAlignment="Top"/>
+                                        <controls:KeyBindControl Grid.Column="1" VirtualKeyCode="{Binding Key, Mode=TwoWay}" BindingName="{Binding Name}" ValidationMessage="{Binding KeyError}"/>
+                                        <NumericUpDown Grid.Column="2" Minimum="3" Maximum="128" Increment="1" FormatString="0" Value="{Binding Button, Mode=TwoWay}" ToolTip.Tip="{Binding TargetLabel}" VerticalAlignment="Top"/>
+                                        <Button Grid.Column="3" Content="×" Command="{Binding DeleteCommand}" ToolTip.Tip="{DynamicResource Output_ButtonsDelete}" VerticalAlignment="Top"/>
+                                    </Grid>
+
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

@@ -1,0 +1,12 @@
+﻿<Project>
+  <!-- Windows and WSL share this checkout, but not NuGet assets or apphosts. -->
+  <PropertyGroup>
+    <VWheelBuildPlatform Condition="'$(OS)' == 'Windows_NT'">windows</VWheelBuildPlatform>
+    <VWheelBuildPlatform Condition="'$(VWheelBuildPlatform)' == ''">linux</VWheelBuildPlatform>
+    <BaseIntermediateOutputPath>obj/$(VWheelBuildPlatform)/</BaseIntermediateOutputPath>
+    <BaseOutputPath>bin/$(VWheelBuildPlatform)/</BaseOutputPath>
+    <BaseIntermediateOutputPath Condition="'$(VWheelArtifactsRoot)' != ''">$(VWheelArtifactsRoot)/obj/$(MSBuildProjectName)/$(VWheelBuildPlatform)/</BaseIntermediateOutputPath>
+    <BaseOutputPath Condition="'$(VWheelArtifactsRoot)' != ''">$(VWheelArtifactsRoot)/bin/$(MSBuildProjectName)/$(VWheelBuildPlatform)/</BaseOutputPath>
+    <DefaultItemExcludes>$(DefaultItemExcludes);obj/**;bin/**</DefaultItemExcludes>
+  </PropertyGroup>
+</Project>

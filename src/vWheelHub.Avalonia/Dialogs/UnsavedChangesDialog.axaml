@@ -1,0 +1,96 @@
+<Window xmlns:controls="clr-namespace:SimRacingHub.Avalonia.Controls" xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:dialogs="clr-namespace:SimRacingHub.Avalonia.Dialogs"
+        mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="260"
+        x:Class="SimRacingHub.Avalonia.Dialogs.UnsavedChangesDialog"
+        x:DataType="dialogs:UnsavedChangesDialogViewModel"
+        x:CompileBindings="True"
+        Title="{Binding Title}"
+        Width="480" MinWidth="400"
+        SizeToContent="Height"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource ControlFillColorDefaultBrush}"
+        Foreground="{DynamicResource TextFillColorPrimaryBrush}">
+
+    <Border BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="6" Padding="20">
+        <Grid RowDefinitions="Auto,Auto,*,Auto">
+            <!-- Header with Warning Icon -->
+            <Grid Grid.Row="0" ColumnDefinitions="Auto,*" Margin="0,0,0,12">
+                <Border Grid.Column="0"
+                        Width="36" Height="36"
+                        CornerRadius="18"
+                        Background="#2B1A28"
+                        BorderBrush="#F59E0B"
+                        BorderThickness="1.5"
+                        Margin="0,0,12,0">
+                    <PathIcon Data="{StaticResource IconWarning}" Width="16" Height="16"
+                               Foreground="#F59E0B"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center" />
+                </Border>
+                <TextBlock Grid.Column="1"
+                           Text="{Binding Title}"
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                           VerticalAlignment="Center" />
+            </Grid>
+
+            <!-- Optional Profile Name Badge -->
+            <Border Grid.Row="1"
+                    IsVisible="{Binding ProfileName, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                    Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="6"
+                    Padding="10,6"
+                    Margin="48,0,0,12">
+                <TextBlock controls:LocalizedText.Value="{Binding ProfileName}" controls:LocalizedText.Format="{DynamicResource Ui_Format_5ed2e2e4c9}"
+                           FontSize="12"
+                           FontWeight="SemiBold"
+                           Foreground="{DynamicResource SystemAccentColorBrush}" TextWrapping="Wrap" />
+            </Border>
+
+            <!-- Message Body -->
+            <TextBlock Grid.Row="2"
+                       Text="{Binding Message}"
+                       FontSize="13"
+                       Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                       TextWrapping="Wrap"
+                       LineHeight="20"
+                       Margin="48,0,0,20" />
+
+            <!-- Action Buttons: Cancel, Discard, Save -->
+            <Grid Grid.Row="3" ColumnDefinitions="Auto,*,Auto">
+                <Button Grid.Column="0"
+                        Content="{DynamicResource Common_Cancel}"
+                        Command="{Binding CancelCommand}"
+                        BorderThickness="1"
+                        CornerRadius="6"
+                        Padding="14,7" />
+
+                <StackPanel Grid.Column="2"
+                            Orientation="Horizontal"
+                            Spacing="10">
+                    <Button Content="{DynamicResource Ui_e07e053c2e10}"
+                            Command="{Binding DiscardCommand}"
+                            Background="#7F1D1D"
+                            Foreground="#FCA5A5"
+                            BorderBrush="#991B1B"
+                            BorderThickness="1"
+                            CornerRadius="6"
+                            Padding="14,7" />
+                    <Button Classes="accent" Content="{DynamicResource Ui_35322b5bb5a2}"
+                            Command="{Binding SaveCommand}"
+                            Foreground="#FFFFFF"
+                            CornerRadius="6"
+                            Padding="16,7"
+                            FontWeight="SemiBold" />
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

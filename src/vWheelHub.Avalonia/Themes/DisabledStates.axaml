@@ -1,0 +1,99 @@
+<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Use native disabled tokens instead of fading whole subtrees: nested controls stay readable. -->
+    <Styles.Resources>
+        <SolidColorBrush x:Key="HubDisabledForeground" Color="#7D7D7D"/>
+        <SolidColorBrush x:Key="HubDisabledBackground" Color="#2B2B2B"/>
+        <SolidColorBrush x:Key="HubDisabledBorder" Color="#353535"/>
+        <SolidColorBrush x:Key="ButtonBackgroundDisabled" Color="#2B2B2B"/>
+        <SolidColorBrush x:Key="ButtonBorderBrushDisabled" Color="#353535"/>
+        <SolidColorBrush x:Key="ButtonForegroundDisabled" Color="#7D7D7D"/>
+        <SolidColorBrush x:Key="AccentButtonBackgroundDisabled" Color="#2B2B2B"/>
+        <SolidColorBrush x:Key="AccentButtonBorderBrushDisabled" Color="#353535"/>
+        <SolidColorBrush x:Key="AccentButtonForegroundDisabled" Color="#7D7D7D"/>
+        <!-- A numeric bound disables one arrow, not the field or the opposite direction. -->
+        <SolidColorBrush x:Key="RepeatButtonBackgroundDisabled" Color="Transparent"/>
+        <SolidColorBrush x:Key="RepeatButtonForegroundDisabled" Color="#686868"/>
+        <SolidColorBrush x:Key="TextControlBackgroundDisabled" Color="#2B2B2B"/>
+        <SolidColorBrush x:Key="TextControlBorderBrushDisabled" Color="#353535"/>
+        <SolidColorBrush x:Key="TextControlForegroundDisabled" Color="#7D7D7D"/>
+        <SolidColorBrush x:Key="ComboBoxBackgroundDisabled" Color="#2B2B2B"/>
+        <SolidColorBrush x:Key="ComboBoxBorderBrushDisabled" Color="#353535"/>
+        <SolidColorBrush x:Key="ComboBoxDropDownGlyphForegroundDisabled" Color="#686868"/>
+        <SolidColorBrush x:Key="ComboBoxForegroundDisabled" Color="#7D7D7D"/>
+        <SolidColorBrush x:Key="ToggleButtonBackgroundDisabled" Color="#2B2B2B"/>
+        <SolidColorBrush x:Key="ToggleButtonBackgroundCheckedDisabled" Color="#383838"/>
+        <SolidColorBrush x:Key="ToggleButtonBackgroundIndeterminateDisabled" Color="#383838"/>
+        <SolidColorBrush x:Key="ToggleButtonBorderBrushDisabled" Color="#353535"/>
+        <SolidColorBrush x:Key="ToggleButtonBorderBrushCheckedDisabled" Color="#454545"/>
+        <SolidColorBrush x:Key="ToggleButtonBorderBrushIndeterminateDisabled" Color="#454545"/>
+        <SolidColorBrush x:Key="ToggleButtonForegroundDisabled" Color="#7D7D7D"/>
+        <SolidColorBrush x:Key="ToggleButtonForegroundCheckedDisabled" Color="#999999"/>
+        <SolidColorBrush x:Key="ToggleButtonForegroundIndeterminateDisabled" Color="#999999"/>
+        <SolidColorBrush x:Key="ToggleSwitchFillOffDisabled" Color="#2B2B2B"/>
+        <SolidColorBrush x:Key="ToggleSwitchFillOnDisabled" Color="#383838"/>
+        <SolidColorBrush x:Key="ToggleSwitchHeaderForegroundDisabled" Color="#7D7D7D"/>
+        <SolidColorBrush x:Key="ToggleSwitchKnobFillOffDisabled" Color="#7D7D7D"/>
+        <SolidColorBrush x:Key="ToggleSwitchKnobFillOnDisabled" Color="#999999"/>
+        <SolidColorBrush x:Key="ToggleSwitchStrokeOffDisabled" Color="#555555"/>
+        <SolidColorBrush x:Key="ToggleSwitchStrokeOnDisabled" Color="#454545"/>
+        <SolidColorBrush x:Key="SliderContainerBackgroundDisabled" Color="Transparent"/>
+        <SolidColorBrush x:Key="SliderThumbBackgroundDisabled" Color="#7D7D7D"/>
+        <SolidColorBrush x:Key="SliderTickBarFillDisabled" Color="#555555"/>
+        <SolidColorBrush x:Key="SliderTrackFillDisabled" Color="#383838"/>
+        <SolidColorBrush x:Key="SliderTrackValueFillDisabled" Color="#686868"/>
+        <SolidColorBrush x:Key="CheckBoxBackgroundUncheckedDisabled" Color="Transparent"/>
+        <SolidColorBrush x:Key="CheckBoxBackgroundCheckedDisabled" Color="Transparent"/>
+        <SolidColorBrush x:Key="CheckBoxBackgroundIndeterminateDisabled" Color="Transparent"/>
+        <SolidColorBrush x:Key="CheckBoxBorderBrushUncheckedDisabled" Color="Transparent"/>
+        <SolidColorBrush x:Key="CheckBoxBorderBrushCheckedDisabled" Color="Transparent"/>
+        <SolidColorBrush x:Key="CheckBoxBorderBrushIndeterminateDisabled" Color="Transparent"/>
+        <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillUncheckedDisabled" Color="#2B2B2B"/>
+        <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillCheckedDisabled" Color="#383838"/>
+        <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillIndeterminateDisabled" Color="#383838"/>
+        <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeUncheckedDisabled" Color="#555555"/>
+        <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeCheckedDisabled" Color="#454545"/>
+        <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeIndeterminateDisabled" Color="#454545"/>
+        <SolidColorBrush x:Key="CheckBoxCheckGlyphForegroundUncheckedDisabled" Color="#999999"/>
+        <SolidColorBrush x:Key="CheckBoxCheckGlyphForegroundCheckedDisabled" Color="#999999"/>
+        <SolidColorBrush x:Key="CheckBoxCheckGlyphForegroundIndeterminateDisabled" Color="#999999"/>
+        <SolidColorBrush x:Key="CheckBoxForegroundUncheckedDisabled" Color="#7D7D7D"/>
+        <SolidColorBrush x:Key="CheckBoxForegroundCheckedDisabled" Color="#7D7D7D"/>
+        <SolidColorBrush x:Key="CheckBoxForegroundIndeterminateDisabled" Color="#7D7D7D"/>
+        <SolidColorBrush x:Key="RadioButtonBackgroundDisabled" Color="Transparent"/>
+        <SolidColorBrush x:Key="RadioButtonBorderBrushDisabled" Color="Transparent"/>
+        <SolidColorBrush x:Key="RadioButtonCheckGlyphFillDisabled" Color="#999999"/>
+        <SolidColorBrush x:Key="RadioButtonCheckGlyphStrokeDisabled" Color="Transparent"/>
+        <SolidColorBrush x:Key="RadioButtonForegroundDisabled" Color="#7D7D7D"/>
+        <SolidColorBrush x:Key="RadioButtonOuterEllipseCheckedFillDisabled" Color="#383838"/>
+        <SolidColorBrush x:Key="RadioButtonOuterEllipseCheckedStrokeDisabled" Color="#555555"/>
+        <SolidColorBrush x:Key="RadioButtonOuterEllipseFillDisabled" Color="#2B2B2B"/>
+        <SolidColorBrush x:Key="RadioButtonOuterEllipseStrokeDisabled" Color="#555555"/>
+    </Styles.Resources>
+
+    <Style Selector="TextBlock:disabled, PathIcon:disabled">
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource HubDisabledForeground}"/>
+    </Style>
+    <Style Selector="Button:disabled, ToggleButton:disabled, NumericUpDown:disabled, ComboBox:disabled, TextBox:disabled">
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource HubDisabledForeground}"/>
+    </Style>
+    <Style Selector="Button.accent:disabled TextBlock, Button.accent:disabled PathIcon, Button.accent:disabled /template/ ContentPresenter">
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource HubDisabledForeground}"/>
+    </Style>
+    <Style Selector="NumericUpDown:disabled">
+        <Setter Property="Background" Value="{DynamicResource HubDisabledBackground}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource HubDisabledBorder}"/>
+    </Style>
+    <Style Selector="NumericUpDown:disabled /template/ TextBox">
+        <Setter Property="Background" Value="{DynamicResource HubDisabledBackground}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource HubDisabledBorder}"/>
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource HubDisabledForeground}"/>
+    </Style>
+    <!-- Scope to spinners: Slider uses RepeatButtons for its filled and unfilled track. -->
+    <Style Selector="ButtonSpinner /template/ RepeatButton:disabled">
+        <Setter Property="TextElement.Foreground" Value="#686868"/>
+    </Style>
+    <Style Selector="ButtonSpinner /template/ RepeatButton:disabled /template/ ContentPresenter">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+    </Style>
+</Styles>

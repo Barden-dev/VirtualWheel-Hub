@@ -1,117 +1,79 @@
-# 🏎️ VirtualWheel Hub
+# vWheel Hub Free
 
----
-[![Version](https://img.shields.io/badge/version-v1.1-blue.svg)](https://github.com/Barden-dev/vWheel-Hub)
-[![License](https://img.shields.io/badge/license-All_Rights_Reserved-red.svg)](LICENSE)
-[![Boosty](https://img.shields.io/badge/Support-Boosty-orange.svg?style=flat&logo=boosty)](https://boosty.to/barden_dev)
-[![Discord](https://img.shields.io/badge/Community-Discord-5865F2.svg?style=flat&logo=discord)](https://discord.gg/YQn5eh2vfc)
-[![Wiki](https://img.shields.io/badge/Documentation-Wiki-blueviolet.svg)](https://github.com/Barden-dev/vWheel-Hub/wiki)
+Mouse and keyboard steering for racing games on Windows and Linux, with a shared
+Avalonia desktop interface.
 
-**vWheel Hub** is a high-performance Windows desktop application designed for **Mouse Steering & Keyboard Control** in PC Sim Racing titles via the **vJoy** virtual joystick driver.
+Free is the no-cost edition distributed through [GitHub](https://github.com/Barden-dev/VirtualWheel-Hub).
+Use and distribution are subject to [LICENSE](LICENSE).
 
-It translates real-time mouse movement into ultra-smooth virtual wheel angles and maps keyboard keypresses to dynamic gas and brake axes with physical curve customization (attack, decay, gamma correction).
+## Features
 
----
+- Steering, throttle and brake response, calibration, curves and inversion.
+- Synthetic Trail Braking: steering-based brake limit, intensity and release time.
+- Key bindings and manual cursor locking. Startup leaves the hub stopped by default.
+  Global shortcuts on Linux remain available while the hub is stopped.
+- Profiles with game, class and car inheritance, import/export, search and undo.
+- Windows vJoy wheel output; Linux uinput output.
+- Game process detection and a live output monitor.
+- English, Russian, German, Spanish, French and Brazilian Portuguese interface.
 
-### 🎥 Interface Preview
+## Run
 
-<img width="1276" alt="vWheel Hub Interface Walkthrough" src="https://github.com/user-attachments/assets/60a134f7-a1d7-4510-9f06-c3b84921a486"/>
+The 2.0 candidates include Windows and Linux packages. Actual Free input/game
+acceptance is separate from PRO and from automated checks.
+Windows and Linux archives include .NET; no separate runtime installation is needed.
+Windows output uses vJoy. Linux source builds require write access to `/dev/uinput`,
+read access to the mouse/keyboard event devices under `/dev/input`, and
+the native libraries required by Avalonia (X11/Wayland and font rendering).
 
----
+Extract the entire archive. Start `vWheelHub.exe` on Windows. On Linux, open a
+terminal in the extracted folder and run as your normal user (without `sudo`):
 
-### 🎮 Game Compatibility & Telemetry Support
+```sh
+chmod +x ./vWheelHub ./app/vWheelHub
+./vWheelHub
+```
 
-> 💡 **Universal Compatibility:** You can play **ANY racing game** (Assetto Corsa, Automobilista 2, iRacing, BeamNG, Forza, EA Sports WRC, Dirt Rally, etc.) using base mouse steering and keyboard pedal controls without needing telemetry.
->
-> 🏎️ **Telemetry & Auto-Detection:** Telemetry features (ABS/TC Helpers, Speed-Sensitive Steering, Trail Braking, Audio Slip Cues, In-Menu Control Suspension) and automatic game detection are supported for:
-> * **Assetto Corsa Competizione (ACC)** — Full Support (Native Shared Memory Telemetry & Auto-Detect)
-> * **Assetto Corsa EVO (AC EVO)** — Full Support (Native Shared Memory Telemetry & Auto-Detect)
-> * **Le Mans Ultimate (LMU)** — Full Support (Shared Memory Plugin & Auto-Detect, supports 1000 Hz with DirectInput Fix)
-> * **BeamNG.drive** — Full Support (Telemetry Mod & Auto-Detect)
-> * **rFactor 2** — Experimental Support (Shared Memory Plugin & Auto-Detect)
-> * **iRacing** — Experimental Support (Auto-Detect Only)
-> * **Assetto Corsa** — Experimental Support (Auto-Detect Only)
-> * **Dirt Rally 2.0** — Experimental Support (Auto-Detect Only)
-> * **EA Sports WRC** — Experimental Support (Auto-Detect Only)
-> * **Richard Burns Rally** — Experimental Support (Auto-Detect Only)
->
-> *Once detected and plugin status is clear, you can customize sensitivity, curves, and keybindings to your exact liking.*
+Keep the `app/` directory beside the launcher. Native system libraries and device
+permissions are still required. Free contains the basic controls and device
+tools listed above.
 
----
+Open **Dashboard → Open device diagnostics** to check or prepare the virtual wheel.
+Select your input devices in **Controls → Input devices** and check your key bindings, then start the
+hub explicitly, or enable starting the hub when the app opens in Settings.
+Assign axes and buttons inside the game manually; the hub monitor only proves
+hub output. The application does not enable cursor locking at startup.
+Steering, throttle and brake settings are under **Controls → Axis controls**.
+Losing an input device stops the hub, resets the output and releases the cursor.
+After reconnecting the device, start the hub again explicitly.
 
-### 📌 Key Features
+Settings → Startup and window also offers starting minimized, minimizing to tray
+and closing to tray. The tray menu restores the window, starts/stops the hub and
+exits with the usual unsaved-profile confirmation. If no system tray is available,
+the window stays on the taskbar and the close button exits normally. On Linux,
+tray hiding requires a StatusNotifier host and the `dbus-send` utility; otherwise
+the taskbar fallback is used. These options do not register application startup
+with Windows or Linux.
 
-* **High-Precision Mouse Steering:** Converts raw mouse movement into virtual joystick output at up to **1000 Hz**, utilizing Windows high-resolution waitable timers and non-blocking accumulated Raw Input deltas.
-* **Keyboard Steering Mode:** Full keyboard-only steering support with configurable ramp-up/ramp-down rates, instant full-lock snap, and a dedicated center-steering key.
-* **Schema V2 dt-Based Pedal Physics:** Frame-rate and polling-rate independent gas and brake dynamics calculated via true delta-time physics, with seconds-based segment tuning and Turbo dual-key attack.
-* **Smart In-Menu Controls & Cursor Locking:** In-menu control suspension, auto-unlocking cursor in menus, hold-to-unlock hotkey, and automatic game-exit cursor release.
-* **Hierarchical Profile System:** Multi-tiered context profile inheritance (`Game` ➔ `Car Class` ➔ `Car Model`) with real-time undo/redo support (`Ctrl+Z` / `Ctrl+Y`).
-* **Self-Learning Grip Engine (Pro):** Adaptive grip learning continuously learns dry and wet tire grip limits per vehicle.
-* **1-Click vJoy Auto-Configuration & LMU Fix:** Automatically configures vJoy Device #1 via CLI and patches LMU DirectInput Fallback in one click.
+## Build from source
 
----
+Use the .NET 10 SDK:
 
-### 📊 Free (Open Source) vs Pro Feature Comparison
+```sh
+dotnet build src/vWheelHub.Avalonia/vWheelHub.Avalonia.csproj -c Release
+dotnet run --project src/vWheelHub.Avalonia/vWheelHub.Avalonia.csproj -- --preview --smoke
+```
 
-| Feature / Capability | Free (Open Source) | Pro Version (Boosty) |
-| :--- | :---: | :---: |
-| **Mouse Steering & Custom Curves (up to 1000 Hz)** | ✅ | ✅ |
-| **Keyboard Steering Mode (Ramp-up/down, snap, center key)** | ✅ | ✅ |
-| **Schema V2 dt-Based Gas & Brake Dynamics (Attack, Decay, Gamma, Turbo)** | ✅ | ✅ |
-| **Hierarchical Profiles (Universal / Game / Class / Car)** | ✅ | ✅ |
-| **Real-Time Undo & Redo History** | ✅ | ✅ |
-| **Custom Hotkeys, Dual Keybindings & Conflict Alerts** | ✅ | ✅ |
-| **Profile Sharing (.vwh files & Share Codes)** | ✅ | ✅ |
-| **vJoy Diagnostic & 1-Click Auto-Config** | ✅ | ✅ |
-| **LMU Input Compatibility Fix (DirectInput Fallback @ 1000 Hz)** | ✅ | ✅ |
-| **Game Process Auto-Detection** | ✅ (Process-based) | ✅ (Advanced + Plugins) |
-| **Telemetry ABS Helper (Wheel Lockup Prevention & Rate Control)** | ❌ *(Unlock on Boosty)* | ✅ |
-| **Smart Traction Control (TC Helper with Reactive Rates)** | ❌ *(Unlock on Boosty)* | ✅ |
-| **Adaptive Grip Learning Cache & UI Tools** | ❌ *(Unlock on Boosty)* | ✅ |
-| **Speed-Sensitive Steering (Dynamic Telemetry Scaling)** | ❌ *(Unlock on Boosty)* | ✅ |
-| **Synthetic Trail Braking Engine** | ❌ *(Unlock on Boosty)* | ✅ |
-| **Slip Audio Feedback (Understeer / Oversteer Beeps)** | ❌ *(Unlock on Boosty)* | ✅ |
-| **TC Audio Feedback (Wheelspin Beeps)** | ❌ *(Unlock on Boosty)* | ✅ |
-| **In-Menu Control Suspension** | ❌ *(Unlock on Boosty)* | ✅ |
-| **Auto-Unlock Mouse Cursor in Menu** | ❌ *(Unlock on Boosty)* | ✅ |
-| **Automated Game Telemetry Plugin Installer** | ❌ *(Unlock on Boosty)* | ✅ |
-| **Development Support & Priority Updates** | — | ❤️ Boosty Subscription |
+Publish for your platform:
 
----
+```sh
+dotnet publish src/vWheelHub.Avalonia/vWheelHub.Avalonia.csproj -c Release -r win-x64 --self-contained true
+dotnet publish src/vWheelHub.Avalonia/vWheelHub.Avalonia.csproj -c Release -r linux-x64 --self-contained true
+```
 
-### 🧩 Requirements
+User profiles are stored separately from the application. An existing saved
+profile is never shipped as part of this source distribution.
 
-| Requirement | Details |
-| :--- | :--- |
-| **OS** | Windows 10 (version 1809 or newer) or Windows 11, **64-bit** |
-| **Runtime** | [.NET 10 Desktop Runtime (x64)](https://dotnet.microsoft.com/download/dotnet/10.0) — **required**, the app is published framework-dependent and will not start without it |
-| **Driver** | [vJoy Driver](https://github.com/jshafer817/vJoy/releases) with Device #1 configured (X, Y, Z axes and at least 2 buttons — the built-in **Auto-Configure vJoy** button does this for you) |
-| **Privileges** | Standard user is enough to run the hub. Configuring vJoy requires a one-time Windows UAC confirmation |
-
-> ⚠️ If Windows shows *"To run this application, you must install .NET"* on launch, install the **Desktop Runtime (x64)** (not the ASP.NET Core Runtime and not the SDK-only package) from the link above and start vWheel Hub again.
-
----
-
-### 🚀 Quick Start Guide
-
-1. **Install the .NET 10 Desktop Runtime:** Download it from [dotnet.microsoft.com](https://dotnet.microsoft.com/download/dotnet/10.0) (**Desktop Runtime, x64**). Skip this step only if it is already installed.
-2. **Install vJoy:** Download and install the [vJoy Driver](https://github.com/jshafer817/vJoy/releases).
-3. **Download the binary file from [Releases](https://github.com/Barden-dev/VirtualWheel-Hub/releases). Then launch vWheel Hub.**
-4. **Configure vJoy:** Click **Auto-Configure vJoy** in the diagnostic section to set up Device #1 automatically if needed.
-5. **Set Up LMU Compatibility Fix (if playing Le Mans Ultimate):** Click **Apply LMU Input Compatibility Fix** on the dashboard to enable 1000 Hz DirectInput Fallback.
-6. **Set Up Controls & Launch Game:** Launch your sim racing game — Auto-Detect will identify the game process automatically (or select your context manually). Once detected and plugin status is clear, fine-tune sensitivity, response curves, and keybindings to your liking.
-7. **Activate Hub:** Toggle **Is Active** or press your assigned hotkey.
-
----
-
-### 🔗 Links & Community
-
-* 🧡 **Boosty (Pro Build & Support):** [https://boosty.to/barden_dev](https://boosty.to/barden_dev)
-* 💬 **Discord Community:** [https://discord.gg/YQn5eh2vfc](https://discord.gg/YQn5eh2vfc)
-* 📖 **Wiki & Guides:** [https://github.com/Barden-dev/vWheel-Hub/wiki](https://github.com/Barden-dev/vWheel-Hub/wiki)
-
----
-
-## 📜 License
-
-Copyright (c) 2026 Barden-dev. All Rights Reserved. See [LICENSE](LICENSE) for details.
+For the distribution layout with one launcher beside an `app/` folder, follow
+[src/Launcher/BUILD.md](src/Launcher/BUILD.md). Building the Windows launcher
+requires Zig 0.16.0; the Linux launcher uses `/bin/sh`.

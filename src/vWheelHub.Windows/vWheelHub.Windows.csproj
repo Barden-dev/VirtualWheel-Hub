@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+ <PropertyGroup><TargetFramework>net10.0</TargetFramework><Nullable>enable</Nullable><ImplicitUsings>enable</ImplicitUsings><AllowUnsafeBlocks>true</AllowUnsafeBlocks></PropertyGroup>
+ <ItemGroup><ProjectReference Include="../vWheelHub.Core/vWheelHub.Core.csproj"/><ProjectReference Include="../vWheelHub.Application/vWheelHub.Application.csproj"/></ItemGroup>
+<ItemGroup>
+  <None Include="../../vJoyInterface.dll" Link="vJoyInterface.dll" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" Condition="'$(RuntimeIdentifier)' != 'linux-x64'"/>
+  <Content Include="../../Assets/**" Link="Assets/%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest"/>
+ </ItemGroup>
+</Project>

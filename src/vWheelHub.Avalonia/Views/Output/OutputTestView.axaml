@@ -1,0 +1,28 @@
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="SimRacingHub.Avalonia.Views.Output.OutputTestView"
+             Foreground="{DynamicResource TextFillColorPrimaryBrush}">
+    <ScrollViewer Classes="hub-scroll" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+    <StackPanel Margin="0,0,16,24" Spacing="16" MaxWidth="680" HorizontalAlignment="Left">
+        <TextBlock Text="{DynamicResource OutputTest_Title}" FontSize="22" FontWeight="SemiBold" TextWrapping="Wrap" IsVisible="False"/>
+        <TextBlock Name="DeviceText" FontWeight="SemiBold" TextWrapping="Wrap"/>
+        <TextBlock Text="{DynamicResource OutputTest_Hint}" TextWrapping="Wrap"/>
+        <ComboBox Name="ActionBox" HorizontalAlignment="Stretch"/>
+        <StackPanel Name="ButtonAssignmentPanel" Spacing="6" IsVisible="False">
+            <TextBlock Text="{DynamicResource OutputTest_ButtonNumber}"/>
+            <ComboBox Name="ButtonChoiceBox" HorizontalAlignment="Stretch"/>
+            <TextBlock Name="NoButtonsHint" Text="{DynamicResource OutputTest_NoProfileButtons}" TextWrapping="Wrap" IsVisible="False"/>
+            <TextBlock Text="{DynamicResource OutputTest_ButtonHint}" TextWrapping="Wrap"/>
+        </StackPanel>
+        <StackPanel Spacing="6">
+            <TextBlock Text="{DynamicResource OutputTest_Mode}"/>
+            <ComboBox Name="ModeBox" HorizontalAlignment="Stretch"/>
+        </StackPanel>
+        <TextBlock Name="OnceHint" Text="{DynamicResource OutputTest_OnceHint}" TextWrapping="Wrap" FontSize="12"/>
+        <TextBlock Name="RepeatHint" Text="{DynamicResource OutputTest_RepeatHint}" TextWrapping="Wrap" FontSize="12" IsVisible="False"/>
+        <CheckBox Name="SoundCheckBox" IsChecked="True" Content="{DynamicResource OutputTest_Sound}"/>
+        <TextBlock Name="StatusText" FontSize="16" TextWrapping="Wrap"/>
+        <Button Name="StartStopButton" Classes="accent" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+        <TextBlock Text="{DynamicResource OutputTest_StopHint}" TextWrapping="Wrap" FontWeight="SemiBold"/>
+    </StackPanel>
+    </ScrollViewer>
+</UserControl>

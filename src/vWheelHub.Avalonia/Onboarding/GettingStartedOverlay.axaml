@@ -1,0 +1,56 @@
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="SimRacingHub.Avalonia.Onboarding.GettingStartedOverlay" x:CompileBindings="False"
+             Background="Transparent" KeyboardNavigation.TabNavigation="Cycle">
+  <UserControl.Styles>
+    <Style Selector="TextBlock"><Setter Property="Foreground" Value="#F5F5F5"/></Style>
+  </UserControl.Styles>
+  <Grid>
+    <Canvas Name="Shade" IsHitTestVisible="False">
+      <Border Name="ShadeTop" Background="#CF080B10"/>
+      <Border Name="ShadeBottom" Background="#CF080B10"/>
+      <Border Name="ShadeLeft" Background="#CF080B10"/>
+      <Border Name="ShadeRight" Background="#CF080B10"/>
+      <Border Name="Spotlight" BorderBrush="#60D4FF" BorderThickness="2" CornerRadius="8"/>
+    </Canvas>
+    <Border Name="GuideCard" Background="#25282E" BorderBrush="#54606C" BorderThickness="1"
+            CornerRadius="12" Padding="24" Margin="20" HorizontalAlignment="Stretch" ClipToBounds="True"
+            VerticalAlignment="Center" MaxWidth="1080" MaxHeight="480">
+      <Grid RowDefinitions="*,Auto" RowSpacing="18">
+        <ScrollViewer Name="GuideScroll" HorizontalScrollBarVisibility="Disabled" ClipToBounds="True">
+          <Grid ColumnDefinitions="210,*" ColumnSpacing="24">
+            <StackPanel Spacing="10">
+              <TextBlock Name="ProgressText" Foreground="#60D4FF" FontSize="12" FontWeight="SemiBold"/>
+              <TextBlock Name="GuideTitle" FontSize="24" FontWeight="SemiBold" TextWrapping="Wrap"/>
+              <TextBlock Name="GuidePath" FontSize="12" Foreground="#B2C1D0" TextWrapping="Wrap"/>
+            </StackPanel>
+            <StackPanel Grid.Column="1" Spacing="12">
+              <StackPanel Name="LanguagePanel" Spacing="7">
+                <TextBlock Text="Language / Язык" FontSize="13"/>
+                <ComboBox Name="LanguageBox" HorizontalAlignment="Stretch">
+                  <ComboBox.ItemTemplate><DataTemplate><TextBlock Text="{Binding DisplayName}"/></DataTemplate></ComboBox.ItemTemplate>
+                </ComboBox>
+              </StackPanel>
+              <TextBlock Name="GuideBody" TextWrapping="Wrap" FontSize="14" LineHeight="22"/>
+              <Border Name="ExampleCard" Background="#40361F" BorderBrush="#B38C39" BorderThickness="1"
+                      CornerRadius="6" Padding="12" IsVisible="False">
+                <StackPanel Spacing="6">
+                  <TextBlock Text="{DynamicResource Tour_Example}" Foreground="#FBD778" FontSize="11" FontWeight="SemiBold"/>
+                  <TextBlock Name="ExampleText" TextWrapping="Wrap" FontWeight="SemiBold"/>
+                </StackPanel>
+              </Border>
+              <TextBlock Name="GuideTip" TextWrapping="Wrap" FontSize="12" Foreground="#B2C1D0" LineHeight="19"/>
+            </StackPanel>
+          </Grid>
+        </ScrollViewer>
+        <Grid Grid.Row="1" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <Button Name="SkipGuide" Content="{DynamicResource Tour_Skip}" HorizontalAlignment="Left"/>
+            <Button Name="ShowPageButton" Content="{DynamicResource Tour_ShowPage}"/>
+          </StackPanel>
+          <Button Name="PreviousStep" Grid.Column="1" Content="{DynamicResource Tour_Back}" Padding="14,6" HorizontalContentAlignment="Center"/>
+          <Button Name="NextStep" Grid.Column="2" Classes="accent" Padding="14,6" HorizontalContentAlignment="Center"/>
+        </Grid>
+      </Grid>
+    </Border>
+  </Grid>
+</UserControl>

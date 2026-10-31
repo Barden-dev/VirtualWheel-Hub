@@ -1,0 +1,8 @@
+<Window xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Class="SimRacingHub.Avalonia.Dialogs.ProfileNameDialog"
+ Title="{DynamicResource Ui_ProfileName}" Width="440" Height="230" CanResize="False" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" KeyDown="OnKeyDown">
+ <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="24">
+  <TextBlock Name="NamePrompt" Text="{DynamicResource Ui_ProfileName}" FontSize="18" FontWeight="SemiBold"/>
+  <TextBox Name="ProfileNameBox" Grid.Row="1" Margin="0,14,0,0" TextChanged="OnNameChanged" MaxLength="80"/>
+  <StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right"><Button Content="{DynamicResource Ui_Cancel}" Click="OnCancel"/><Button Name="ConfirmNameButton" Content="{DynamicResource Ui_Continue}" Classes="accent" Click="OnConfirm"/></StackPanel>
+ </Grid>
+</Window>

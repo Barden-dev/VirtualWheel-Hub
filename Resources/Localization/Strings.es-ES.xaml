@@ -1,0 +1,851 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+
+    <sys:String x:Key="Common_Dismiss" xml:space="preserve">Descartar</sys:String>
+    <sys:String x:Key="InfoBar_Btn_SaveAndSwitch" xml:space="preserve">Guardar y cambiar</sys:String>
+    <sys:String x:Key="InfoBar_Btn_SwitchAndDiscard" xml:space="preserve">Cambiar y descartar</sys:String>
+    <sys:String x:Key="InfoBar_Btn_KeepCurrent" xml:space="preserve">Mantenerse actualizado</sys:String>
+    <sys:String x:Key="Nav_Steering" xml:space="preserve">Dirección</sys:String>
+    <sys:String x:Key="Nav_ThrottleLogic" xml:space="preserve">Respuesta del acelerador</sys:String>
+    <sys:String x:Key="Nav_BrakeLogic" xml:space="preserve">Respuesta del freno</sys:String>
+    <sys:String x:Key="Nav_VJoyAxes" xml:space="preserve">vJoy Ejes</sys:String>
+    <sys:String x:Key="Nav_KeyBindings" xml:space="preserve">Atajos de teclas</sys:String>
+    <sys:String x:Key="Common_Universal" xml:space="preserve">Universales</sys:String>
+    <sys:String x:Key="Common_Cancel" xml:space="preserve">Cancelar</sys:String>
+    <sys:String x:Key="Common_Close" xml:space="preserve">Cerrar</sys:String>
+    <sys:String x:Key="Common_Paste" xml:space="preserve">Pegar</sys:String>
+    <sys:String x:Key="Common_Browse" xml:space="preserve">Navegar...</sys:String>
+    <sys:String x:Key="Header_LockMouse" xml:space="preserve">Bloquear ratón</sys:String>
+    <sys:String x:Key="Monitor_VJoySteerMin" xml:space="preserve">VJoy Dirección mínima</sys:String>
+    <sys:String x:Key="Monitor_VJoySteerMax" xml:space="preserve">VJoy Dirección máxima</sys:String>
+    <sys:String x:Key="Monitor_CarSteeringLock" xml:space="preserve">Límite de giro del coche</sys:String>
+    <sys:String x:Key="Page_Steering_SnapToFullLock" xml:space="preserve">Ajustar a bloqueo completo</sys:String>
+    <sys:String x:Key="Page_Keys_SteerLeft" xml:space="preserve">Girar a la izquierda:</sys:String>
+    <sys:String x:Key="Page_Keys_SteerLeft_Primary_ToolTip" xml:space="preserve">Tecla principal para girar el volante hacia la izquierda en el modo Solo teclado.</sys:String>
+    <sys:String x:Key="Page_Keys_SteerRight" xml:space="preserve">Girar a la derecha:</sys:String>
+    <sys:String x:Key="Page_Keys_SteerRight_Primary_ToolTip" xml:space="preserve">Tecla principal para girar el volante hacia la derecha en el modo Solo teclado.</sys:String>
+    <sys:String x:Key="Page_Keys_Gas" xml:space="preserve">Acelerador:</sys:String>
+    <sys:String x:Key="Page_Keys_Gas_Primary_ToolTip" xml:space="preserve">Tecla principal para aplicar el acelerador.</sys:String>
+    <sys:String x:Key="Page_Keys_Brake" xml:space="preserve">Freno:</sys:String>
+    <sys:String x:Key="Page_Keys_Brake_Primary_ToolTip" xml:space="preserve">Tecla principal para aplicar el freno.</sys:String>
+    <sys:String x:Key="Page_Keys_ShiftUp" xml:space="preserve">Cambiar hacia arriba:</sys:String>
+    <sys:String x:Key="Page_Keys_ShiftUp_Primary_ToolTip" xml:space="preserve">Tecla principal para subir de marcha.</sys:String>
+    <sys:String x:Key="Page_Keys_ShiftDown" xml:space="preserve">Desplazamiento hacia abajo:</sys:String>
+    <sys:String x:Key="Page_Keys_ShiftDown_Primary_ToolTip" xml:space="preserve">Tecla principal para bajar de marcha.</sys:String>
+    <sys:String x:Key="Page_Keys_CenterSteer" xml:space="preserve">Dirección central:</sys:String>
+    <sys:String x:Key="Page_Keys_CenterSteer_Primary_ToolTip" xml:space="preserve">Tecla principal para colocar el volante en el centro al instante.</sys:String>
+    <sys:String x:Key="Page_Keys_ToggleHub" xml:space="preserve">Alternar centro:</sys:String>
+    <sys:String x:Key="Page_Keys_ToggleHub_Primary_ToolTip" xml:space="preserve">Tecla principal para activar o desactivar el estado activo del concentrador.</sys:String>
+    <sys:String x:Key="Page_Keys_ToggleLock" xml:space="preserve">Bloqueo de palanca:</sys:String>
+    <sys:String x:Key="Page_Keys_ToggleLock_Primary_ToolTip" xml:space="preserve">Tecla principal para activar o desactivar el bloqueo del mouse.</sys:String>
+    <sys:String x:Key="Page_Keys_UnlockCursor" xml:space="preserve">Desbloquear cursor (mantener):</sys:String>
+    <sys:String x:Key="Page_Keys_UnlockCursor_Primary_ToolTip" xml:space="preserve">Tecla principal para desbloquear temporalmente el cursor y congelar la dirección mientras se mantiene presionado (por ejemplo, para mirar a su alrededor).</sys:String>
+    <sys:String x:Key="Page_Keys_Warning" xml:space="preserve">Las combinaciones de teclas Girar hacia la izquierda y Girar hacia la derecha están activas solo cuando el modo "Solo teclado" está habilitado en la configuración de dirección.</sys:String>
+    <sys:String x:Key="Dialog_Export_TargetConfig" xml:space="preserve">CONFIGURACIÓN DEL OBJETIVO</sys:String>
+    <sys:String x:Key="Dialog_Export_PresetName" xml:space="preserve">Nombre preestablecido</sys:String>
+    <sys:String x:Key="Dialog_Export_CopyCode" xml:space="preserve">Copiar código compartido</sys:String>
+    <sys:String x:Key="Dialog_Export_SaveFile" xml:space="preserve">Exportar a archivo (.vwh)...</sys:String>
+    <sys:String x:Key="Dialog_Export_SaveFileDialog_Title" xml:space="preserve">Exportar perfil preestablecido</sys:String>
+    <sys:String x:Key="Dialog_Import_Header" xml:space="preserve">Importar perfil preestablecido</sys:String>
+    <sys:String x:Key="KeyBind_Unbind_ToolTip" xml:space="preserve">Desvincular</sys:String>
+    <sys:String x:Key="KeyBind_PressAnyKey" xml:space="preserve">Presione cualquier tecla...</sys:String>
+    <sys:String x:Key="KeyBind_ConflictFormat" xml:space="preserve">{0} ya utilizado por: {1}</sys:String>
+    <sys:String x:Key="KeyBind_None" xml:space="preserve">Ninguna</sys:String>
+    <sys:String x:Key="Ui_dbeb8e7198d7" xml:space="preserve">Se detectó un nuevo contexto de simulador de juego, pero el perfil actual tiene modificaciones no guardadas.</sys:String>
+    <sys:String x:Key="Ui_3580469d06f3" xml:space="preserve">acción</sys:String>
+    <sys:String x:Key="Ui_7d907ad785cc" xml:space="preserve">Configuración de la aplicación</sys:String>
+    <sys:String x:Key="Ui_cd64194d42f7" xml:space="preserve">Actualizaciones de aplicaciones</sys:String>
+    <sys:String x:Key="Ui_4b8eea178c46" xml:space="preserve">Aplicar contexto</sys:String>
+    <sys:String x:Key="Ui_af2d089f586c" xml:space="preserve">Tiempo de accionamiento: del 0 % al umbral</sys:String>
+    <sys:String x:Key="Ui_bff4b3769649" xml:space="preserve">Tiempo de accionamiento: del umbral al 100 %</sys:String>
+    <sys:String x:Key="Ui_d95082a2ee57" xml:space="preserve">Autor</sys:String>
+    <sys:String x:Key="Ui_9e4a53b33b0d" xml:space="preserve">Juegos de simulador de detección automática</sys:String>
+    <sys:String x:Key="Ui_55bc464ca374" xml:space="preserve">Calibración de ejes</sys:String>
+    <sys:String x:Key="Ui_c110ea64b741" xml:space="preserve">Eje de freno</sys:String>
+    <sys:String x:Key="Ui_b34724a152c9" xml:space="preserve">Tiempo de liberación del acelerador al frenar</sys:String>
+    <sys:String x:Key="Ui_dc4e506ed294" xml:space="preserve">Linealidad</sys:String>
+    <sys:String x:Key="Ui_8011b9f75b94" xml:space="preserve">Linealidad del freno</sys:String>
+    <sys:String x:Key="Ui_b990fab5dbc4" xml:space="preserve">Ajustes de freno y curva</sys:String>
+    <sys:String x:Key="Ui_a8ea852dab63" xml:space="preserve">Límite de giro del coche</sys:String>
+    <sys:String x:Key="Ui_e398f7d43a7b" xml:space="preserve">Desplazamiento del centro de dirección</sys:String>
+    <sys:String x:Key="Ui_9ed79ee9b212" xml:space="preserve">Buscar actualizaciones</sys:String>
+    <sys:String x:Key="Ui_67b696468610" xml:space="preserve">Panel</sys:String>
+    <sys:String x:Key="Ui_b141eb1ee136" xml:space="preserve">Umbral entre etapas de accionamiento</sys:String>
+    <sys:String x:Key="Ui_526e0087cc3f" xml:space="preserve">Descripción</sys:String>
+    <sys:String x:Key="Ui_ae7d3c5843fe" xml:space="preserve">Detalles de diagnóstico:</sys:String>
+    <sys:String x:Key="Ui_eb1a70e39274" xml:space="preserve">Descartar</sys:String>
+    <sys:String x:Key="Ui_e07e053c2e10" xml:space="preserve">Descartar cambios</sys:String>
+    <sys:String x:Key="Ui_144884bad664" xml:space="preserve">Descartar advertencia</sys:String>
+    <sys:String x:Key="Ui_6ea67f029794" xml:space="preserve">Descargar actualización</sys:String>
+    <sys:String x:Key="Ui_cf7e2003932f" xml:space="preserve">Duración para volver a centrarse automáticamente en punto muerto cuando se sueltan las teclas.</sys:String>
+    <sys:String x:Key="Ui_1d84728ea880" xml:space="preserve">Duración de la transición del centro neutral al bloqueo total de la dirección cuando se presiona la llave de giro.</sys:String>
+    <sys:String x:Key="Ui_5625033096a6" xml:space="preserve">Limitar el ángulo de giro</sys:String>
+    <sys:String x:Key="Ui_60e7fb8d49a2" xml:space="preserve">Tiempo total de accionamiento (0–100 %):</sys:String>
+    <sys:String x:Key="Ui_bbc0dc3c2d4c" xml:space="preserve">Estado de ejecución, alimentación del controlador virtual, monitoreo de ejes en tiempo real y diagnóstico del simulador.</sys:String>
+    <sys:String x:Key="Ui_a23cb954f828" xml:space="preserve">Exponente para curva no lineal. Los valores &gt; 1,0 mejoran la precisión alrededor del centro; los valores &lt; 1,0 aumentan la capacidad de respuesta inicial.</sys:String>
+    <sys:String x:Key="Ui_84852ef7bce5" xml:space="preserve">Curva de respuesta de freno exponencial (0,2 a 3,0). Permite una sensación progresiva del pedal simulando células de carga.</sys:String>
+    <sys:String x:Key="Ui_83f471b6e894" xml:space="preserve">Exponente de curva exponencial (0,2 a 3,0). Los valores más altos mejoran el delicado control del acelerador al salir de las curvas.</sys:String>
+    <sys:String x:Key="Ui_ecf9ffc12b60" xml:space="preserve">Juego detectado con cambios no guardados</sys:String>
+    <sys:String x:Key="Ui_4626aac2f901" xml:space="preserve">Transición del simulador de juego detectada</sys:String>
+    <sys:String x:Key="Ui_127c3f97b7a6" xml:space="preserve">Preferencias generales</sys:String>
+    <sys:String x:Key="Ui_6fc2adc0ceaa" xml:space="preserve">Genere un código compartido compacto o guárdelo como un archivo para compartirlo con otros controladores.</sys:String>
+    <sys:String x:Key="Ui_f0f1765411c8" xml:space="preserve">Ajuste instantáneamente al ángulo de dirección máximo sin pasar por la velocidad de rampa.</sys:String>
+    <sys:String x:Key="Ui_5fb0deaf49b5" xml:space="preserve">Captura de teclas interactiva activa: presione cualquier tecla del teclado o botón del mouse (Esc para cancelar)...</sys:String>
+    <sys:String x:Key="Ui_2e1c1069f24e" xml:space="preserve">Linealidad de dirección</sys:String>
+    <sys:String x:Key="Ui_d1c76800f087" xml:space="preserve">Idioma de la interfaz</sys:String>
+    <sys:String x:Key="Ui_660384b1d7af" xml:space="preserve">Freno invertido</sys:String>
+    <sys:String x:Key="Ui_8cfc7f4c3f57" xml:space="preserve">Invertir acelerador</sys:String>
+    <sys:String x:Key="Ui_878e3ac30d94" xml:space="preserve">Vista previa aislada: pantallas existentes y ViewModels, sin acceso al dispositivo.</sys:String>
+    <sys:String x:Key="Ui_23bf625ce5ab" xml:space="preserve">Fijaciones de teclas y botones</sys:String>
+    <sys:String x:Key="Ui_ef8f8f7a8374" xml:space="preserve">Conflicto de enlace de claves detectado</sys:String>
+    <sys:String x:Key="Ui_58326a43567c" xml:space="preserve">Dinámica de dirección del teclado</sys:String>
+    <sys:String x:Key="Ui_4eb746e348f9" xml:space="preserve">Dirección con teclado</sys:String>
+    <sys:String x:Key="Ui_d7c7da8b1d85" xml:space="preserve">Idioma, actualizaciones y mantenimiento de aplicaciones.</sys:String>
+    <sys:String x:Key="Ui_e574b3bde371" xml:space="preserve">Limita el ángulo físico máximo de giro de la rueda para que coincida con la geometría de dirección específica del automóvil.</sys:String>
+    <sys:String x:Key="Ui_5cffe59fd046" xml:space="preserve">Asigne controles del simulador a teclas del teclado, botones del mouse o gestos de la rueda del mouse con protección contra conflictos.</sys:String>
+    <sys:String x:Key="Ui_1f284960cf0c" xml:space="preserve">Máximo</sys:String>
+    <sys:String x:Key="Ui_5425325f3103" xml:space="preserve">Ángulo máximo del volante</sys:String>
+    <sys:String x:Key="Ui_80329b381a36" xml:space="preserve">Mínimo</sys:String>
+    <sys:String x:Key="Ui_7ce1afa3f281" xml:space="preserve">Modo:</sys:String>
+    <sys:String x:Key="Ui_cdd6daa893b1" xml:space="preserve">Sensibilidad de dirección con ratón</sys:String>
+    <sys:String x:Key="Ui_2fc10512fb73" xml:space="preserve">¡Nueva actualización disponible!</sys:String>
+    <sys:String x:Key="Ui_7a7633d3ca5f" xml:space="preserve">Aún no hay ningún preset cargado</sys:String>
+    <sys:String x:Key="Ui_5f95c61312b0" xml:space="preserve">Notas sobre el manejo del automóvil, sensación de FFB, etc. (opcional)</sys:String>
+    <sys:String x:Key="Ui_71c8b87c75ad" xml:space="preserve">Dispositivos de salida</sys:String>
+    <sys:String x:Key="Ui_e5f914fbed9b" xml:space="preserve">Ejes de salida</sys:String>
+    <sys:String x:Key="Ui_d93e5286e800" xml:space="preserve">Factor de escala de respuesta de dirección general para el movimiento del mouse.</sys:String>
+    <sys:String x:Key="Ui_4df234690b03" xml:space="preserve">PEGAR CÓDIGO COMPARTIDO O EXPLORAR ARCHIVO PREESTABLECIDO</sys:String>
+    <sys:String x:Key="Ui_59e1f415bf9d" xml:space="preserve">VISTA PREVIA</sys:String>
+    <sys:String x:Key="Ui_8f71e54796e7" xml:space="preserve">clave primaria</sys:String>
+    <sys:String x:Key="Ui_7a43745238a2" xml:space="preserve">Pegue VWH1-... código compartido o JSON aquí</sys:String>
+    <sys:String x:Key="Ui_acc79880d626" xml:space="preserve">Pegue un código compartido válido arriba o abra un archivo preestablecido .vwhub para obtener una vista previa e importar los ajustes de configuración.</sys:String>
+    <sys:String x:Key="Ui_6e80136eea32" xml:space="preserve">Pedales y dinámica</sys:String>
+    <sys:String x:Key="Ui_4a90af55e031" xml:space="preserve">Configuración de pedales</sys:String>
+    <sys:String x:Key="Ui_b4a4c70ccf3a" xml:space="preserve">Inspeccione periódicamente los procesos en ejecución (/proc en Linux, TaskList en Windows) para cambiar de perfil automáticamente.</sys:String>
+    <sys:String x:Key="Ui_b608e3dfff6e" xml:space="preserve">Verifique el controlador virtual seleccionado y acceda a los dispositivos de entrada. Esto no verifica la conexión del juego.</sys:String>
+    <sys:String x:Key="Ui_7b2ff0886f69" xml:space="preserve">Sondeando...</sys:String>
+    <sys:String x:Key="Ui_535e52e4a261" xml:space="preserve">Perfiles</sys:String>
+    <sys:String x:Key="Ui_b19457eeca75" xml:space="preserve">Acciones recomendadas:</sys:String>
+    <sys:String x:Key="Ui_fe09770d531c" xml:space="preserve">Tiempo de liberación (100–0 %)</sys:String>
+    <sys:String x:Key="Ui_c28205673d49" xml:space="preserve">Restablecer calibración</sys:String>
+    <sys:String x:Key="Ui_7b9f883f9636" xml:space="preserve">Linealidad</sys:String>
+    <sys:String x:Key="Ui_4a2e856a7924" xml:space="preserve">Invertir la dirección del pedal del freno.</sys:String>
+    <sys:String x:Key="Ui_309c0adfec27" xml:space="preserve">Invierta la dirección del pedal del acelerador.</sys:String>
+    <sys:String x:Key="Ui_e90fafd8ddef" xml:space="preserve">Comprobar dispositivo</sys:String>
+    <sys:String x:Key="Ui_51fc2ca654c7" xml:space="preserve">Clave alternativa</sys:String>
+    <sys:String x:Key="Ui_35322b5bb5a2" xml:space="preserve">Guardar cambios</sys:String>
+    <sys:String x:Key="Ui_76b810fdf9d9" xml:space="preserve">Guardar en archivo...</sys:String>
+    <sys:String x:Key="Ui_f12d9789f48a" xml:space="preserve">Sensibilidad, curva gamma no lineal, compensación de zona muerta, abrazaderas de bloqueo y escala de dirección sensible a la velocidad.</sys:String>
+    <sys:String x:Key="Ui_74a883a037bc" xml:space="preserve">Ajustes</sys:String>
+    <sys:String x:Key="Ui_168b43930f68" xml:space="preserve">El contexto del simulador cambió. ¿Aplicar configuración para juego detectado o descartar?</sys:String>
+    <sys:String x:Key="Ui_755c8b2a9fb1" xml:space="preserve">Estado:</sys:String>
+    <sys:String x:Key="Ui_785d3986a74f" xml:space="preserve">Eje de dirección</sys:String>
+    <sys:String x:Key="Ui_305b8b980ec1" xml:space="preserve">Linealidad y compensación</sys:String>
+    <sys:String x:Key="Ui_bbb99a3aa5b4" xml:space="preserve">Tiempo de aceleración de la dirección</sys:String>
+    <sys:String x:Key="Ui_f87df89a0839" xml:space="preserve">Velocidad de retorno de la dirección</sys:String>
+    <sys:String x:Key="Ui_754b0d2e9711" xml:space="preserve">Configuración de dirección</sys:String>
+    <sys:String x:Key="Ui_cddefdcc39b1" xml:space="preserve">Configuración del volante</sys:String>
+    <sys:String x:Key="Ui_d430f70620d8" xml:space="preserve">Fallo del sistema detectado</sys:String>
+    <sys:String x:Key="Ui_0db35ddaa9f6" xml:space="preserve">Configuración y curva del acelerador (gas)</sys:String>
+    <sys:String x:Key="Ui_04b5622ee264" xml:space="preserve">Eje del acelerador</sys:String>
+    <sys:String x:Key="Ui_d84f6e0617b2" xml:space="preserve">Linealidad</sys:String>
+    <sys:String x:Key="Ui_951d97384917" xml:space="preserve">Linealidad del acelerador</sys:String>
+    <sys:String x:Key="Ui_897c55421a11" xml:space="preserve">Respuesta del acelerador y del freno y sincronización de la prensa.</sys:String>
+    <sys:String x:Key="Ui_4003024a98dd" xml:space="preserve">Tiempo de prensa: ambas teclas del acelerador</sys:String>
+    <sys:String x:Key="Ui_a31428a467d6" xml:space="preserve">Diagnóstico del dispositivo</sys:String>
+    <sys:String x:Key="Ui_e56d9ecfa817" xml:space="preserve">Rangos y dirección de los ejes.</sys:String>
+    <sys:String x:Key="Ui_2eb430faa424" xml:space="preserve">Cuando está habilitado, la dirección se controla presionando los botones digitales del teclado en lugar del movimiento del mouse o del eje analógico.</sys:String>
+    <sys:String x:Key="Ui_f2213bcf1956" xml:space="preserve">Tu nombre o indicativo (opcional)</sys:String>
+    <sys:String x:Key="Ui_a25fed4fe254" xml:space="preserve">Ajuste de compensación del centro del punto cero en recuentos de dispositivos sin procesar (-32768 a 32768).</sys:String>
+    <sys:String x:Key="Ui_aed8c1840cfe" xml:space="preserve">por ej. Configuración Assetto Corsa GT3</sys:String>
+    <sys:String x:Key="Ui_7e688ff57e41" xml:space="preserve">Panel de vWheel Hub</sys:String>
+    <sys:String x:Key="Ui_102815389c77" xml:space="preserve">Directorio de configuración</sys:String>
+    <sys:String x:Key="Ui_6dddc1bfad77" xml:space="preserve">Apoyar en Boosty</sys:String>
+    <sys:String x:Key="Ui_b7c6095c80ba" xml:space="preserve">Repositorio GitHub</sys:String>
+    <sys:String x:Key="Ui_3da42b09f945" xml:space="preserve">Discord Comunidad</sys:String>
+    <sys:String x:Key="Ui_26cda12d5ef9" xml:space="preserve">Directorio de perfiles</sys:String>
+    <sys:String x:Key="Ui_2ef57cfafd92" xml:space="preserve">Documentación y wiki</sys:String>
+    <sys:String x:Key="Ui_b74bf22af826" xml:space="preserve">Directorio de registros</sys:String>
+    <sys:String x:Key="Ui_4db779894a56" xml:space="preserve">Lanzamientos y registro de cambios</sys:String>
+    <sys:String x:Key="Ui_RestoreSetting" xml:space="preserve">Restaurar</sys:String>
+    <sys:String x:Key="Ui_RestoreSettingHint" xml:space="preserve">Restaurar esta configuración a su último valor guardado</sys:String>
+    <sys:String x:Key="Ui_ProfileSaved" xml:space="preserve">Todos los cambios guardados</sys:String>
+    <sys:String x:Key="Ui_ProfileNew" xml:space="preserve">Nuevo perfil · guardar para conservarlo</sys:String>
+    <sys:String x:Key="Ui_ProfileModified" xml:space="preserve">Cambios no guardados</sys:String>
+    <sys:String x:Key="Ui_UndoHint" xml:space="preserve">Deshacer un cambio de perfil y revertir la selección de dispositivo no guardada · Ctrl+Z</sys:String>
+    <sys:String x:Key="Ui_SaveHint" xml:space="preserve">Guardar cambios de perfil y selección de dispositivo de entrada · Ctrl+S</sys:String>
+    <sys:String x:Key="Ui_About" xml:space="preserve">Acerca de</sys:String>
+    <sys:String x:Key="Ui_Documentation" xml:space="preserve">Wiki y guías</sys:String>
+    <sys:String x:Key="Ui_Community" xml:space="preserve">Discord</sys:String>
+    <sys:String x:Key="Ui_Support" xml:space="preserve">Apoyar en Boosty</sys:String>
+    <sys:String x:Key="Ui_ProjectDescription" xml:space="preserve">vWheel Hub convierte el ratón y el teclado en un volante de carreras virtual.</sys:String>
+    <sys:String x:Key="Ui_DiscordDescription" xml:space="preserve">Comparte configuraciones y habla con otros conductores.</sys:String>
+    <sys:String x:Key="Ui_BoostyDescription" xml:space="preserve">Ayudar al proyecto a crecer y seguir el desarrollo.</sys:String>
+    <sys:String x:Key="Ui_SponsorsTitle" xml:space="preserve">Hecho posible gracias a nuestros seguidores</sys:String>
+    <sys:String x:Key="Ui_SponsorsDescription" xml:space="preserve">Cada contribución nos ayuda a mejorar la experiencia de conducción.</sys:String>
+    <sys:String x:Key="Ui_BecomeSponsor" xml:space="preserve">Conviértete en un seguidor</sys:String>
+    <sys:String x:Key="Ui_Thanks" xml:space="preserve">Gracias por ser parte de vWheel Hub.</sys:String>
+    <sys:String x:Key="Ui_Repository" xml:space="preserve">Código fuente</sys:String>
+    <sys:String x:Key="Ui_Changelog" xml:space="preserve">Versiones y cambios</sys:String>
+    <sys:String x:Key="Ui_NewProfile" xml:space="preserve">Nuevo perfil</sys:String>
+    <sys:String x:Key="Ui_Import" xml:space="preserve">Importar</sys:String>
+    <sys:String x:Key="Ui_Export" xml:space="preserve">Compartir</sys:String>
+    <sys:String x:Key="Ui_ProfileActions" xml:space="preserve">Acciones de perfil</sys:String>
+    <sys:String x:Key="Ui_ProfileDetails" xml:space="preserve">Detalles del perfil</sys:String>
+    <sys:String x:Key="Ui_ResetKeys" xml:space="preserve">Restaurar enlaces predeterminados</sys:String>
+    <sys:String x:Key="Ui_ClearKeys" xml:space="preserve">Borrar todos los enlaces</sys:String>
+    <sys:String x:Key="Ui_On" xml:space="preserve">encendido</sys:String>
+    <sys:String x:Key="Ui_Off" xml:space="preserve">Apagado</sys:String>
+    <sys:String x:Key="Ui_PreviewMode" xml:space="preserve">Vista previa · los dispositivos no están conectados</sys:String>
+    <sys:String x:Key="Ui_Cancel" xml:space="preserve">Cancelar</sys:String>
+    <sys:String x:Key="Ui_Format_c235fd1930" xml:space="preserve">Bloqueado: {0}</sys:String>
+    <sys:String x:Key="Ui_Format_4c8196f66b" xml:space="preserve">{0:0.000} s</sys:String>
+    <sys:String x:Key="Ui_Format_5ed2e2e4c9" xml:space="preserve">Perfil: {0}</sys:String>
+    <sys:String x:Key="Ui_Message_1a05fda18b" xml:space="preserve">Error de creación</sys:String>
+    <sys:String x:Key="Ui_Message_880328aec7" xml:space="preserve">No se pudo guardar el nuevo perfil.</sys:String>
+    <sys:String x:Key="Ui_Message_269c7045f7" xml:space="preserve">No se puede cambiar el nombre</sys:String>
+    <sys:String x:Key="Ui_Message_d4c84c795f" xml:space="preserve">No se puede cambiar el nombre del perfil predeterminado.</sys:String>
+    <sys:String x:Key="Ui_Message_13e348fdd0" xml:space="preserve">Nombre no válido</sys:String>
+    <sys:String x:Key="Ui_Message_fda3dbb681" xml:space="preserve">El nombre del perfil no puede estar vacío.</sys:String>
+    <sys:String x:Key="Ui_Message_cd0e64d3e9" xml:space="preserve">El nombre del perfil contiene sólo caracteres no válidos.</sys:String>
+    <sys:String x:Key="Ui_Message_b89e58be8a" xml:space="preserve">Error al cambiar el nombre</sys:String>
+    <sys:String x:Key="Ui_Message_2fdef742b6" xml:space="preserve">Ya existe un perfil con el nombre '{0}'.</sys:String>
+    <sys:String x:Key="Ui_Message_50363249c1" xml:space="preserve">No se pudo guardar el perfil renombrado.</sys:String>
+    <sys:String x:Key="Ui_Message_cfe1f0c0c8" xml:space="preserve">No se puede eliminar</sys:String>
+    <sys:String x:Key="Ui_Message_c992320e77" xml:space="preserve">Los perfiles predeterminados del sistema no se pueden eliminar.</sys:String>
+    <sys:String x:Key="Ui_Message_4e5fc6f52f" xml:space="preserve">Eliminar perfil</sys:String>
+    <sys:String x:Key="Ui_Message_785fb55893" xml:space="preserve">¿Está seguro de que desea eliminar el perfil '{0}'?</sys:String>
+    <sys:String x:Key="Ui_Message_6e455f706d" xml:space="preserve">Eliminación fallida</sys:String>
+    <sys:String x:Key="Ui_Message_f28cbdfe56" xml:space="preserve">No se pudo eliminar el archivo de perfil: {0}</sys:String>
+    <sys:String x:Key="Ui_Message_e94edb2b38" xml:space="preserve">{0} (Copia)</sys:String>
+    <sys:String x:Key="Ui_Message_2d6ed53e7f" xml:space="preserve">Duplicado fallido</sys:String>
+    <sys:String x:Key="Ui_Message_4701ba3995" xml:space="preserve">No se pudo guardar el perfil duplicado.</sys:String>
+    <sys:String x:Key="Ui_Message_8678e199a7" xml:space="preserve">Exportando perfil a archivo...</sys:String>
+    <sys:String x:Key="Ui_Message_38d03c629a" xml:space="preserve">Exportando perfil al portapapeles...</sys:String>
+    <sys:String x:Key="Ui_Message_a7e6dbd845" xml:space="preserve">Exportación exitosa</sys:String>
+    <sys:String x:Key="Ui_Message_147304a111" xml:space="preserve">¡Comparte el código copiado al portapapeles! Puedes pegarlo en cualquier lugar.</sys:String>
+    <sys:String x:Key="Ui_Message_bcebda692c" xml:space="preserve">Seleccionando archivo para importar...</sys:String>
+    <sys:String x:Key="Ui_Message_09876dabd9" xml:space="preserve">Importación fallida</sys:String>
+    <sys:String x:Key="Ui_Message_d826e1f97e" xml:space="preserve">Leyendo el portapapeles...</sys:String>
+    <sys:String x:Key="Ui_Message_e7286e0417" xml:space="preserve">El portapapeles no contiene datos preestablecidos válidos.</sys:String>
+    <sys:String x:Key="Ui_Message_04fee11023" xml:space="preserve">Sobrescribir cambios</sys:String>
+    <sys:String x:Key="Ui_Message_03c467e5ac" xml:space="preserve">Tienes cambios no guardados en el perfil actual. ¿Sobrescribir con el ajuste preestablecido importado?</sys:String>
+    <sys:String x:Key="Ui_Message_fd8c48f36d" xml:space="preserve">Importación exitosa</sys:String>
+    <sys:String x:Key="Ui_Message_3e1a431d86" xml:space="preserve">Nuevo perfil {0}</sys:String>
+    <sys:String x:Key="Ui_Message_2bd3deb779" xml:space="preserve">Configuración {0}</sys:String>
+    <sys:String x:Key="Ui_Message_50f06ca758" xml:space="preserve">Configuración universal</sys:String>
+    <sys:String x:Key="Ui_Message_8d35b49867" xml:space="preserve">¡Compartir código copiado al portapapeles! Péguelo en cualquier lugar (por ejemplo, Discord).</sys:String>
+    <sys:String x:Key="Ui_Message_a5126f46f8" xml:space="preserve">No se pudo copiar el código compartido: {0}</sys:String>
+    <sys:String x:Key="Ui_Message_e28e63462f" xml:space="preserve">Preestablecido vWheel Hub (*.vwhub, *.json)</sys:String>
+    <sys:String x:Key="Ui_Message_6ae05840ac" xml:space="preserve">Todos los archivos (*.*)</sys:String>
+    <sys:String x:Key="Ui_Message_07ad645ec6" xml:space="preserve">Exportar perfil preestablecido</sys:String>
+    <sys:String x:Key="Ui_Message_b803216545" xml:space="preserve">Archivo guardado: {0}</sys:String>
+    <sys:String x:Key="Ui_Message_45f297da6c" xml:space="preserve">No se pudo exportar el archivo: {0}</sys:String>
+    <sys:String x:Key="Ui_Message_baad7626ba" xml:space="preserve">Guardar en la ranura de destino</sys:String>
+    <sys:String x:Key="Ui_Message_ae4e70372c" xml:space="preserve">Aplicar a la configuración actual ({0})</sys:String>
+    <sys:String x:Key="Ui_Message_74b84bb326" xml:space="preserve">Formato de código compartido no válido o datos corruptos.</sys:String>
+    <sys:String x:Key="Ui_Message_53b338d45a" xml:space="preserve">Preestablecido importado</sys:String>
+    <sys:String x:Key="Ui_Message_b1a4c78acc" xml:space="preserve">Creado por {0} • {1}</sys:String>
+    <sys:String x:Key="Ui_Message_471a26cb56" xml:space="preserve">Creado el {0}</sys:String>
+    <sys:String x:Key="Ui_Message_f88169d7ab" xml:space="preserve">Guardar en la ranura de destino ({0})</sys:String>
+    <sys:String x:Key="Ui_Message_5a839bae46" xml:space="preserve">Sensibilidad: {0:0.00} ({1} Hz)</sys:String>
+    <sys:String x:Key="Ui_Message_568ed9dc8d" xml:space="preserve">(Lineal)</sys:String>
+    <sys:String x:Key="Ui_Message_fad8a5066b" xml:space="preserve">Gama de dirección: {0:0.00}{1}</sys:String>
+    <sys:String x:Key="Ui_Message_5e62a701ab" xml:space="preserve">Bloqueo de dirección: {0:0}°</sys:String>
+    <sys:String x:Key="Ui_Message_c41ab16c71" xml:space="preserve">Bloqueo de dirección: Automático</sys:String>
+    <sys:String x:Key="Ui_Message_91590274ad" xml:space="preserve">Acelerador: {0:0.000} rápido / {1:0.000} lento</sys:String>
+    <sys:String x:Key="Ui_Message_f2593f97e1" xml:space="preserve">Gamma del acelerador: {0:0.00}</sys:String>
+    <sys:String x:Key="Ui_Message_c9c47a6dc0" xml:space="preserve">Freno: Rápido {0:0.000}s / Lento {1:0.000}s</sys:String>
+    <sys:String x:Key="Ui_Message_d5d188263a" xml:space="preserve">Gama de frenos: {0:0.00}</sys:String>
+    <sys:String x:Key="Ui_Message_7aae6111b1" xml:space="preserve">El portapapeles está vacío o no contiene texto.</sys:String>
+    <sys:String x:Key="Ui_Message_d3dae8fcb7" xml:space="preserve">Error del portapapeles: {0}</sys:String>
+    <sys:String x:Key="Ui_Message_27fe4208cf" xml:space="preserve">Abra el archivo preestablecido vWheel Hub</sys:String>
+    <sys:String x:Key="Ui_Message_c19f1be820" xml:space="preserve">Archivo cargado: {0}</sys:String>
+    <sys:String x:Key="Ui_Message_7be4905ac4" xml:space="preserve">No se pudo analizar el archivo seleccionado '{0}' como un valor preestablecido válido.</sys:String>
+    <sys:String x:Key="Ui_Message_6ea8b29b14" xml:space="preserve">Error de archivo: {0}</sys:String>
+    <sys:String x:Key="Ui_ProfilesTitle" xml:space="preserve">Perfiles</sys:String>
+    <sys:String x:Key="Ui_ProfilesDescription" xml:space="preserve">Una configuración para cada coche. Crea el tuyo propio o importa uno de la comunidad.</sys:String>
+    <sys:String x:Key="Ui_DuplicateProfile" xml:space="preserve">Crear una copia</sys:String>
+    <sys:String x:Key="Ui_RenameProfile" xml:space="preserve">Cambiar nombre…</sys:String>
+    <sys:String x:Key="Ui_DeleteProfile" xml:space="preserve">Eliminar perfil…</sys:String>
+    <sys:String x:Key="Ui_HertzFormat" xml:space="preserve">{0}Hz</sys:String>
+    <sys:String x:Key="Ui_ProfileName" xml:space="preserve">Nombre del perfil</sys:String>
+    <sys:String x:Key="Ui_Continue" xml:space="preserve">Continuar</sys:String>
+    <sys:String x:Key="Status_HubRunning" xml:space="preserve">Hub activo</sys:String>
+    <sys:String x:Key="Status_HubStopped" xml:space="preserve">Hub detenido</sys:String>
+    <sys:String x:Key="Ui_AxisGas" xml:space="preserve">ACELERADOR</sys:String>
+    <sys:String x:Key="Ui_AxisBrake" xml:space="preserve">FRENO</sys:String>
+    <sys:String x:Key="Ui_Input" xml:space="preserve">en</sys:String>
+    <sys:String x:Key="Ui_Output" xml:space="preserve">Fuera</sys:String>
+    <sys:String x:Key="Ui_UnsavedMessage" xml:space="preserve">¿Guardar los cambios antes de continuar?</sys:String>
+    <sys:String x:Key="Msg_Updates_Checking" xml:space="preserve">Buscando actualizaciones...</sys:String>
+    <sys:String x:Key="Msg_Updates_NewVersionAvailableFormat" xml:space="preserve">¡Está disponible una nueva versión {0}!</sys:String>
+    <sys:String x:Key="Msg_Updates_UpToDate" xml:space="preserve">La aplicación está actualizada.</sys:String>
+    <sys:String x:Key="Msg_Updates_Cancelled" xml:space="preserve">Verificación de actualización cancelada.</sys:String>
+    <sys:String x:Key="Msg_Updates_Failed" xml:space="preserve">No se pudo buscar actualizaciones.</sys:String>
+    <sys:String x:Key="Status_Running" xml:space="preserve">corriendo</sys:String>
+    <sys:String x:Key="Status_Stopped" xml:space="preserve">Detenido</sys:String>
+    <sys:String x:Key="Status_Fault" xml:space="preserve">Fallo</sys:String>
+    <sys:String x:Key="Status_StartingHub" xml:space="preserve">Centro de inicio...</sys:String>
+    <sys:String x:Key="Status_StoppingHub" xml:space="preserve">Deteniendo el eje...</sys:String>
+    <sys:String x:Key="Status_OutputReady" xml:space="preserve">Listo para diagnosticar el dispositivo de salida</sys:String>
+    <sys:String x:Key="Status_CheckingDiagnostics" xml:space="preserve">Comprobando el diagnóstico del dispositivo...</sys:String>
+    <sys:String x:Key="Status_DiagnosticFailed" xml:space="preserve">Falló la sonda de diagnóstico</sys:String>
+    <sys:String x:Key="Status_Error" xml:space="preserve">error</sys:String>
+    <sys:String x:Key="Title_StartError" xml:space="preserve">Inicio fallido</sys:String>
+    <sys:String x:Key="Title_UnsavedChanges" xml:space="preserve">Cambios no guardados</sys:String>
+    <sys:String x:Key="Msg_UnsavedChanges_Prompt" xml:space="preserve">Tiene cambios no guardados en el perfil '{0}'. ¿Guardar antes de cambiar a '{1}'?</sys:String>
+    <sys:String x:Key="Btn_Save" xml:space="preserve">Guardar</sys:String>
+    <sys:String x:Key="Btn_Discard" xml:space="preserve">Descartar</sys:String>
+    <sys:String x:Key="Title_RuntimeFault" xml:space="preserve">Fallo de tiempo de ejecución</sys:String>
+    <sys:String x:Key="Ui_NavKeys" xml:space="preserve">Asignación de teclas</sys:String>
+    <sys:String x:Key="Ui_NumberSecondsFormat" xml:space="preserve">0.000 s</sys:String>
+    <sys:String x:Key="Ui_Message_InvalidProfileName" xml:space="preserve">Nombre de perfil no válido</sys:String>
+    <sys:String x:Key="Ui_Message_EnterProfileName" xml:space="preserve">Introduzca un nombre de perfil válido.</sys:String>
+    <sys:String x:Key="Ui_ProfileExistsFormat" xml:space="preserve">Ya existe un perfil denominado '{0}'. Elige otro nombre.</sys:String>
+    <sys:String x:Key="Ui_TabGas" xml:space="preserve">Acelerador</sys:String>
+    <sys:String x:Key="Ui_TabBrake" xml:space="preserve">Freno</sys:String>
+    <sys:String x:Key="Nav_Controls" xml:space="preserve">Controles</sys:String>
+    <sys:String x:Key="Nav_General" xml:space="preserve">generales</sys:String>
+    <sys:String x:Key="Ui_PreviewDiagnosticsNote" xml:space="preserve">Vista previa: se simulan los resultados del diagnóstico; Los controladores instalados no están marcados.</sys:String>
+    <sys:String x:Key="Profiles_SearchPlaceholder" xml:space="preserve">Juego, clase o coche…</sys:String>
+    <sys:String x:Key="Profiles_SearchHint" xml:space="preserve">Buscar todos los perfiles · Ctrl+F</sys:String>
+    <sys:String x:Key="Profiles_TotalCount" xml:space="preserve">Perfiles totales: {0}</sys:String>
+    <sys:String x:Key="Profiles_SearchCount" xml:space="preserve">Perfiles encontrados: {0}</sys:String>
+    <sys:String x:Key="Profiles_BaseProfile" xml:space="preserve">Perfil compartido</sys:String>
+    <sys:String x:Key="Profiles_GameProfile" xml:space="preserve">Configuraciones del juego</sys:String>
+    <sys:String x:Key="Profiles_ClassProfile" xml:space="preserve">Configuraciones de clase</sys:String>
+    <sys:String x:Key="Profiles_CarProfile" xml:space="preserve">Configuraciones del auto</sys:String>
+    <sys:String x:Key="Profiles_CarCountHint" xml:space="preserve">Número de perfiles de coches en este grupo</sys:String>
+    <sys:String x:Key="Profiles_QuickSettingsTitle" xml:space="preserve">sintonización rápida</sys:String>
+    <sys:String x:Key="Profiles_QuickSettingsHint" xml:space="preserve">Imprescindibles para el perfil seleccionado. Seleccione el título de una sección para abrir todas sus configuraciones.</sys:String>
+    <sys:String x:Key="Profiles_ToggleGroup" xml:space="preserve">Expandir o contraer grupo</sys:String>
+    <sys:String x:Key="Profiles_CollapseAll" xml:space="preserve">Contraer grupos</sys:String>
+    <sys:String x:Key="Profiles_ClearSearch" xml:space="preserve">Borrar búsqueda</sys:String>
+    <sys:String x:Key="Profiles_ShowCurrent" xml:space="preserve">Mostrar perfil actual</sys:String>
+    <sys:String x:Key="Profiles_NoResults" xml:space="preserve">No hay perfiles coincidentes</sys:String>
+    <sys:String x:Key="Profiles_NoResultsHint" xml:space="preserve">Prueba un juego, una clase o parte del nombre de un auto.</sys:String>
+    <sys:String x:Key="Profiles_UnsavedYes" xml:space="preserve">si</sys:String>
+    <sys:String x:Key="Profiles_UnsavedNo" xml:space="preserve">No</sys:String>
+    <sys:String x:Key="ProfileSetting_MouseSensitivity" xml:space="preserve">Sensibilidad del ratón</sys:String>
+    <sys:String x:Key="ProfileSetting_SteeringOffset" xml:space="preserve">Desplazamiento de dirección</sys:String>
+    <sys:String x:Key="ProfileSetting_SteeringGamma" xml:space="preserve">gama de dirección</sys:String>
+    <sys:String x:Key="ProfileSetting_PollingRate" xml:space="preserve">Tasa de sondeo</sys:String>
+    <sys:String x:Key="ProfileSetting_GasThreshold" xml:space="preserve">Umbral de etapa de presión del acelerador</sys:String>
+    <sys:String x:Key="ProfileSetting_GasAttackTurbo" xml:space="preserve">Tiempo de presión del acelerador con ambas teclas</sys:String>
+    <sys:String x:Key="ProfileSetting_GasAttackFast" xml:space="preserve">Tiempo de presión del acelerador: 0% al umbral</sys:String>
+    <sys:String x:Key="ProfileSetting_GasAttackSlow" xml:space="preserve">Tiempo de presión del acelerador: umbral al 100%</sys:String>
+    <sys:String x:Key="ProfileSetting_GasDecay" xml:space="preserve">Tiempo de liberación del acelerador</sys:String>
+    <sys:String x:Key="ProfileSetting_GasInstantCut" xml:space="preserve">Tiempo de liberación del acelerador al frenar</sys:String>
+    <sys:String x:Key="ProfileSetting_GasGamma" xml:space="preserve">Gamma del acelerador</sys:String>
+    <sys:String x:Key="ProfileSetting_BrakeThreshold" xml:space="preserve">Umbral de etapa de prensa de freno</sys:String>
+    <sys:String x:Key="ProfileSetting_BrakeAttackFast" xml:space="preserve">Tiempo de presión del freno: 0% hasta el umbral</sys:String>
+    <sys:String x:Key="ProfileSetting_BrakeAttackSlow" xml:space="preserve">Tiempo de presión del freno: umbral al 100%</sys:String>
+    <sys:String x:Key="ProfileSetting_BrakeDecay" xml:space="preserve">Tiempo de liberación del freno</sys:String>
+    <sys:String x:Key="ProfileSetting_BrakeGamma" xml:space="preserve">gama de frenos</sys:String>
+    <sys:String x:Key="ProfileSetting_UseSteeringLockClamp" xml:space="preserve">Abrazadera de bloqueo de dirección</sys:String>
+    <sys:String x:Key="ProfileSetting_CarSteeringLock" xml:space="preserve">Bloqueo de dirección del coche</sys:String>
+    <sys:String x:Key="ProfileSetting_GlobalSteeringRange" xml:space="preserve">Rango de dirección global</sys:String>
+    <sys:String x:Key="ProfileSetting_OutputMode" xml:space="preserve">controlador virtual</sys:String>
+    <sys:String x:Key="ProfileSetting_OutSteerMin" xml:space="preserve">Salida de dirección mínima</sys:String>
+    <sys:String x:Key="ProfileSetting_OutSteerMax" xml:space="preserve">Salida de dirección máxima</sys:String>
+    <sys:String x:Key="ProfileSetting_OutGasMin" xml:space="preserve">Salida mínima del acelerador</sys:String>
+    <sys:String x:Key="ProfileSetting_OutGasMax" xml:space="preserve">Salida máxima del acelerador</sys:String>
+    <sys:String x:Key="ProfileSetting_OutBrakeMin" xml:space="preserve">Mínimo de salida de freno</sys:String>
+    <sys:String x:Key="ProfileSetting_OutBrakeMax" xml:space="preserve">Salida de freno máxima</sys:String>
+    <sys:String x:Key="ProfileSetting_InvertSteering" xml:space="preserve">dirección invertida</sys:String>
+    <sys:String x:Key="ProfileSetting_InvertGas" xml:space="preserve">acelerador invertido</sys:String>
+    <sys:String x:Key="ProfileSetting_InvertBrake" xml:space="preserve">freno invertido</sys:String>
+    <sys:String x:Key="ProfileSetting_UseKeyboardOnlyMode" xml:space="preserve">Dirección del teclado</sys:String>
+    <sys:String x:Key="ProfileSetting_KeySteerRampUpMs" xml:space="preserve">Tiempo de aceleración de la dirección del teclado</sys:String>
+    <sys:String x:Key="ProfileSetting_KeySteerRampDownMs" xml:space="preserve">Tiempo de retorno de la dirección del teclado</sys:String>
+    <sys:String x:Key="ProfileSetting_KeySteerSnapToFullLock" xml:space="preserve">Ajustar al bloqueo total</sys:String>
+    <sys:String x:Key="ProfileSetting_KeySteerLeft1" xml:space="preserve">Girar a la izquierda · tecla 1</sys:String>
+    <sys:String x:Key="ProfileSetting_KeySteerLeft2" xml:space="preserve">Girar a la izquierda · tecla 2</sys:String>
+    <sys:String x:Key="ProfileSetting_KeySteerRight1" xml:space="preserve">Girar a la derecha · tecla 1</sys:String>
+    <sys:String x:Key="ProfileSetting_KeySteerRight2" xml:space="preserve">Girar a la derecha · tecla 2</sys:String>
+    <sys:String x:Key="ProfileSetting_KeyGas1" xml:space="preserve">Acelerador · tecla 1</sys:String>
+    <sys:String x:Key="ProfileSetting_KeyGas2" xml:space="preserve">Acelerador · tecla 2</sys:String>
+    <sys:String x:Key="ProfileSetting_KeyBrake1" xml:space="preserve">Freno · llave 1</sys:String>
+    <sys:String x:Key="ProfileSetting_KeyBrake2" xml:space="preserve">Freno · llave 2</sys:String>
+    <sys:String x:Key="ProfileSetting_KeyShiftUp1" xml:space="preserve">Mayús arriba · tecla 1</sys:String>
+    <sys:String x:Key="ProfileSetting_KeyShiftUp2" xml:space="preserve">Mayús arriba · tecla 2</sys:String>
+    <sys:String x:Key="ProfileSetting_KeyShiftDown1" xml:space="preserve">Mayús hacia abajo · tecla 1</sys:String>
+    <sys:String x:Key="ProfileSetting_KeyShiftDown2" xml:space="preserve">Mayús hacia abajo · tecla 2</sys:String>
+    <sys:String x:Key="ProfileSetting_KeyCenterSteering1" xml:space="preserve">Dirección central · tecla 1</sys:String>
+    <sys:String x:Key="ProfileSetting_KeyCenterSteering2" xml:space="preserve">Dirección central · tecla 2</sys:String>
+    <sys:String x:Key="ProfileSetting_KeyToggleHub1" xml:space="preserve">Alternar concentrador · tecla 1</sys:String>
+    <sys:String x:Key="ProfileSetting_KeyToggleHub2" xml:space="preserve">Alternar concentrador · tecla 2</sys:String>
+    <sys:String x:Key="ProfileSetting_KeyToggleLock1" xml:space="preserve">Alternar bloqueo del mouse · tecla 1</sys:String>
+    <sys:String x:Key="ProfileSetting_KeyToggleLock2" xml:space="preserve">Alternar bloqueo del mouse · tecla 2</sys:String>
+    <sys:String x:Key="ProfileSetting_KeyUnlockCursor1" xml:space="preserve">Soltar cursor · tecla 1</sys:String>
+    <sys:String x:Key="ProfileSetting_KeyUnlockCursor2" xml:space="preserve">Soltar cursor · tecla 2</sys:String>
+    <sys:String x:Key="Summary_ComparedWith" xml:space="preserve">Comparado con: {0}</sys:String>
+    <sys:String x:Key="Summary_FactoryDefaults" xml:space="preserve">valores predeterminados de fábrica</sys:String>
+    <sys:String x:Key="Summary_Title" xml:space="preserve">Diferencias de perfil</sys:String>
+    <sys:String x:Key="Summary_Matching" xml:space="preserve">Sin diferencias individuales</sys:String>
+    <sys:String x:Key="Summary_MatchingHint" xml:space="preserve">Todos los valores coinciden con la línea base de comparación. Ajuste los elementos esenciales anteriores o abra Controles para obtener más configuraciones.</sys:String>
+    <sys:String x:Key="Summary_ReadError" xml:space="preserve">No se pudo leer el perfil base. La comparación no está disponible.</sys:String>
+    <sys:String x:Key="Summary_Hint" xml:space="preserve">Sólo se muestran las diferencias. Seleccione un grupo para abrir su configuración.</sys:String>
+    <sys:String x:Key="Summary_OneDifference" xml:space="preserve">{0}: {1} · línea base {2}</sys:String>
+    <sys:String x:Key="Summary_DifferenceCount" xml:space="preserve">Configuración modificada: {0}</sys:String>
+    <sys:String x:Key="Summary_Details" xml:space="preserve">Todas las diferencias</sys:String>
+    <sys:String x:Key="Summary_Base" xml:space="preserve">Valor de referencia</sys:String>
+    <sys:String x:Key="Summary_Enabled" xml:space="preserve">Habilitado</sys:String>
+    <sys:String x:Key="Summary_Disabled" xml:space="preserve">Discapacitado</sys:String>
+    <sys:String x:Key="Summary_Unassigned" xml:space="preserve">No asignado</sys:String>
+    <sys:String x:Key="Summary_Seconds" xml:space="preserve">{0} s</sys:String>
+    <sys:String x:Key="Summary_BaselineValue" xml:space="preserve">Línea base: {0}</sys:String>
+    <sys:String x:Key="Summary_Milliseconds" xml:space="preserve">{0} ms</sys:String>
+    <sys:String x:Key="Readiness_CheckFailed" xml:space="preserve">No se pudo verificar el controlador</sys:String>
+    <sys:String x:Key="Readiness_OutputUnavailable" xml:space="preserve">El controlador virtual no está disponible</sys:String>
+    <sys:String x:Key="Readiness_InputUnavailable" xml:space="preserve">La entrada del mouse o del teclado no está disponible</sys:String>
+    <sys:String x:Key="Readiness_RetryAdvice" xml:space="preserve">Abra los diagnósticos del dispositivo e inténtelo de nuevo.</sys:String>
+    <sys:String x:Key="Readiness_WindowsOutputAdvice" xml:space="preserve">Abra el diagnóstico del dispositivo aquí para verificar y reparar la rueda virtual.</sys:String>
+    <sys:String x:Key="Readiness_LinuxOutputAdvice" xml:space="preserve">Verifique /dev/uinput y los permisos de escritura de su usuario.</sys:String>
+    <sys:String x:Key="Readiness_LinuxInputAdvice" xml:space="preserve">Verifique el acceso a /dev/input/event* para su mouse y teclado. Inicie sesión nuevamente después de cambiar la membresía del grupo.</sys:String>
+    <sys:String x:Key="Readiness_Fix" xml:space="preserve">Arreglar…</sys:String>
+    <sys:String x:Key="Readiness_GuideDescription" xml:space="preserve">Primera configuración, asignaciones de control del juego y respuestas a preguntas comunes.</sys:String>
+    <sys:String x:Key="Supporters_Vip" xml:space="preserve">Agradecimiento especial · Patrocinadores VIP</sys:String>
+    <sys:String x:Key="Supporters_Project" xml:space="preserve">Partidarios del proyecto</sys:String>
+    <sys:String x:Key="Supporters_Thanks" xml:space="preserve">Gracias también a</sys:String>
+    <sys:String x:Key="InputFix_Title" xml:space="preserve">LMU: compatibilidad de entrada</sys:String>
+    <sys:String x:Key="InputFix_Description" xml:space="preserve">Habilite el respaldo DirectInput para velocidades de entrada de hasta 1000 Hz. Cierra el juego antes de aplicar. Se realiza una copia de seguridad del archivo de configuración original.</sys:String>
+    <sys:String x:Key="InputFix_NotChecked" xml:space="preserve">La configuración de entrada no ha sido verificada.</sys:String>
+    <sys:String x:Key="InputFix_NotFound" xml:space="preserve">No se encontró el archivo de controles LMU.</sys:String>
+    <sys:String x:Key="InputFix_Applied" xml:space="preserve">La compatibilidad de entrada está habilitada.</sys:String>
+    <sys:String x:Key="InputFix_Ready" xml:space="preserve">Se puede habilitar la compatibilidad de entrada.</sys:String>
+    <sys:String x:Key="InputFix_Failed" xml:space="preserve">La operación fracasó. Cierra el juego y comprueba el acceso a sus archivos.</sys:String>
+    <sys:String x:Key="InputFix_Check" xml:space="preserve">comprobar</sys:String>
+    <sys:String x:Key="InputFix_Apply" xml:space="preserve">Habilitar</sys:String>
+    <sys:String x:Key="Overview_PollingRate" xml:space="preserve">Tasa de sondeo</sys:String>
+    <sys:String x:Key="Overview_PollingHint" xml:space="preserve">50-1000 Hz. Compartido por todos los perfiles de este juego después de guardar. La edición no inicia el centro.</sys:String>
+    <sys:String x:Key="Edition_Description" xml:space="preserve">Edición FREE: código abierto</sys:String>
+    <sys:String x:Key="Language_Description" xml:space="preserve">Los cambios se aplican inmediatamente. El texto no traducido se muestra en inglés.</sys:String>
+    <sys:String x:Key="Desktop_Preferences" xml:space="preserve">Inicio y ventana</sys:String>
+    <sys:String x:Key="Desktop_AutoStartHub" xml:space="preserve">Inicie el hub cuando se abra la aplicación</sys:String>
+    <sys:String x:Key="Desktop_AutoStartHubHint" xml:space="preserve">El cursor permanece free hasta que lo bloquee manualmente.</sys:String>
+    <sys:String x:Key="Desktop_StartMinimized" xml:space="preserve">Comience con la ventana minimizada</sys:String>
+    <sys:String x:Key="Desktop_StartMinimizedHint" xml:space="preserve">Después de iniciar la aplicación usted mismo.</sys:String>
+    <sys:String x:Key="Desktop_MinimizeToTray" xml:space="preserve">Minimizar a bandeja</sys:String>
+    <sys:String x:Key="Desktop_MinimizeToTrayHint" xml:space="preserve">Oculta la ventana de la barra de tareas cuando esté minimizada.</sys:String>
+    <sys:String x:Key="Desktop_CloseToTray" xml:space="preserve">cerca de la bandeja</sys:String>
+    <sys:String x:Key="Desktop_CloseToTrayHint" xml:space="preserve">El botón de cerrar oculta la ventana. Elija Salir en la bandeja para salir.</sys:String>
+    <sys:String x:Key="Desktop_MouseLockSounds" xml:space="preserve">Sonidos de bloqueo del mouse</sys:String>
+    <sys:String x:Key="Desktop_MouseLockSoundsHint" xml:space="preserve">Sonidos cortos distintos cuando se captura y suelta el mouse. Independiente de deslizamiento y audio TC.</sys:String>
+    <sys:String x:Key="Desktop_TrayFallback" xml:space="preserve">Si la bandeja del sistema no está disponible, la ventana permanece en la barra de tareas y el botón de cerrar sale de la aplicación.</sys:String>
+    <sys:String x:Key="Desktop_TrayOpen" xml:space="preserve">Abrir vWheel Hub</sys:String>
+    <sys:String x:Key="Desktop_TrayStart" xml:space="preserve">Centro de inicio</sys:String>
+    <sys:String x:Key="Desktop_TrayStop" xml:space="preserve">Centro de parada</sys:String>
+    <sys:String x:Key="Desktop_TrayExit" xml:space="preserve">Salir</sys:String>
+    <sys:String x:Key="Settings_WebLinks" xml:space="preserve">Proyecto y documentación</sys:String>
+    <sys:String x:Key="Settings_LocalDirectories" xml:space="preserve">Carpetas de aplicaciones</sys:String>
+    <sys:String x:Key="Ui_OpenDeviceDiagnostics" xml:space="preserve">Abrir diagnóstico del dispositivo</sys:String>
+    <sys:String x:Key="Status_DeviceCheckReady" xml:space="preserve">Verificación completada en {0}: dispositivo listo</sys:String>
+    <sys:String x:Key="Status_DeviceCheckIssues" xml:space="preserve">Cheque completado en {0}: se requiere atención</sys:String>
+    <sys:String x:Key="Status_DeviceCheckCancelled" xml:space="preserve">cheque cancelado</sys:String>
+    <sys:String x:Key="Settings_CommunityLinks" xml:space="preserve">Comunidad y apoyo</sys:String>
+    <sys:String x:Key="Ui_NumberPercentFormat" xml:space="preserve">0.##' %'</sys:String>
+    <sys:String x:Key="Ui_NumberDegreesFormat" xml:space="preserve">0 °</sys:String>
+    <sys:String x:Key="Ui_AxesControls" xml:space="preserve">Control de ejes</sys:String>
+    <sys:String x:Key="Ui_AxisSteering" xml:space="preserve">Dirección</sys:String>
+    <sys:String x:Key="OutputMonitor_Steer_02f4a3" xml:space="preserve">dirigir</sys:String>
+    <sys:String x:Key="OutputMonitor_Gas_ead965" xml:space="preserve">gasolina</sys:String>
+    <sys:String x:Key="OutputMonitor_Brake_d5ff6c" xml:space="preserve">Freno</sys:String>
+    <sys:String x:Key="OutputMonitor_Output_monitor_dc5721" xml:space="preserve">Salida de control calculada</sys:String>
+    <sys:String x:Key="OutputMonitor_Quick_settings_766f62" xml:space="preserve">Configuraciones rápidas · </sys:String>
+    <sys:String x:Key="OutputMonitor_White_output_range_Yellow_thresholds_Cyan_steering_lock_35e496" xml:space="preserve">Blanco: rango de salida. Amarillo: umbrales. Cian: bloqueo de dirección. Arrastra un marcador.</sys:String>
+    <sys:String x:Key="OutputMonitor_Drag_a_marker_or_enter_an_exact_value_be1fb1" xml:space="preserve">Arrastre un marcador o ingrese un valor exacto</sys:String>
+    <sys:String x:Key="OutputMonitor_Lock_71dc3a" xml:space="preserve">Bloqueo, °</sys:String>
+    <sys:String x:Key="OutputMonitor_Threshold_f64037" xml:space="preserve">Umbral, %</sys:String>
+    <sys:String x:Key="OutputMonitor_Minimum_5d398e" xml:space="preserve">Mínimo</sys:String>
+    <sys:String x:Key="OutputMonitor_Maximum_a8df2f" xml:space="preserve">Máximo</sys:String>
+    <sys:String x:Key="OutputMonitor_MarkersFormat" xml:space="preserve">Marcadores de salida: {0}</sys:String>
+    <sys:String x:Key="Common_Yes" xml:space="preserve">si</sys:String>
+    <sys:String x:Key="Common_No" xml:space="preserve">No</sys:String>
+    <sys:String x:Key="Common_OK" xml:space="preserve">bien</sys:String>
+    <sys:String x:Key="Common_Notice" xml:space="preserve">Aviso</sys:String>
+    <sys:String x:Key="Desktop_TrayTooltipFormat" xml:space="preserve">vWheel Hub · {0}</sys:String>
+    <sys:String x:Key="Ui_NumberMsFormat" xml:space="preserve">0 ms</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_92" xml:space="preserve">desaparecido</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_93" xml:space="preserve">No se encontró la biblioteca vJoyInterface.dll</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_94" xml:space="preserve">Haga clic en 'Obtener vJoy' para descargar e instalar el controlador primero. Después de la instalación, copie vJoyInterface.dll en la carpeta de la aplicación si es necesario.</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_95" xml:space="preserve">El controlador vJoy no está instalado o deshabilitado en Windows</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_96" xml:space="preserve">Haga clic en 'Obtener vJoy' para descargar e instalar el controlador y asegúrese de que el dispositivo esté habilitado en el Administrador de dispositivos Windows.</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_97" xml:space="preserve">Free</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_98" xml:space="preserve">Propiedad</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_99" xml:space="preserve">Ocupado</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_100" xml:space="preserve">vJoy El dispositivo #{0} está siendo utilizado actualmente por otra aplicación.</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_101" xml:space="preserve">Cierre otras aplicaciones (por ejemplo, UCR, vJoyFeeder) usando el dispositivo vJoy #{0}.</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_102" xml:space="preserve">desaparecido</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_103" xml:space="preserve">vJoy El dispositivo #{0} no se crea</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_104" xml:space="preserve">Ejecute vJoyConfig (vJoyConf.exe), agregue el dispositivo #{0} y haga clic en Aplicar.</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_105" xml:space="preserve">vJoy Al dispositivo #{0} le faltan ejes ({1}) y necesita botones (mínimo {2}, actualmente {3})</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_106" xml:space="preserve">Abra vJoyConfig (vJoyConf.exe), habilite los ejes (X, Y, Z) y establezca el número de botones en 8 para el dispositivo #{0}, luego haga clic en Aplicar.</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_107" xml:space="preserve">vJoy Al dispositivo #{0} le faltan los ejes requeridos: {1}</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_108" xml:space="preserve">Abra vJoyConfig (vJoyConf.exe), habilite los ejes ({0}) para el dispositivo #{1} y haga clic en Aplicar.</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_109" xml:space="preserve">vJoy El dispositivo #{0} no tiene suficientes botones (se requiere un mínimo de {1}, actualmente {2})</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_110" xml:space="preserve">Abra vJoyConfig (vJoyConf.exe), establezca el Número de botones en 8 para el Dispositivo #{0} y haga clic en Aplicar.</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_111" xml:space="preserve">vJoy El dispositivo #{0} está configurado y listo (botones {1}, ejes: X, Y, Z)</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_112" xml:space="preserve">Todo está configurado correctamente.</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_113" xml:space="preserve">Nota: el vJoyInterface.dll al lado de vWheel Hub ({0}) difiere del de su instalación vJoy ({1}). Si vJoy no funciona correctamente, reemplace el archivo en la carpeta de la aplicación con '{2}' manualmente.</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_114" xml:space="preserve">desconocido</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_115" xml:space="preserve">X (dirección)</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_116" xml:space="preserve">Y (gasolina)</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_117" xml:space="preserve">Z (freno)</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_120" xml:space="preserve">Rz (embrague)</sys:String>
+    <sys:String x:Key="DiagPlatform_WindowsOutputDiagnostics_131" xml:space="preserve">El dispositivo virtual vJoy está listo.</sys:String>
+    <sys:String x:Key="DiagPlatform_WindowsOutputDiagnostics_132" xml:space="preserve">Estado del dispositivo: {0} (ID: {1})</sys:String>
+    <sys:String x:Key="DiagPlatform_WindowsOutputDiagnostics_133" xml:space="preserve">, Ejes faltantes: {0}</sys:String>
+    <sys:String x:Key="DiagPlatform_WindowsOutputDiagnostics_134" xml:space="preserve">La configuración vJoy no es válida</sys:String>
+    <sys:String x:Key="DiagPlatform_WindowsOutputDiagnostics_137" xml:space="preserve">Modo de dispositivo de salida no compatible: {0}</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_138" xml:space="preserve">El módulo kernel 'uinput' no se detectó y /dev/uinput no existe.</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_139" xml:space="preserve">Falta el nodo /dev/uinput aunque el módulo está cargado.</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_140" xml:space="preserve">Se denegó el acceso de escritura a /dev/uinput.</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_141" xml:space="preserve">No se pudo abrir /dev/uinput con el error {0}.</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_142" xml:space="preserve">Error inesperado al comprobar /dev/uinput: {0}</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_143" xml:space="preserve">
+No se detectó ningún teclado legible.</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_144" xml:space="preserve">Linux uinput Controlador Xbox 360 listo</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_145" xml:space="preserve">Linux uinput Rueda virtual lista</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_146" xml:space="preserve">El módulo del kernel uinput no está cargado y falta /dev/uinput</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_147" xml:space="preserve">Módulo kernel 'uinput' no detectado en /sys/class/misc/uinput o /proc/modules.</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_148" xml:space="preserve">Asegúrese de que el módulo uinput esté configurado para cargarse al iniciar el sistema (por ejemplo, agregue 'uinput' a /etc/modules-load.d/uinput.conf).</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_149" xml:space="preserve">Verifique que CONFIG_INPUT_UINPUT esté habilitado en la configuración del kernel de su distribución.</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_150" xml:space="preserve">Si se ejecuta dentro de un contenedor, asegúrese de que el host del contenedor otorgue acceso al dispositivo uinput.</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_151" xml:space="preserve">/dev/uinput nodo del dispositivo no encontrado</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_152" xml:space="preserve">El módulo parece cargado pero el demonio udev no creó /dev/uinput.</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_153" xml:space="preserve">Verifique que el demonio udev (systemd-udevd) se esté ejecutando para crear nodos de dispositivo en /dev.</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_154" xml:space="preserve">Verifique la configuración de reglas de udev del sistema para la creación de uinput en el arranque.</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_155" xml:space="preserve">Permiso denegado para acceder a /dev/uinput</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_156" xml:space="preserve">El usuario actual no tiene acceso de escritura a /dev/uinput (errno {0}).</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_157" xml:space="preserve">Agregue su cuenta de usuario al grupo del sistema de 'entrada' (por ejemplo, usando la administración de grupos de usuarios).</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_158" xml:space="preserve">Instale una regla udev (por ejemplo, /etc/udev/rules.d/99-uinput.rules con TAG+="uaccess" o MODE="0660", GROUP="input").</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_159" xml:space="preserve">Cierre sesión y vuelva a iniciarla para que los cambios en la membresía del grupo surtan efecto.</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_160" xml:space="preserve">No se pudo acceder a /dev/uinput (error {0})</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_161" xml:space="preserve">Error desconocido al acceder a /dev/uinput (errno {0}).</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_162" xml:space="preserve">Inspeccione los registros del sistema (dmesg o journalctl) en busca de errores del subsistema de entrada del kernel.</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_163" xml:space="preserve">Directorio /dev/input no encontrado</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_164" xml:space="preserve">El directorio del subsistema /dev/input no existe en este sistema.</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_165" xml:space="preserve">Verifique que el subsistema de entrada del kernel Linux (CONFIG_INPUT) esté habilitado.</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_166" xml:space="preserve">Si se ejecuta dentro de un contenedor, monte /dev/input desde el sistema host.</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_167" xml:space="preserve">No se encontraron dispositivos /dev/input/event*</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_168" xml:space="preserve">Actualmente no hay ningún nodo de dispositivo de eventos registrado bajo /dev/input.</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_169" xml:space="preserve">Conecte un mouse o teclado físico al sistema.</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_170" xml:space="preserve">Verifique que los controladores de entrada USB o PS/2 estén cargados.</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_171" xml:space="preserve">Permiso denegado para leer dispositivos /dev/input/event*</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_172" xml:space="preserve">Se encontraron dispositivos de eventos {0}, pero el usuario actual carece de permiso de lectura (errno 13).</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_173" xml:space="preserve">Agregue su cuenta de usuario al grupo del sistema 'entrada'.</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_174" xml:space="preserve">Cierre sesión y vuelva a iniciarla para que los cambios en la membresía del grupo surtan efecto.</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_175" xml:space="preserve">No se detectó ningún dispositivo de entrada de mouse legible</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_176" xml:space="preserve">Se encontraron dispositivos de entrada legibles {0}, pero ninguno emite movimiento relativo X (REL_X).</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_177" xml:space="preserve">Conecte un mouse físico o configure la anulación de la ruta de entrada explícita.</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_178" xml:space="preserve">Dispositivos de entrada listos ({0} legible del total de {1}, mouse detectado)</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyBytesFormat" xml:space="preserve">{0} bytes</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyHandbrakeAxis" xml:space="preserve">Control deslizante0 (freno de mano)</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyUnknownAxisFormat" xml:space="preserve">Eje 0x{0:X}</sys:String>
+    <sys:String x:Key="Prep_LinuxChanges" xml:space="preserve">Si es necesario, solicite permiso del administrador para cargar uinput e instalar reglas de acceso udev basadas en sesiones y una entrada de carga de módulos. El acceso se aplica a los dispositivos de entrada físicos para el usuario local activo. Se realiza una copia de seguridad de los archivos originales del sistema y la reversión conserva las ediciones posteriores. Luego seleccione y recuerde el mouse y el teclado físicos.</sys:String>
+    <sys:String x:Key="Prep_WindowsChanges" xml:space="preserve">Si es necesario, el concentrador descarga vJoy 2.1.9.1 de su editor, verifica SHA-256 e inicia el instalador. Windows solicita permiso de administrador. La configuración de las ruedas se confirma por separado. Es posible que sea necesario reiniciar.</sys:String>
+    <sys:String x:Key="Prep_InputSelectionRequired" xml:space="preserve">Conecte el mouse y el teclado seleccionados, o ejecute la preparación para seleccionar dispositivos. Los dispositivos ambiguos o desconectados no serán reemplazados automáticamente.</sys:String>
+    <sys:String x:Key="Prep_SelectDevice" xml:space="preserve">Seleccione un dispositivo de entrada</sys:String>
+    <sys:String x:Key="Prep_NextDevice" xml:space="preserve">Saltar este dispositivo</sys:String>
+    <sys:String x:Key="Common_Select" xml:space="preserve">Seleccionar</sys:String>
+    <sys:String x:Key="OutputTest_Title" xml:space="preserve">Probar y asignar controles</sys:String>
+    <sys:String x:Key="OutputTest_Hint" xml:space="preserve">Elige una acción y un modo. Después de comenzar, tienes 5 segundos para pasar al juego. Los ejes recorren todo su rango con transiciones de 0,5 segundos. Los controles normales del centro se suspenden durante la prueba. El monitor de salida de control calculado no muestra la señal de prueba ni confirma la salida del dispositivo.</sys:String>
+    <sys:String x:Key="OutputTest_StopHint" xml:space="preserve">Detener: Escape en cualquier ventana o el botón Detener. Libere las claves vinculadas después de la prueba. Puede habilitar el bloqueo del cursor nuevamente manualmente.</sys:String>
+    <sys:String x:Key="OutputTest_Ready" xml:space="preserve">Listo para empezar</sys:String>
+    <sys:String x:Key="OutputTest_ContextChanged" xml:space="preserve">Prueba cancelada porque el perfil o la sesión central cambiaron. Verifique el perfil actual y comience la prueba nuevamente.</sys:String>
+    <sys:String x:Key="OutputTest_Start" xml:space="preserve">Iniciar</sys:String>
+    <sys:String x:Key="OutputTest_Stop" xml:space="preserve">Detener</sys:String>
+    <sys:String x:Key="OutputTest_Running" xml:space="preserve">Repetición de señal · Escape para detener</sys:String>
+    <sys:String x:Key="OutputTest_Countdown" xml:space="preserve">A partir de {0} s… Cambia al juego.</sys:String>
+    <sys:String x:Key="OutputTest_Error" xml:space="preserve">Prueba detenida: {0}</sys:String>
+    <sys:String x:Key="OutputTest_SteeringBoth" xml:space="preserve">Dirección: izquierda y derecha</sys:String>
+    <sys:String x:Key="OutputTest_SteeringLeft" xml:space="preserve">Dirección: solo izquierda</sys:String>
+    <sys:String x:Key="OutputTest_SteeringRight" xml:space="preserve">Dirección: solo derecha</sys:String>
+    <sys:String x:Key="OutputTest_Gas" xml:space="preserve">Acelerador: presione y suelte</sys:String>
+    <sys:String x:Key="OutputTest_Brake" xml:space="preserve">Freno: presione y suelte</sys:String>
+    <sys:String x:Key="OutputTest_Nav" xml:space="preserve">Asignación en el juego</sys:String>
+    <sys:String x:Key="OutputTest_Unavailable" xml:space="preserve">La salida de la prueba no está disponible en el modo de vista previa.</sys:String>
+    <sys:String x:Key="OutputTest_ShiftDown" xml:space="preserve">Cambiar hacia abajo</sys:String>
+    <sys:String x:Key="OutputTest_ShiftUp" xml:space="preserve">cambiar hacia arriba</sys:String>
+    <sys:String x:Key="OutputTest_Mode" xml:space="preserve">Modo</sys:String>
+    <sys:String x:Key="OutputTest_Once" xml:space="preserve">una vez</sys:String>
+    <sys:String x:Key="OutputTest_Repeat" xml:space="preserve">Repita hasta que se detenga</sys:String>
+    <sys:String x:Key="OutputTest_OnceHint" xml:space="preserve">Una vez: una pulsación corta de la marcha o un barrido del eje para volver a punto muerto. Luego la prueba se detiene automáticamente.</sys:String>
+    <sys:String x:Key="OutputTest_RepeatHint" xml:space="preserve">Repetir: la señal seleccionada se repite hasta que detenga la prueba.</sys:String>
+    <sys:String x:Key="OutputTest_Sound" xml:space="preserve">Sonidos de cuenta regresiva, inicio y finalización.</sys:String>
+    <sys:String x:Key="OutputTest_Sending" xml:space="preserve">Realizar una acción · Escapar para detener</sys:String>
+    <sys:String x:Key="InputDevices_Title" xml:space="preserve">Dispositivos de entrada</sys:String>
+    <sys:String x:Key="InputDevices_StopHint" xml:space="preserve">Encontrar, probar o guardar detiene el centro. El par guardado es compartido por todos los perfiles.</sys:String>
+    <sys:String x:Key="InputDevices_Refresh" xml:space="preserve">Actualizar lista</sys:String>
+    <sys:String x:Key="InputDevices_Check" xml:space="preserve">Probar dispositivos seleccionados</sys:String>
+    <sys:String x:Key="InputDevices_StopCheck" xml:space="preserve">detener la prueba</sys:String>
+    <sys:String x:Key="InputDevices_Mouse" xml:space="preserve">ratón</sys:String>
+    <sys:String x:Key="InputDevices_Keyboard" xml:space="preserve">Teclado</sys:String>
+    <sys:String x:Key="InputDevices_Select" xml:space="preserve">Seleccione un dispositivo</sys:String>
+    <sys:String x:Key="InputDevices_FindMouse" xml:space="preserve">Identificar por movimiento</sys:String>
+    <sys:String x:Key="InputDevices_FindKeyboard" xml:space="preserve">Identificar presionando una tecla</sys:String>
+    <sys:String x:Key="InputDevices_Choose" xml:space="preserve">Elige tus dispositivos.</sys:String>
+    <sys:String x:Key="InputDevices_None" xml:space="preserve">No se encontró ningún mouse o teclado. Conecte los dispositivos y actualice. Si se deniega el acceso, abra los diagnósticos del dispositivo para preparar los permisos de entrada.</sys:String>
+    <sys:String x:Key="InputDevices_Missing" xml:space="preserve">Un dispositivo seleccionado previamente no está disponible. Seleccione su reemplazo explícitamente.</sys:String>
+    <sys:String x:Key="InputDevices_Error" xml:space="preserve">No se pudieron abrir ni guardar los dispositivos seleccionados. Actualice la lista y verifique el acceso al dispositivo en diagnóstico. Los detalles están en el registro del centro.</sys:String>
+    <sys:String x:Key="InputDevices_Checking" xml:space="preserve">Mueva el mouse seleccionado o presione las teclas para verificar la actividad. Los controles permanecen parados.</sys:String>
+    <sys:String x:Key="InputDevices_MoveMouse" xml:space="preserve">Mueva el mouse que desea seleccionar en 10 segundos.</sys:String>
+    <sys:String x:Key="InputDevices_PressKey" xml:space="preserve">Presione una tecla en el teclado que desea seleccionar dentro de 10 segundos.</sys:String>
+    <sys:String x:Key="InputDevices_Found" xml:space="preserve">Dispositivo seleccionado. La búsqueda se detuvo.</sys:String>
+    <sys:String x:Key="InputDevices_Timeout" xml:space="preserve">No se detectó actividad. Inténtalo de nuevo o selecciona un dispositivo de la lista.</sys:String>
+    <sys:String x:Key="InputDevices_Saved" xml:space="preserve">Selección guardada para todos los perfiles. Inicie los controles del concentrador cuando esté listo.</sys:String>
+    <sys:String x:Key="InputDevices_Unavailable" xml:space="preserve">Dispositivo no disponible o no seleccionado.</sys:String>
+    <sys:String x:Key="InputDevices_Activity" xml:space="preserve">Entrada detectada</sys:String>
+    <sys:String x:Key="InputDevices_Idle" xml:space="preserve">Conectado: esperando entrada</sys:String>
+    <sys:String x:Key="Tour_Open" xml:space="preserve">Primeros pasos</sys:String>
+    <sys:String x:Key="Tour_Example" xml:space="preserve">ILUSTRACIÓN: no es tu estado actual del juego</sys:String>
+    <sys:String x:Key="Tour_Progress" xml:space="preserve">PASO {0} DE {1}</sys:String>
+    <sys:String x:Key="Tour_Start" xml:space="preserve">Haz el recorrido</sys:String>
+    <sys:String x:Key="Tour_Next" xml:space="preserve">Siguiente</sys:String>
+    <sys:String x:Key="Tour_Back" xml:space="preserve">Atrás</sys:String>
+    <sys:String x:Key="Tour_Finish" xml:space="preserve">terminar</sys:String>
+    <sys:String x:Key="Tour_Skip" xml:space="preserve">Salir del recorrido</sys:String>
+    <sys:String x:Key="Tour_Later" xml:space="preserve">Saltar por ahora</sys:String>
+    <sys:String x:Key="Tour_WelcomeTitle" xml:space="preserve">Bienvenido a vWheel Hub</sys:String>
+    <sys:String x:Key="Tour_WelcomePath" xml:space="preserve">Tu mouse y teclado → un controlador de carreras virtual</sys:String>
+    <sys:String x:Key="Tour_WelcomeBody" xml:space="preserve">¡Gracias por descargar! Elija su idioma primero. Este breve recorrido muestra dónde seleccionar dispositivos, asignar controles y participar en una carrera. Destacaremos páginas reales y explicaremos los obstáculos más comunes.</sys:String>
+    <sys:String x:Key="Tour_WelcomeTip" xml:space="preserve">Unos 4 minutos. El hub permanece detenido durante el recorrido; no se cambian configuraciones ni enlaces del juego. Puede volver a abrir esta guía desde Introducción en la barra lateral. Los idiomas instalados se enumeran arriba; Las traducciones que faltan usan inglés.</sys:String>
+    <sys:String x:Key="Tour_ProfilesTitle" xml:space="preserve">Comience con un perfil</sys:String>
+    <sys:String x:Key="Tour_ProfilesPath" xml:space="preserve">Perfiles → juego → perfil</sys:String>
+    <sys:String x:Key="Tour_ProfilesBody" xml:space="preserve">Un perfil contiene la configuración de la dirección, los pedales y las teclas. Elige el juego y un perfil aquí. Universal es un punto de partida útil para un juego sin una integración dedicada. Puede crear perfiles separados para diferentes automóviles o estilos de conducción.</sys:String>
+    <sys:String x:Key="Tour_ProfilesTip" xml:space="preserve">Verifique el nombre del perfil arriba de Controles antes de editarlo. La detección de juegos puede sugerir otro contexto; revise el mensaje de cambio si tiene cambios no guardados.</sys:String>
+    <sys:String x:Key="Tour_OutputTitle" xml:space="preserve">Lo que recibe el juego</sys:String>
+    <sys:String x:Key="Tour_OutputPath" xml:space="preserve">Controles → Dispositivos de salida</sys:String>
+    <sys:String x:Key="Tour_OutputBody" xml:space="preserve">Cambie los rangos y la dirección de los ejes aquí. Las comprobaciones y reparaciones de dispositivos están disponibles en el Panel de control.</sys:String>
+    <sys:String x:Key="Tour_OutputWindows" xml:space="preserve">Windows utiliza vJoy. Si es necesaria la configuración, Dashboard muestra el problema y abre la reparación del dispositivo. Los cambios de configuración requieren confirmación.</sys:String>
+    <sys:String x:Key="Tour_OutputLinux" xml:space="preserve">Linux: utilice la salida nativa uinput y otorgue el acceso solicitado a la entrada/uinput. Inicie el centro antes del juego. Para LMU hasta Steam/Proton, desactive la entrada Steam para el juego para que pueda ver la rueda virtual directamente.</sys:String>
+    <sys:String x:Key="Tour_InputTitle" xml:space="preserve">¿Qué dispositivos usas?</sys:String>
+    <sys:String x:Key="Tour_InputPath" xml:space="preserve">Controles → Dispositivos de entrada</sys:String>
+    <sys:String x:Key="Tour_InputBody" xml:space="preserve">Elija su mouse y teclado en sus tarjetas, o identifíquelos mediante el movimiento y la pulsación de teclas. Al encontrar un dispositivo, la búsqueda se detiene automáticamente. Utilice Guardar en el encabezado del perfil para guardar el par junto con los demás cambios. El encabezado muestra cuando los cambios no se guardan.</sys:String>
+    <sys:String x:Key="Tour_InputTip" xml:space="preserve">Probar los dispositivos seleccionados solo muestra actividad. Detener una prueba mantiene el borrador. Deshacer en el encabezado también revierte la selección de dispositivos no guardados. El mouse y el teclado guardados siguen siendo compartidos por todos los perfiles.</sys:String>
+    <sys:String x:Key="Tour_KeysTitle" xml:space="preserve">Qué hace cada tecla</sys:String>
+    <sys:String x:Key="Tour_KeysPath" xml:space="preserve">Controles → Combinaciones de teclas</sys:String>
+    <sys:String x:Key="Tour_KeysBody" xml:space="preserve">Asigne aquí acelerador, freno, marchas, comandos de buje y botones de juego virtuales. Haga clic en un campo clave y presione la tecla o el botón del mouse que desee utilizar.</sys:String>
+    <sys:String x:Key="Tour_KeysTip" xml:space="preserve">Hay dos capas: asigna tus teclas físicas en el centro, luego asigna los ejes/botones virtuales del centro en el juego. Los siguientes pasos explican la segunda capa.</sys:String>
+    <sys:String x:Key="Tour_AssignmentTitle" xml:space="preserve">Asignar controles en el juego.</sys:String>
+    <sys:String x:Key="Tour_AssignmentPath" xml:space="preserve">Controles → Enlace en el juego</sys:String>
+    <sys:String x:Key="Tour_AssignmentBody" xml:space="preserve">Elija dirección, acelerador, freno o cambio de marcha. Utilice Una vez para una sola tarea, de modo que las pulsaciones repetidas no puedan cambiar de menú después. Haga clic en Inicio, cambie al juego y abra el enlace deseado: la señal comienza después de 5 segundos.</sys:String>
+    <sys:String x:Key="Tour_AssignmentTip" xml:space="preserve">Repita las carreras hasta que se detenga. Escape o Stop finalizan la señal. Las señales sonoras te ayudan a seguir la cuenta regresiva. La selección de dispositivos físicos en Dispositivos de entrada es un paso independiente; No es necesario que conozcas el nombre del botón subyacente del gamepad.</sys:String>
+    <sys:String x:Key="Tour_AxesTitle" xml:space="preserve">Ajustar dirección y pedales</sys:String>
+    <sys:String x:Key="Tour_AxesPath" xml:space="preserve">Controles → Controles de eje → Dirección / Acelerador / Freno</sys:String>
+    <sys:String x:Key="Tour_AxesBody" xml:space="preserve">Comience con los valores predeterminados y luego ajuste una configuración a la vez. La dirección controla cómo el movimiento del mouse o las teclas de dirección hacen girar el volante. El acelerador y el freno controlan la rapidez con la que se presionan y sueltan los pedales virtuales. Observe el monitor de salida mientras realiza la prueba con el concentrador en funcionamiento y luego verifique el resultado.</sys:String>
+    <sys:String x:Key="Tour_AxesTip" xml:space="preserve">Utilice la herramienta de asignación cuando necesite una señal de salida conocida. Este recorrido nunca inicia una señal ni cambia sus fijaciones.</sys:String>
+    <sys:String x:Key="Tour_ReadyTitle" xml:space="preserve">Guardar, arrancar, conducir</sys:String>
+    <sys:String x:Key="Tour_ReadyPath" xml:space="preserve">Panel de control → iniciar el centro</sys:String>
+    <sys:String x:Key="Tour_ReadyBody" xml:space="preserve">Guarda tu perfil antes de partir. Inicie el centro, luego inicie el juego y participe en una carrera. Habilite Bloquear mouse cuando desee conducir sin que el puntero abandone el juego; deshabilítelo para usar el escritorio nuevamente. Puede asignar atajos de bloqueo del concentrador y del mouse en combinaciones de teclas.</sys:String>
+    <sys:String x:Key="Tour_ReadyTip" xml:space="preserve">Si algo no responde: verifique la actividad del dispositivo físico → enlaces del concentrador → salida virtual → enlaces del juego. Vuelva a abrir esta guía en cualquier momento desde Introducción. Al finalizar, volverá a la página anterior.</sys:String>
+    <sys:String x:Key="Tour_ShowPage" xml:space="preserve">Mostrar página</sys:String>
+    <sys:String x:Key="Tour_ShowExplanation" xml:space="preserve">Mostrar explicación</sys:String>
+    <sys:String x:Key="Tour_DashboardTitle" xml:space="preserve">Tu punto de partida</sys:String>
+    <sys:String x:Key="Tour_DashboardPath" xml:space="preserve">Panel</sys:String>
+    <sys:String x:Key="Tour_DashboardBody" xml:space="preserve">Esta es la primera página que ves. Muestra el juego actual, el estado del concentrador y los diagnósticos del dispositivo. Inicie o detenga los controles con el interruptor del concentrador de arriba. El monitor de salida en la parte inferior muestra la dirección, el acelerador y el freno. Un controlador conectado y un juego conectado son cosas separadas.</sys:String>
+    <sys:String x:Key="Tour_DashboardTip" xml:space="preserve">Seguiremos la barra lateral y las pestañas Controles en el orden de visualización. El hub permanece parado durante todo el recorrido.</sys:String>
+    <sys:String x:Key="Tour_SettingsTitle" xml:space="preserve">Preferencias de aplicación</sys:String>
+    <sys:String x:Key="Tour_SettingsPath" xml:space="preserve">Configuración → General</sys:String>
+    <sys:String x:Key="Tour_SettingsBody" xml:space="preserve">Aquí configura cómo se inicia y se comporta la aplicación en el escritorio: inicio automático del concentrador, minimización, la bandeja del sistema y sonidos de bloqueo del mouse. El idioma también se puede cambiar desde el selector en la barra de título. Configure estas preferencias después de que su primer perfil de trabajo esté listo.</sys:String>
+    <sys:String x:Key="Tour_SettingsTip" xml:space="preserve">El botón Comenzar de la barra lateral vuelve a abrir este recorrido cuando lo necesite. Saltarse o finalizar el recorrido guarda que se haya mostrado.</sys:String>
+    <sys:String x:Key="InputDevices_CancelFind" xml:space="preserve">Cancelar búsqueda</sys:String>
+    <sys:String x:Key="InputDevices_Unsaved" xml:space="preserve">Selección no guardada: use Guardar arriba</sys:String>
+    <sys:String x:Key="InputDevices_SavedShort" xml:space="preserve">Guardado</sys:String>
+    <sys:String x:Key="Ui_ChangesSaveError" xml:space="preserve">No se pudieron guardar todos los cambios. Se conservan sus ediciones pendientes. Verifique el estado del dispositivo de entrada o el registro.</sys:String>
+    <sys:String x:Key="InputDevices_FindPair" xml:space="preserve">Identificar mouse y teclado</sys:String>
+    <sys:String x:Key="InputDevices_PairMouse" xml:space="preserve">Mueva el mouse que desea usar.</sys:String>
+    <sys:String x:Key="InputDevices_PairKeyboard" xml:space="preserve">Ahora presione una tecla en el teclado que desea usar.</sys:String>
+    <sys:String x:Key="InputDevices_PairFound" xml:space="preserve">Ambos dispositivos seleccionados. Utilice Guardar arriba para aplicarlos.</sys:String>
+    <sys:String x:Key="Output_WheelPrepare" xml:space="preserve">Configurar rueda virtual...</sys:String>
+    <sys:String x:Key="Output_WheelPrepareHint" xml:space="preserve">Comprueba el dispositivo vJoy seleccionado o lo crea si ese número no está configurado. Se conservan las configuraciones existentes. Los enlaces de control de salida de datos y dentro del juego se configuran por separado.</sys:String>
+    <sys:String x:Key="Output_WheelConfirm" xml:space="preserve">¿Verifique la compatibilidad de las ruedas con el dispositivo vJoy {0}? Si el número no está configurado, créelo con 8 ejes, 128 botones, un punto de vista discreto y todos los efectos FFB. Los dispositivos existentes no se sobrescribirán. Cierre juegos y otros programas de alimentación: la creación de un dispositivo puede reiniciar el controlador. Se puede solicitar permiso de administrador. Los enlaces de salida de datos y dentro del juego se configuran por separado.</sys:String>
+    <sys:String x:Key="Output_WheelIncomplete" xml:space="preserve">El dispositivo vJoy {0} necesita la configuración de rueda POV/FFB.</sys:String>
+    <sys:String x:Key="Output_WheelStopFirst" xml:space="preserve">Detenga los controles del cubo antes de preparar la rueda.</sys:String>
+    <sys:String x:Key="Output_WheelReady" xml:space="preserve">Configuración de ruedas verificada. Guarde el perfil, inicie los controles del centro y luego seleccione su configuración de volante personalizada en el juego.</sys:String>
+    <sys:String x:Key="Output_WheelFailed" xml:space="preserve">Falló la preparación de la rueda. Verifique el controlador y si otro alimentador está usando el dispositivo seleccionado.</sys:String>
+    <sys:String x:Key="Output_VJoyExistingProtected" xml:space="preserve">El dispositivo vJoy {0} ya existe. FREE sólo significa que no está en uso actualmente. El hub conservará su configuración. Utilice un dispositivo existente compatible sin cambios o seleccione un número no configurado. El reemplazo automático no está disponible hasta que se implementen la copia de seguridad y la restauración.</sys:String>
+    <sys:String x:Key="Output_VJoyConfigurationUnknown" xml:space="preserve">No se puede verificar de forma segura la configuración guardada del dispositivo vJoy {0}. Verifique que el controlador esté disponible e intente verificar el dispositivo nuevamente.</sys:String>
+    <sys:String x:Key="Output_VJoyBackup" xml:space="preserve">Copia de seguridad de la configuración vJoy</sys:String>
+    <sys:String x:Key="Output_VJoyBackupSaved" xml:space="preserve">Copia de seguridad verificada y registro de operación guardado: {0}</sys:String>
+    <sys:String x:Key="Output_VJoyBackupFailed" xml:space="preserve">No se pudo completar la copia de seguridad o el registro de operación vJoy verificado. La instalación no puede continuar sin una copia de seguridad verificada.</sys:String>
+    <sys:String x:Key="Output_VJoyInspect" xml:space="preserve">Verifique todos los dispositivos vJoy</sys:String>
+    <sys:String x:Key="Output_VJoyUseExisting" xml:space="preserve">Usar existente sin cambios</sys:String>
+    <sys:String x:Key="Output_VJoyCheck" xml:space="preserve">Comprobar dispositivo</sys:String>
+    <sys:String x:Key="Output_VJoySharedSelected" xml:space="preserve">Salida del concentrador compartido: vJoy #{0}. Este número se conserva en todos los juegos y reinicios.</sys:String>
+    <sys:String x:Key="Output_VJoyNotSelected" xml:space="preserve">Es necesario configurar la rueda virtual. Abra el diagnóstico del dispositivo en el Panel de control.</sys:String>
+    <sys:String x:Key="Output_VJoySelectionIssue" xml:space="preserve">La salida vJoy compartida necesita atención. En su lugar, ningún dispositivo se reemplaza o selecciona automáticamente.</sys:String>
+    <sys:String x:Key="Output_VJoyExisting" xml:space="preserve">existente</sys:String>
+    <sys:String x:Key="Output_VJoyBusy" xml:space="preserve">en uso por otro alimentador</sys:String>
+    <sys:String x:Key="Output_VJoyUnconfigured" xml:space="preserve">número no configurado</sys:String>
+    <sys:String x:Key="Output_VJoyPersisted" xml:space="preserve">configuración guardada; dispositivo no disponible</sys:String>
+    <sys:String x:Key="Output_VJoyUnknown" xml:space="preserve">no puedo verificar</sys:String>
+    <sys:String x:Key="Output_VJoyInventoryRow" xml:space="preserve">#{0}: {1}; ejes {2}, botones {3}, POV discreto {4}, POV continuo {5}</sys:String>
+    <sys:String x:Key="Output_VJoySelectCompatible" xml:space="preserve">Elija un dispositivo existente accesible con las capacidades requeridas. Un dispositivo ocupado o incompatible no será reconfigurado.</sys:String>
+    <sys:String x:Key="Output_VJoyAdoptConfirm" xml:space="preserve">¿Utilizar vJoy #{0} como salida del concentrador compartido sin cambiar su configuración? Este perfil cambiará de su dispositivo individual #{1} a la salida compartida después de guardarlo. Otros perfiles guardados mantienen sus opciones de dispositivo existentes. Cambiar el número de salida puede requerir volver a vincular los controles en el juego. Seleccionar un dispositivo no otorga permiso para eliminarlo.</sys:String>
+    <sys:String x:Key="Output_VJoyAdopted" xml:space="preserve">vJoy #{0} está seleccionado como salida compartida. Guarde este perfil para usarlo. Otros perfiles mantienen sus opciones actuales hasta que los migre explícitamente.</sys:String>
+    <sys:String x:Key="Output_VJoyNoUnusedNumbers" xml:space="preserve">No hay disponible ningún número vJoy no configurado confirmado. Elija un dispositivo existente compatible sin cambios; no se sobrescribirá ninguna configuración.</sys:String>
+    <sys:String x:Key="Output_VJoyCreate" xml:space="preserve">Crear un dispositivo concentrador dedicado</sys:String>
+    <sys:String x:Key="Output_VJoyCreateConfirm" xml:space="preserve">¿Crear vJoy #{0} para vWheel Hub? Otros números existentes o no verificados ({1}) permanecen sin cambios. La nueva rueda tendrá 8 ejes, 128 botones, un POV y FFB discretos. Se guarda una copia de seguridad verificada antes de la configuración. Cerrar juegos y programas de alimentación; La creación del dispositivo puede reiniciar el controlador y puede requerir permiso de administrador. Los enlaces de salida de datos y dentro del juego están separados. Este perfil utilizará la salida compartida después de guardarlo; otros perfiles mantienen sus opciones actuales.</sys:String>
+    <sys:String x:Key="Output_VJoyReadyUnchanged" xml:space="preserve">El dispositivo compartido vJoy está listo. Su configuración fue comprobada sin cambios. Utilice la opción de salida compartida en los perfiles que desee migrar explícitamente.</sys:String>
+    <sys:String x:Key="ProfileSetting_UseHubVJoyDevice" xml:space="preserve">Utilice la salida vJoy del concentrador compartido</sys:String>
+    <sys:String x:Key="Output_VJoyPreview" xml:space="preserve">Vista previa de los cambios de configuración de vJoy</sys:String>
+    <sys:String x:Key="Output_VJoyChangeExisting" xml:space="preserve">Vista previa de cambios en el dispositivo seleccionado...</sys:String>
+    <sys:String x:Key="Output_VJoyLayout" xml:space="preserve">Ejes {0}; botones {1}; punto de vista discreto {2}; punto de vista continuo {3}; todos los efectos FFB: {4}</sys:String>
+    <sys:String x:Key="Output_VJoyExactPreview" xml:space="preserve">vJoy #{0}
+
+Actual → {1}
+Requerido → {2}
+
+{4}
+
+Copia de seguridad original verificada: {3}
+
+Cierra juegos y otros programas de alimentación. Se puede solicitar la aprobación del administrador. El diseño exacto revisado y un recibo de operación se guardarán juntos. Si la configuración falla, solo se puede revertir un resultado del concentrador coincidente a esta copia de seguridad, incluida la eliminación de una configuración recién creada. Se conservan las ediciones externas. Es posible que sea necesario reiniciar el controlador o Windows antes de que el diseño esté activo. Los enlaces de salida de datos y dentro del juego están separados.</sys:String>
+    <sys:String x:Key="Output_VJoyExistingOrigin" xml:space="preserve">Este es un dispositivo existente. Cambiar su configuración no la convierte en propiedad del centro ni autoriza su eliminación. Se conservan puntos de vista extra discretos; Cualquier reemplazo continuo de POV se muestra arriba. Otros dispositivos no cambian.</sys:String>
+    <sys:String x:Key="Output_VJoyNewOrigin" xml:space="preserve">Este número fue verificado como no configurado. Se convertirá en la salida del centro compartido dedicado. Las configuraciones de dispositivos existentes no cambian. Otros perfiles guardados conservan sus opciones anteriores hasta que los migre explícitamente.</sys:String>
+    <sys:String x:Key="Output_VJoySavedRestart" xml:space="preserve">La configuración vJoy se guardó y verificó. Reinicie el controlador o Windows, luego verifique el mismo dispositivo. El centro conserva su número; no se selecciona ninguna salida alternativa. Guarde este perfil si su elección de salida cambió.</sys:String>
+    <sys:String x:Key="Output_VJoySetupStopped" xml:space="preserve">La configuración de vJoy se detuvo. Mantener el registro de respaldo y operación; verifique el estado informado antes de volver a intentarlo.</sys:String>
+    <sys:String x:Key="Output_VJoyElevationDeclined" xml:space="preserve">Se rechazó la aprobación del administrador. Ningún cambio no confirmado se revierte ni se reemplaza.</sys:String>
+    <sys:String x:Key="Output_VJoyUseSetupCard" xml:space="preserve">Abra el panel y el diagnóstico del dispositivo para configurar la rueda virtual.</sys:String>
+    <sys:String x:Key="Output_VJoyApplyChanges" xml:space="preserve">Aplicar cambios</sys:String>
+    <sys:String x:Key="Output_VJoyResume" xml:space="preserve">Reanudar configuración pendiente</sys:String>
+    <sys:String x:Key="Output_VJoyCancelSetup" xml:space="preserve">Cancelar configuración pendiente</sys:String>
+    <sys:String x:Key="Output_VJoyPendingConflict" xml:space="preserve">La operación guardada entra en conflicto con el estado actual del dispositivo o ha caducado. Mantenga la copia de seguridad; la cancelación está disponible solo cuando el resultado del hub original o verificado está presente.</sys:String>
+    <sys:String x:Key="Output_VJoyResumeConfirm" xml:space="preserve">¿Reanudar la configuración aprobada de vJoy #{0}? Se utilizará el mismo número y configuración guardada exacta. Un resultado confirmado se verifica sin repetir la escritura. Una vista previa no confirmada es válida durante 30 minutos.
+Copia de seguridad: {1}
+Cerrar juegos y otros comederos. Windows puede solicitar derechos de administrador; Es posible que sea necesario reiniciar el controlador o Windows.</sys:String>
+    <sys:String x:Key="Output_VJoyCancelRestoreConfirm" xml:space="preserve">¿Cancelar la configuración de vJoy #{0} y restaurar su configuración original ausente? Esto elimina solo la configuración verificada exacta creada por esta operación. Los cambios externos bloquean la restauración. Se conservan otros dispositivos y perfiles.
+Copia de seguridad: {1}
+Cerrar juegos y comederos. Es posible que se necesiten derechos de administrador y un controlador o reinicio Windows.</sys:String>
+    <sys:String x:Key="Output_VJoyCancelUnwrittenConfirm" xml:space="preserve">¿Cancelar la configuración pendiente de vJoy #{0}? El estado original está presente y se volverá a comprobar. No se escribirá ninguna configuración del dispositivo. El número reservado queda liberado; la copia de seguridad se conserva.
+Copia de seguridad: {1}</sys:String>
+    <sys:String x:Key="Output_VJoyCancelled" xml:space="preserve">Configuración pendiente cancelada. Configuración original verificada; copia de seguridad retenida.</sys:String>
+    <sys:String x:Key="Output_VJoyCancelledRestart" xml:space="preserve">Configuración cancelada y configuración original restaurada. Reinicie el controlador o Windows antes de usar vJoy; copia de seguridad retenida.</sys:String>
+    <sys:String x:Key="Output_VJoyRemove" xml:space="preserve">Eliminar el dispositivo seleccionado creado por el hub...</sys:String>
+    <sys:String x:Key="Output_VJoyRemoveConfirm" xml:space="preserve">¿Eliminar el vJoy #{0} creado por el concentrador seleccionado?
+Actual: {1}
+Objetivo: no hay configuración guardada para este número.
+Copia de seguridad: {2}
+La creación y cada cambio de centro se verifican con recibos de confirmación protegidos. Los dispositivos adoptados y los cambios externos están protegidos. Se conservan otros números de dispositivo y una salida compartida en otro número. Los perfiles y enlaces de juegos no se editan; Los perfiles que utilizan el número eliminado necesitan una opción de salida explícita. Cerrar juegos y comederos. Windows solicitará derechos de administrador; reinicie el controlador o Windows después de la eliminación.</sys:String>
+    <sys:String x:Key="Output_VJoyRemoved" xml:space="preserve">Se eliminó el dispositivo creado por el concentrador. Copia de seguridad retenida. Reinicie el controlador o Windows y verifique la salida antes de iniciar los controles.</sys:String>
+    <sys:String x:Key="Output_ButtonsTitle" xml:space="preserve">Botones virtuales</sys:String>
+    <sys:String x:Key="Output_ButtonsHint" xml:space="preserve">Asigna claves a los botones del juego. Los botones 1 y 2 están reservados para las marchas.</sys:String>
+    <sys:String x:Key="Output_ButtonsAdd" xml:space="preserve">Añadir botón virtual</sys:String>
+    <sys:String x:Key="Output_ButtonsDelete" xml:space="preserve">Quitar encuadernación</sys:String>
+    <sys:String x:Key="Output_ButtonsInvalid" xml:space="preserve">No se aplicó la vinculación.</sys:String>
+    <sys:String x:Key="ProfileSetting_VirtualButtons" xml:space="preserve">Enlaces de botones virtuales</sys:String>
+    <sys:String x:Key="Profiles_ForzaCarFallback" xml:space="preserve">Coche Forza #{0}</sys:String>
+    <sys:String x:Key="Profiles_ForzaCarName" xml:space="preserve">Tu nombre para este coche Forza</sys:String>
+    <sys:String x:Key="Profiles_ForzaCarNameHint" xml:space="preserve">Guarde el perfil para conservar este nombre para mostrar. La identificación numérica del automóvil y la ruta del perfil permanecen sin cambios, por lo que la selección automática aún funciona. No se requiere un nombre de catálogo.</sys:String>
+    <sys:String x:Key="Output_MigrationTitle" xml:space="preserve">Mover perfiles guardados al dispositivo compartido...</sys:String>
+    <sys:String x:Key="Output_MigrationSaveFirst" xml:space="preserve">Guarde o descarte las ediciones del perfil actual antes de migrar los perfiles guardados.</sys:String>
+    <sys:String x:Key="Output_MigrationNoChanges" xml:space="preserve">Ningún perfil guardado necesita esta migración.</sys:String>
+    <sys:String x:Key="Output_MigrationJoin" xml:space="preserve">{0}: individual #{1} → compartido #{2}</sys:String>
+    <sys:String x:Key="Output_MigrationKeep" xml:space="preserve">{0}: conservar el individuo #{1} (proteger la excepción heredada)</sys:String>
+    <sys:String x:Key="Output_MigrationConfirm" xml:space="preserve">¿Mover perfiles vJoy guardados usando el ID individual #{0} al dispositivo compartido #{1}?
+
+{2}
+
+Directorio de respaldo: {3}
+Sólo cambia la opción de salida compartida. Se conservan las identificaciones individuales, la calibración de ejes, las combinaciones de teclas, las combinaciones de juegos y las configuraciones no relacionadas. Los perfiles que utilizan otras identificaciones siguen siendo individuales, incluidas las excepciones heredadas. Todos los archivos guardados se verifican nuevamente antes de aplicar; Las ediciones externas detienen la migración.</sys:String>
+    <sys:String x:Key="Output_MigrationDone" xml:space="preserve">Los perfiles guardados ahora utilizan las opciones de salida revisadas. Copias de seguridad retenidas: {0}</sys:String>
+    <sys:String x:Key="Output_MigrationFailed" xml:space="preserve">La migración del perfil se detuvo. Mantenga el directorio de respaldo.</sys:String>
+    <sys:String x:Key="Output_VJoyCancelRepairConfirm" xml:space="preserve">¿Cancelar el cambio pendiente a vJoy #{0} y restaurar la configuración original exacta? Los cambios externos bloquean la restauración. Se conservan el número de dispositivo seleccionado, otros dispositivos y perfiles.
+Copia de seguridad: {1}
+Cerrar juegos y comederos. Es posible que se necesiten derechos de administrador y un controlador o reinicio Windows.</sys:String>
+    <sys:String x:Key="Output_VJoyRestoreMissing" xml:space="preserve">Restaure el dispositivo perdido creado por el concentrador...</sys:String>
+    <sys:String x:Key="Output_VJoyRestoreMissingHint" xml:space="preserve">Restaure solo el número de dispositivo compartido guardado del historial del concentrador verificado. No se elige ningún número de reemplazo. Un controlador modificado, una configuración existente o un dispositivo externo adoptado bloquea esta acción. Los enlaces de juegos guardados no se editan; verifíquelos después de reiniciar el controlador o Windows.</sys:String>
+    <sys:String x:Key="Output_VJoyResumeRemovalConfirm" xml:space="preserve">¿Reanudar la eliminación aprobada del vJoy #{0} creado por el centro? Sólo se elimina su configuración verificada exacta. La selección compartida se borrará y los perfiles necesitarán una opción de salida explícita posteriormente. Eliminación de bloques de ediciones externas; Se conservan otros dispositivos y enlaces de juegos.
+Copia de seguridad: {1}
+Cerrar juegos y comederos. Es posible que se necesiten derechos de administrador y un controlador o reinicio Windows.</sys:String>
+    <sys:String x:Key="Output_DeviceNotChecked" xml:space="preserve">Dispositivo virtual: no marcado</sys:String>
+    <sys:String x:Key="Output_DeviceReady" xml:space="preserve">Dispositivo virtual: listo</sys:String>
+    <sys:String x:Key="Output_DeviceNeedsAttention" xml:space="preserve">Dispositivo virtual: necesita atención</sys:String>
+    <sys:String x:Key="Output_GameBindingsUnverified" xml:space="preserve">Fijaciones del juego: verifica dirección, pedales y botones en el juego. La preparación del dispositivo no confirma estas asignaciones.</sys:String>
+    <sys:String x:Key="Output_GameDataReceiving" xml:space="preserve">Conexión de datos del juego: recibiendo datos válidos. La actividad de conducción se comprueba por separado.</sys:String>
+    <sys:String x:Key="Output_GameDataUnverified" xml:space="preserve">Conexión de datos del juego: no confirmada por el receptor existente.</sys:String>
+    <sys:String x:Key="OutputTest_Button" xml:space="preserve">Botón virtual</sys:String>
+    <sys:String x:Key="OutputTest_ButtonNumber" xml:space="preserve">Botón de combinaciones de teclas</sys:String>
+    <sys:String x:Key="OutputTest_ButtonHint" xml:space="preserve">Abre la pantalla de asignación de control en el juego y selecciona la acción a vincular. Luego comience esta prueba una vez: después de la cuenta regresiva, solo se presiona el botón elegido. Iniciar una prueba en otro lugar puede desencadenar la acción del juego existente.</sys:String>
+    <sys:String x:Key="Output_ButtonsName" xml:space="preserve">Nombre</sys:String>
+    <sys:String x:Key="Output_ButtonsKey" xml:space="preserve">clave</sys:String>
+    <sys:String x:Key="Output_ButtonsNumber" xml:space="preserve">Botón</sys:String>
+    <sys:String x:Key="Output_Axis" xml:space="preserve">eje</sys:String>
+    <sys:String x:Key="Output_Invert" xml:space="preserve">invertir</sys:String>
+    <sys:String x:Key="OutputTest_NoProfileButtons" xml:space="preserve">Agregue un botón virtual en las combinaciones de teclas y luego selecciónelo aquí.</sys:String>
+    <sys:String x:Key="Output_ButtonsKeyConflict" xml:space="preserve">No aplicado: {0} ya está asignado a otra acción. Elija otra clave.</sys:String>
+    <sys:String x:Key="Nav_CollapseSidebar" xml:space="preserve">Contraer menú</sys:String>
+    <sys:String x:Key="Nav_ExpandSidebar" xml:space="preserve">Expandir menú</sys:String>
+    <sys:String x:Key="Vehicle_Confirmed" xml:space="preserve">Coche confirmado por datos del juego.</sys:String>
+    <sys:String x:Key="Vehicle_Waiting" xml:space="preserve">Esperando datos del coche del juego.</sys:String>
+    <sys:String x:Key="Vehicle_Unsupported" xml:space="preserve">La identificación del coche no está disponible para este juego.</sys:String>
+    <sys:String x:Key="Vehicle_DetectionDisabled" xml:space="preserve">La detección automática de juegos está desactivada</sys:String>
+    <sys:String x:Key="Vehicle_DifferentProfile" xml:space="preserve">Otro coche detectado; este perfil permanece seleccionado</sys:String>
+    <sys:String x:Key="Vehicle_GameNotRunning" xml:space="preserve">El juego no se está ejecutando.</sys:String>
+    <sys:String x:Key="Vehicle_LastProfile" xml:space="preserve">Último perfil confirmado</sys:String>
+    <sys:String x:Key="Vehicle_SelectedProfile" xml:space="preserve">Perfil seleccionado</sys:String>
+    <sys:String x:Key="Overview_WindowFocus" xml:space="preserve">Enfoque de ventana</sys:String>
+    <sys:String x:Key="Overview_WindowFocusBehavior" xml:space="preserve">Cambio de ventana</sys:String>
+    <sys:String x:Key="Overview_PauseOnFocusLoss" xml:space="preserve">Pausar controles al salir de la ventana del juego</sys:String>
+    <sys:String x:Key="Overview_PauseOnFocusLossHint" xml:space="preserve">Regresa al juego y suelta las teclas enlazadas para continuar. Cuando está apagado, los ejes y botones permanecen activos en otros ventanas.</sys:String>
+    <sys:String x:Key="ProfileSetting_PauseControlsOnFocusLoss" xml:space="preserve">Pausar controles fuera del juego</sys:String>
+    <sys:String x:Key="Overview_ReleaseCursorOnFocusLoss" xml:space="preserve">Liberar el cursor al salir de la ventana del juego</sys:String>
+    <sys:String x:Key="Overview_ReleaseCursorOnFocusLossHint" xml:space="preserve">Restaura un bloqueo de cursor habilitado manualmente cuando regresa. Independiente de los controles de pausa.</sys:String>
+    <sys:String x:Key="ProfileSetting_ReleaseCursorOnFocusLoss" xml:space="preserve">Suelta el cursor fuera del juego.</sys:String>
+    <sys:String x:Key="Offer_Enable" xml:space="preserve">Habilitar</sys:String>
+    <sys:String x:Key="Offer_Abs" xml:space="preserve">Asistente ABS</sys:String>
+    <sys:String x:Key="Offer_AbsInfo" xml:space="preserve">Reduce la potencia del freno cuando las ruedas se bloquean.</sys:String>
+    <sys:String x:Key="Offer_Tc" xml:space="preserve">Asistente TC</sys:String>
+    <sys:String x:Key="Offer_TcInfo" xml:space="preserve">Reduce la salida del acelerador cuando las ruedas patinan.</sys:String>
+    <sys:String x:Key="Offer_Speed" xml:space="preserve">Dirección consciente de la velocidad</sys:String>
+    <sys:String x:Key="Offer_SpeedInfo" xml:space="preserve">Ajusta la respuesta de la dirección utilizando la velocidad actual del juego.</sys:String>
+    <sys:String x:Key="Offer_Slip" xml:space="preserve">Umbral de deslizamiento</sys:String>
+    <sys:String x:Key="Offer_Drop" xml:space="preserve">Reducción máxima (%)</sys:String>
+    <sys:String x:Key="Offer_Recover" xml:space="preserve">Tasa de recuperación</sys:String>
+    <sys:String x:Key="Offer_Minimum" xml:space="preserve">Velocidad mínima (km/h)</sys:String>
+    <sys:String x:Key="Offer_Maximum" xml:space="preserve">Velocidad máxima (km/h)</sys:String>
+    <sys:String x:Key="Offer_Intensity" xml:space="preserve">Intensidad (%)</sys:String>
+    <sys:String x:Key="Offer_Sound" xml:space="preserve">Respuesta sonora</sys:String>
+    <sys:String x:Key="Offer_SoundTab" xml:space="preserve">Audio · PRO</sys:String>
+    <sys:String x:Key="Offer_SoundInfo" xml:space="preserve">Escuche los cambios de agarre y la actividad de asistencia mientras conduce.</sys:String>
+    <sys:String x:Key="Offer_Volume" xml:space="preserve">Volumen (%)</sys:String>
+    <sys:String x:Key="Offer_Pitch" xml:space="preserve">Tono (Hz)</sys:String>
+    <sys:String x:Key="Offer_Front" xml:space="preserve">Eje delantero</sys:String>
+    <sys:String x:Key="Offer_Rear" xml:space="preserve">Eje trasero</sys:String>
+    <sys:String x:Key="Offer_Data" xml:space="preserve">Datos del juego en vivo</sys:String>
+    <sys:String x:Key="Offer_DataTab" xml:space="preserve">Conexión de juego · PRO</sys:String>
+    <sys:String x:Key="Offer_DataInfo" xml:space="preserve">Los datos del juego permiten la selección automática de automóviles y asistentes de conducción compatibles.</sys:String>
+    <sys:String x:Key="Offer_Prepare" xml:space="preserve">preparar el juego</sys:String>
+    <sys:String x:Key="Offer_Menu" xml:space="preserve">Menús de juego</sys:String>
+    <sys:String x:Key="Offer_MenuInfo" xml:space="preserve">Utilice el estado conocido del menú del juego para pausar los controles y soltar el cursor.</sys:String>
+    <sys:String x:Key="Offer_Pause" xml:space="preserve">Suspender controles en los menús del juego.</sys:String>
+    <sys:String x:Key="Offer_Cursor" xml:space="preserve">Suelta el cursor en los menús del juego.</sys:String>
+    <sys:String x:Key="Offer_Count" xml:space="preserve">Datos de juegos en vivo y funciones {0} PRO</sys:String>
+    <sys:String x:Key="Offer_TireSound" xml:space="preserve">Comentarios de sonido de los neumáticos</sys:String>
+    <sys:String x:Key="Offer_TcSound" xml:space="preserve">TC respuesta de sonido</sys:String>
+    <sys:String x:Key="Import_TargetExistsTitle" xml:space="preserve">¿Reemplazar perfil guardado?</sys:String>
+    <sys:String x:Key="Import_TargetExists" xml:space="preserve">Ya existe un perfil en {0}. ¿Reemplazar su configuración con el ajuste preestablecido importado?</sys:String>
+    <sys:String x:Key="Import_Replace" xml:space="preserve">Reemplazar</sys:String>
+    <sys:String x:Key="Import_SaveFailed" xml:space="preserve">No se pudo guardar el perfil importado. El perfil actual no fue reemplazado.</sys:String>
+    <sys:String x:Key="CursorLock_Hint" xml:space="preserve">Bloquea el cursor. Elige el comportamiento al desbloquearlo en el Panel.</sys:String>
+    <sys:String x:Key="CursorUnlock_Title" xml:space="preserve">Cuando el cursor está desbloqueado</sys:String>
+    <sys:String x:Key="CursorUnlock_Continue" xml:space="preserve">Continuar todos los controles, incluida la dirección con ratón</sys:String>
+    <sys:String x:Key="CursorUnlock_Steering" xml:space="preserve">Pausar solo la dirección con ratón</sys:String>
+    <sys:String x:Key="CursorUnlock_All" xml:space="preserve">Pausar todos los controles</sys:String>
+    <sys:String x:Key="CursorUnlock_Hint" xml:space="preserve">Comportamiento con «Bloquear ratón» desactivado. Se guarda en este perfil. Los ajustes de cambio de ventana y menús del juego se aplican por separado.</sys:String>
+    <sys:String x:Key="Page_TrailBraking_HubRateHint" xml:space="preserve">Cambiar Hub Rate no cambia el comportamiento del pedal resultante.</sys:String>
+    <sys:String x:Key="Page_TrailBraking_Title" xml:space="preserve">Frenada en apoyo</sys:String>
+    <sys:String x:Key="Ui_6363d1b49d13" xml:space="preserve">Tiempo en segundos para liberar por completo la presión del freno.</sys:String>
+    <sys:String x:Key="Ui_91f36abf8342" xml:space="preserve">Reduce automáticamente la presión de los frenos proporcionalmente a medida que aumenta el bloqueo de la dirección al entrar en la curva.</sys:String>
+    <sys:String x:Key="Ui_98c04661f1f2" xml:space="preserve">Activar frenada en apoyo</sys:String>
+    <sys:String x:Key="Ui_d5b82d4193ca" xml:space="preserve">Umbral mínimo de presión de freno por debajo del cual la liberación del freno de pista no reducirá aún más la fuerza de frenado.</sys:String>
+    <sys:String x:Key="Ui_cf2045189856" xml:space="preserve">Intensidad de frenada en apoyo</sys:String>
+    <sys:String x:Key="Page_TrailBraking_Desc" xml:space="preserve">Reduce automáticamente la presión de los frenos al girar el volante. Esto evita que los neumáticos delanteros se bloqueen al entrar en la curva y ayuda al coche a girar hacia la curva.</sys:String>
+    <sys:String x:Key="Ui_a2d2ba9e4847" xml:space="preserve">Factor de escala aplicado a la curva de liberación del freno a medida que aumenta el ángulo de dirección.</sys:String>
+    <sys:String x:Key="Ui_a665858de703" xml:space="preserve">Tiempo de liberación del freno</sys:String>
+    <sys:String x:Key="Ui_c701a8607d51" xml:space="preserve">Fuerza mínima de frenado</sys:String>
+</ResourceDictionary>

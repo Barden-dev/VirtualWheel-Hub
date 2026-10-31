@@ -1,0 +1,17 @@
+{
+  "source": "https://github.com/shauleiz/vJoy",
+  "revision": "8111294ef89b25d35fa2617a62ce96d23275ab16",
+  "license": "MIT",
+  "sourceHashes": {
+    "LICENSE.txt": "7f0ed151caab68bbfd1a37727c8fe75c94be45aff98a88d63bc7e46e3fb0c5e1",
+    "vJoyConfig.cpp": "c76d49795417881913df1e094e0ee4edf713819d2200583202d2abbc676cf91c",
+    "hidReportDescFfb.h": "cc5f0d83452d441fb314f31856848fe05b17d3f0fa23c8a0a56a8661cfcae34c",
+    "hidtoken.h": "5cab559f3e5460ab9daa57d5b290c93ecd75d9c16af7577e060830c4cfc7f9df",
+    "hidusage.h": "e20d8a54183db2d8cc1a657ab05d81c3e2b893148367660d6b084678456534d4",
+    "public.h": "00a46701c5547ae42b5289901ba9f0d6d95af7cf4f5493d61f1d81b9be87cf6c"
+  },
+  "generatorSha256": "9c418e8e98c6bddf0ad2a2cde46ef0435f3c079b16ff2c3e1cc4d4c04f020a38",
+  "layout": "8 axes, 128 buttons, 1..4 discrete POVs, all FFB effects; report IDs 1..16",
+  "adaptations": "Portable aliases and byte-writing macros; DOS EOF stripped from a derived header; bounded all-effects scan. Windows and registry code excluded.",
+  "presetSha256": "13F4B84ADA472D97B57917DB49FF2FE96AC7A4C9BB999D3241D977DB52486DDF"
+}

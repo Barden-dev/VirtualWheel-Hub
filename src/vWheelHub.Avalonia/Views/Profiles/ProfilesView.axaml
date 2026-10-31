@@ -1,0 +1,122 @@
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ xmlns:vm="clr-namespace:SimRacingHub.Application.Features.Profiles;assembly=vWheelHub.Application"
+ xmlns:local="clr-namespace:SimRacingHub.Avalonia.Views.Profiles"
+ xmlns:controls="clr-namespace:SimRacingHub.Avalonia.Controls" x:Class="SimRacingHub.Avalonia.Views.Profiles.ProfilesView" x:DataType="vm:ProfilesViewModel" x:CompileBindings="True" KeyDown="OnBrowserKeyDown">
+ <UserControl.Resources><local:ProfileDepthConverter x:Key="ProfileDepth"/></UserControl.Resources>
+ <UserControl.Styles>
+  <Style Selector="ListBox.hub-profile-list ListBoxItem"><Setter Property="Padding" Value="2,0"/><Setter Property="MinHeight" Value="38"/><Setter Property="HorizontalContentAlignment" Value="Stretch"/></Style>
+  <!-- A profile switch temporarily disables the list; idle expanders must not flash button chrome. -->
+  <Style Selector="Button.profile-expand:disabled /template/ ContentPresenter#PART_ContentPresenter"><Setter Property="Background" Value="Transparent"/></Style>
+  <Style Selector="PathIcon.profile-chevron.expanded"><Setter Property="RenderTransform"><RotateTransform Angle="90"/></Setter></Style>
+ </UserControl.Styles>
+  <Grid RowDefinitions="Auto,Auto,*" RowSpacing="18" Margin="0,0,16,14">
+   <StackPanel Spacing="6"><TextBlock Text="{DynamicResource Ui_ProfilesTitle}" FontSize="24" FontWeight="SemiBold"/><TextBlock Text="{DynamicResource Ui_ProfilesDescription}" Classes="hub-secondary" TextWrapping="Wrap"/></StackPanel>
+   <WrapPanel Grid.Row="1" Orientation="Horizontal">
+    <Button Name="NewProfileButton" Classes="accent" Click="OnNewProfileClicked" Margin="0,0,8,6"><StackPanel Orientation="Horizontal" Spacing="7"><PathIcon Data="{StaticResource IconAdd}" Width="16" Height="16"/><TextBlock Text="{DynamicResource Ui_NewProfile}"/></StackPanel></Button>
+    <Button Name="ImportProfileDialogButton" Content="{DynamicResource Ui_Import}" Click="OnOpenImportDialogClicked" Margin="0,0,8,6"/>
+    <Button Name="ExportProfileDialogButton" Content="{DynamicResource Ui_Export}" Click="OnOpenExportDialogClicked" Margin="0,0,8,6"/>
+    <Button Name="ProfileListActionsButton" Content="&#x2022;&#x2022;&#x2022;" ToolTip.Tip="{DynamicResource Ui_ProfileActions}" Margin="0,0,0,6">
+     <Button.Flyout><MenuFlyout>
+      <MenuItem Name="DuplicateProfileMenuItem" Header="{DynamicResource Ui_DuplicateProfile}" Click="OnDuplicateProfileClicked"/>
+      <MenuItem Name="RenameProfileMenuItem" Header="{DynamicResource Ui_RenameProfile}" Click="OnRenameProfileClicked" IsEnabled="{Binding SelectedProfile.CanRename}"/>
+      <MenuItem Name="DeleteProfileMenuItem" Header="{DynamicResource Ui_DeleteProfile}" Command="{Binding DeleteProfileCommand}" CommandParameter="{Binding SelectedProfile}" IsEnabled="{Binding SelectedProfile.CanDelete}"/>
+     </MenuFlyout></Button.Flyout>
+    </Button>
+   </WrapPanel>
+   <Grid Grid.Row="2">
+    <Grid.ColumnDefinitions><ColumnDefinition Width="360" MinWidth="260" MaxWidth="540"/><ColumnDefinition Width="10"/><ColumnDefinition Width="*" MinWidth="250"/></Grid.ColumnDefinitions>
+    <Border Classes="hub-card" Padding="10">
+     <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="10">
+      <TextBox Name="SearchFilterBox" PlaceholderText="{DynamicResource Profiles_SearchPlaceholder}" Text="{Binding ProfileSearchQuery, Mode=TwoWay}" TextChanged="OnSearchFilterChanged" ToolTip.Tip="{DynamicResource Profiles_SearchHint}">
+       <TextBox.InnerLeftContent><PathIcon Data="{StaticResource IconSearch}" Width="14" Height="14" Margin="10,0,4,0" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/></TextBox.InnerLeftContent>
+       <TextBox.InnerRightContent><Button Name="ClearProfileSearchButton" IsVisible="{Binding IsSearchingProfiles}" Command="{Binding ClearProfileSearchCommand}" Background="Transparent" BorderThickness="0" Padding="7" ToolTip.Tip="{DynamicResource Profiles_ClearSearch}"><PathIcon Data="{StaticResource IconDismissCircle}" Width="14" Height="14"/></Button></TextBox.InnerRightContent>
+      </TextBox>
+      <Grid Grid.Row="1" ColumnDefinitions="*,Auto" Margin="4,0">
+       <TextBlock Text="{Binding BrowserSummary}" Classes="hub-secondary" FontSize="11" VerticalAlignment="Center"/>
+       <Button Name="CollapseProfileGroupsButton" Grid.Column="1" Content="{DynamicResource Profiles_CollapseAll}" Command="{Binding CollapseProfileGroupsCommand}" IsVisible="{Binding !IsSearchingProfiles}" Background="Transparent" BorderThickness="0" Padding="5,2" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+      </Grid>
+      <Panel Grid.Row="2">
+      <ListBox Name="ProfilesListBox" Classes="hub-profile-list" ItemsSource="{Binding BrowserRows}" SelectedItem="{Binding SelectedBrowserRow, Mode=OneWay}" SelectionChanged="OnProfileSelectionChanged" Background="Transparent" BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" AutoScrollToSelectedItem="False">
+       <ListBox.ItemsPanel><ItemsPanelTemplate><VirtualizingStackPanel/></ItemsPanelTemplate></ListBox.ItemsPanel>
+       <ListBox.ItemTemplate><DataTemplate x:DataType="vm:ProfileBrowserRow">
+        <Grid ColumnDefinitions="26,20,*,Auto" Margin="{Binding Depth, Converter={StaticResource ProfileDepth}}" MinHeight="38" ToolTip.Tip="{Binding Profile.DisplayPath}" AutomationProperties.Name="{Binding Title}" AutomationProperties.HelpText="{Binding Kind}">
+         <Button Classes="profile-expand" IsVisible="{Binding CanExpand}" Click="OnProfileGroupClicked" Background="Transparent" BorderThickness="0" Padding="7" Width="26" Height="30" ToolTip.Tip="{DynamicResource Profiles_ToggleGroup}" AutomationProperties.Name="{DynamicResource Profiles_ToggleGroup}">
+          <PathIcon Classes="profile-chevron" Classes.expanded="{Binding IsExpanded}" Data="M4 2L9 7L4 12L3 11L7 7L3 3Z" Width="9" Height="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" RenderTransformOrigin="50%,50%"/>
+         </Button>
+         <Panel Grid.Column="1" VerticalAlignment="Center">
+          <PathIcon Data="{StaticResource IconXboxController}" Width="14" Height="14" IsVisible="{Binding IsGame}" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+          <PathIcon Data="{StaticResource IconFolder}" Width="14" Height="14" IsVisible="{Binding IsClass}" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+          <PathIcon Data="{StaticResource IconVehicleCar}" Width="14" Height="14" IsVisible="{Binding IsCar}" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+         </Panel>
+         <StackPanel Grid.Column="2" Spacing="3" Margin="7,7,4,7" VerticalAlignment="Center">
+          <TextBlock Text="{Binding Title}" FontSize="13" TextTrimming="CharacterEllipsis"/>
+          <TextBlock Text="{Binding Subtitle}" IsVisible="{Binding ShowsSubtitle}" Classes="hub-secondary" FontSize="11" TextTrimming="CharacterEllipsis"/>
+         </StackPanel>
+         <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="5" VerticalAlignment="Center" Margin="6,0">
+          <TextBlock Text="{Binding CarProfileCount}" IsVisible="{Binding HasCarProfiles}" ToolTip.Tip="{DynamicResource Profiles_CarCountHint}" FontSize="11" Foreground="{DynamicResource TextFillColorTertiaryBrush}"/>
+          <PathIcon Data="{StaticResource IconStar}" Width="11" Height="11" IsVisible="{Binding IsDefault}" Foreground="{DynamicResource TextFillColorTertiaryBrush}"/>
+         </StackPanel>
+        </Grid>
+       </DataTemplate></ListBox.ItemTemplate>
+      </ListBox>
+      <StackPanel Name="NoProfileResults" IsVisible="{Binding !HasBrowserResults}" VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="10" Margin="16">
+       <TextBlock Text="{DynamicResource Profiles_NoResults}" TextWrapping="Wrap" TextAlignment="Center"/>
+       <TextBlock Text="{DynamicResource Profiles_NoResultsHint}" Classes="hub-secondary" TextWrapping="Wrap" TextAlignment="Center"/>
+       <Button Content="{DynamicResource Profiles_ClearSearch}" Command="{Binding ClearProfileSearchCommand}" HorizontalAlignment="Center"/>
+      </StackPanel>
+      </Panel>
+      <Button Name="RevealSelectedProfileButton" Grid.Row="3" Content="{DynamicResource Profiles_ShowCurrent}" Click="OnRevealSelectedClicked" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Background="Transparent" BorderThickness="0" Padding="8,6" FontSize="12"/>
+     </Grid>
+    </Border>
+    <GridSplitter Grid.Column="1" ResizeDirection="Columns" HorizontalAlignment="Stretch" Background="Transparent"/>
+    <Border Grid.Column="2" Classes="hub-card" Padding="20">
+     <ScrollViewer Classes="hub-scroll" HorizontalScrollBarVisibility="Disabled">
+     <StackPanel Spacing="18">
+      <StackPanel Spacing="5"><TextBlock Text="{DynamicResource Ui_ProfileDetails}" Classes="hub-secondary"/><TextBlock Name="ActiveProfileNameText" Text="{Binding ActiveProfileDisplayName}" FontSize="24" FontWeight="SemiBold" TextWrapping="Wrap"/><TextBlock Text="{Binding ContextDisplayPath}" Classes="hub-secondary" TextWrapping="Wrap"/></StackPanel>
+      <Separator Background="{DynamicResource CardStrokeColorDefaultBrush}"/>
+      <local:ProfileQuickSettings Name="QuickProfileSettings"/>
+      <StackPanel IsVisible="{Binding CanEditDetectedCarName}" Spacing="6">
+       <TextBlock Text="{DynamicResource Profiles_ForzaCarName}" FontWeight="SemiBold"/>
+       <TextBox Name="DetectedCarDisplayNameBox" Text="{Binding CurrentProfile.Name, Mode=TwoWay}" MaxLength="80"/>
+       <TextBlock Text="{DynamicResource Profiles_ForzaCarNameHint}" Classes="hub-secondary" TextWrapping="Wrap"/>
+      </StackPanel>
+      <Separator Background="{DynamicResource CardStrokeColorDefaultBrush}"/>
+      <StackPanel Spacing="6">
+       <TextBlock Text="{DynamicResource Summary_Title}" FontSize="17" FontWeight="SemiBold"/>
+       <TextBlock Name="ComparisonBaseText" Text="{Binding ComparisonBaseText}" Classes="hub-secondary" TextWrapping="Wrap"/>
+       <TextBlock Text="{DynamicResource Summary_Hint}" Classes="hub-secondary" TextWrapping="Wrap" FontSize="12" IsVisible="{Binding HasProfileDifferences}"/>
+      </StackPanel>
+      <Border Name="MatchingProfileNotice" IsVisible="{Binding ShowsMatchingProfile}" Classes="hub-card" Padding="16">
+       <StackPanel Spacing="7"><TextBlock Text="{DynamicResource Summary_Matching}" FontWeight="SemiBold" TextWrapping="Wrap"/><TextBlock Text="{DynamicResource Summary_MatchingHint}" Classes="hub-secondary" TextWrapping="Wrap"/></StackPanel>
+      </Border>
+      <TextBlock Name="ComparisonUnavailableText" IsVisible="{Binding !IsComparisonAvailable}" Text="{DynamicResource Summary_ReadError}" Classes="hub-secondary" TextWrapping="Wrap"/>
+      <ItemsControl Name="ProfileDifferenceGroups" ItemsSource="{Binding DifferenceGroups}">
+       <ItemsControl.ItemTemplate><DataTemplate x:DataType="vm:ProfileDifferenceGroup">
+        <Border Classes="hub-card" Padding="12" Margin="0,0,0,10">
+         <StackPanel Spacing="8">
+          <Button Classes="profile-difference-link" Click="OnOpenDifferenceSettings" Background="Transparent" BorderThickness="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Padding="3,4">
+           <Grid ColumnDefinitions="*,Auto">
+            <StackPanel Spacing="5" Margin="0,0,10,0"><TextBlock Text="{Binding Title}" FontWeight="SemiBold" FontSize="14" TextWrapping="Wrap"/><TextBlock Text="{Binding Summary}" Classes="hub-secondary" FontSize="12" TextWrapping="Wrap"/></StackPanel>
+            <PathIcon Grid.Column="1" Data="{StaticResource IconArrowRight}" Width="14" Height="14" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+           </Grid>
+          </Button>
+          <Expander Header="{DynamicResource Summary_Details}" IsVisible="{Binding HasMultiple}" IsExpanded="{Binding IsExpanded, Mode=TwoWay}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+           <ItemsControl ItemsSource="{Binding Differences}">
+            <ItemsControl.ItemTemplate><DataTemplate x:DataType="vm:ProfileSettingDifference">
+             <Grid ColumnDefinitions="*,Auto" Margin="0,6" ColumnSpacing="12">
+              <TextBlock Text="{Binding Label}" FontSize="12" TextWrapping="Wrap" VerticalAlignment="Center"/>
+              <StackPanel Grid.Column="1" Spacing="3" MaxWidth="160"><TextBlock Text="{Binding CurrentValue}" FontSize="13" HorizontalAlignment="Right" TextWrapping="Wrap"/><TextBlock controls:LocalizedText.Value="{Binding BaselineValue}" controls:LocalizedText.Format="{DynamicResource Summary_BaselineValue}" FontSize="11" Classes="hub-secondary" HorizontalAlignment="Right" TextWrapping="Wrap"/></StackPanel>
+             </Grid>
+            </DataTemplate></ItemsControl.ItemTemplate>
+           </ItemsControl>
+          </Expander>
+         </StackPanel>
+        </Border>
+       </DataTemplate></ItemsControl.ItemTemplate>
+      </ItemsControl>
+     </StackPanel>
+     </ScrollViewer>
+    </Border>
+   </Grid>
+  </Grid>
+</UserControl>

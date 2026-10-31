@@ -1,0 +1,856 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+    <sys:String x:Key="Common_Dismiss" xml:space="preserve">Закрыть</sys:String>
+    <sys:String x:Key="InfoBar_Btn_SaveAndSwitch" xml:space="preserve">Сохранить и переключить</sys:String>
+    <sys:String x:Key="InfoBar_Btn_SwitchAndDiscard" xml:space="preserve">Переключить без сохранения</sys:String>
+    <sys:String x:Key="InfoBar_Btn_KeepCurrent" xml:space="preserve">Оставить текущий</sys:String>
+    <sys:String x:Key="Nav_Steering" xml:space="preserve">Рулевое управление</sys:String>
+    <sys:String x:Key="Nav_ThrottleLogic" xml:space="preserve">Логика газа</sys:String>
+    <sys:String x:Key="Nav_BrakeLogic" xml:space="preserve">Логика тормоза</sys:String>
+    <sys:String x:Key="Nav_VJoyAxes" xml:space="preserve">Оси vJoy</sys:String>
+    <sys:String x:Key="Nav_KeyBindings" xml:space="preserve">Назначение клавиш</sys:String>
+    <sys:String x:Key="Common_Universal" xml:space="preserve">Универсальный</sys:String>
+    <sys:String x:Key="Common_Cancel" xml:space="preserve">Отмена</sys:String>
+    <sys:String x:Key="Common_Close" xml:space="preserve">Закрыть</sys:String>
+    <sys:String x:Key="Common_Paste" xml:space="preserve">Вставить</sys:String>
+    <sys:String x:Key="Common_Browse" xml:space="preserve">Обзор...</sys:String>
+    <sys:String x:Key="Header_LockMouse" xml:space="preserve">Захват мыши</sys:String>
+    <sys:String x:Key="Monitor_VJoySteerMin" xml:space="preserve">vJoy Мин. руля</sys:String>
+    <sys:String x:Key="Monitor_VJoySteerMax" xml:space="preserve">vJoy Макс. руля</sys:String>
+    <sys:String x:Key="Monitor_CarSteeringLock" xml:space="preserve">Угол поворота руля авто</sys:String>
+    <sys:String x:Key="Page_Steering_SnapToFullLock" xml:space="preserve">Мгновенный упор</sys:String>
+    <sys:String x:Key="Page_Keys_SteerLeft" xml:space="preserve">Поворот влево:</sys:String>
+    <sys:String x:Key="Page_Keys_SteerLeft_Primary_ToolTip" xml:space="preserve">Основная клавиша поворота руля влево в режиме клавиатуры.</sys:String>
+    <sys:String x:Key="Page_Keys_SteerRight" xml:space="preserve">Поворот вправо:</sys:String>
+    <sys:String x:Key="Page_Keys_SteerRight_Primary_ToolTip" xml:space="preserve">Основная клавиша поворота руля вправо в режиме клавиатуры.</sys:String>
+    <sys:String x:Key="Page_Keys_Gas" xml:space="preserve">Газ:</sys:String>
+    <sys:String x:Key="Page_Keys_Gas_Primary_ToolTip" xml:space="preserve">Основная клавиша подачи газа.</sys:String>
+    <sys:String x:Key="Page_Keys_Brake" xml:space="preserve">Тормоз:</sys:String>
+    <sys:String x:Key="Page_Keys_Brake_Primary_ToolTip" xml:space="preserve">Основная клавиша торможения.</sys:String>
+    <sys:String x:Key="Page_Keys_ShiftUp" xml:space="preserve">Передача вверх:</sys:String>
+    <sys:String x:Key="Page_Keys_ShiftUp_Primary_ToolTip" xml:space="preserve">Основная клавиша переключения передачи вверх.</sys:String>
+    <sys:String x:Key="Page_Keys_ShiftDown" xml:space="preserve">Передача вниз:</sys:String>
+    <sys:String x:Key="Page_Keys_ShiftDown_Primary_ToolTip" xml:space="preserve">Основная клавиша переключения передачи вниз.</sys:String>
+    <sys:String x:Key="Page_Keys_CenterSteer" xml:space="preserve">Центрировать руль:</sys:String>
+    <sys:String x:Key="Page_Keys_CenterSteer_Primary_ToolTip" xml:space="preserve">Основная клавиша мгновенного возврата руля в центр.</sys:String>
+    <sys:String x:Key="Page_Keys_ToggleHub" xml:space="preserve">Переключить хаб:</sys:String>
+    <sys:String x:Key="Page_Keys_ToggleHub_Primary_ToolTip" xml:space="preserve">Основная клавиша включения/выключения активности хаба.</sys:String>
+    <sys:String x:Key="Page_Keys_ToggleLock" xml:space="preserve">Переключить захват:</sys:String>
+    <sys:String x:Key="Page_Keys_ToggleLock_Primary_ToolTip" xml:space="preserve">Основная клавиша включения/выключения захвата мыши.</sys:String>
+    <sys:String x:Key="Page_Keys_UnlockCursor" xml:space="preserve">Освободить курсор (удержание):</sys:String>
+    <sys:String x:Key="Page_Keys_UnlockCursor_Primary_ToolTip" xml:space="preserve">Основная клавиша временного освобождения курсора и фиксации руля при удержании (например, для обзора).</sys:String>
+    <sys:String x:Key="Page_Keys_Warning" xml:space="preserve">Назначения клавиш поворота влево и вправо активны только при включении режима «Управление с клавиатуры» в настройках руля.</sys:String>
+    <sys:String x:Key="Dialog_Export_TargetConfig" xml:space="preserve">ЦЕЛЕВАЯ КОНФИГУРАЦИЯ</sys:String>
+    <sys:String x:Key="Dialog_Export_PresetName" xml:space="preserve">Название пресета</sys:String>
+    <sys:String x:Key="Dialog_Export_CopyCode" xml:space="preserve">Скопировать код пресета</sys:String>
+    <sys:String x:Key="Dialog_Export_SaveFile" xml:space="preserve">Экспорт в файл (.vwh)...</sys:String>
+    <sys:String x:Key="Dialog_Export_SaveFileDialog_Title" xml:space="preserve">Экспорт пресета профиля</sys:String>
+    <sys:String x:Key="Dialog_Import_Header" xml:space="preserve">Импорт пресета профиля</sys:String>
+    <sys:String x:Key="KeyBind_Unbind_ToolTip" xml:space="preserve">Отвязать</sys:String>
+    <sys:String x:Key="KeyBind_PressAnyKey" xml:space="preserve">Нажмите любую клавишу...</sys:String>
+    <sys:String x:Key="KeyBind_ConflictFormat" xml:space="preserve">{0} уже используется для: {1}</sys:String>
+    <sys:String x:Key="KeyBind_None" xml:space="preserve">Нет</sys:String>
+    <sys:String x:Key="Ui_dbeb8e7198d7" xml:space="preserve">В текущем профиле есть несохранённые изменения. Сохраните их перед переключением.</sys:String>
+    <sys:String x:Key="Ui_3580469d06f3" xml:space="preserve">Действие</sys:String>
+    <sys:String x:Key="Ui_7d907ad785cc" xml:space="preserve">Настройки приложения</sys:String>
+    <sys:String x:Key="Ui_cd64194d42f7" xml:space="preserve">Обновления</sys:String>
+    <sys:String x:Key="Ui_4b8eea178c46" xml:space="preserve">Переключиться</sys:String>
+    <sys:String x:Key="Ui_af2d089f586c" xml:space="preserve">Время нажатия до порога</sys:String>
+    <sys:String x:Key="Ui_bff4b3769649" xml:space="preserve">Время нажатия от порога до 100%</sys:String>
+    <sys:String x:Key="Ui_d95082a2ee57" xml:space="preserve">Автор</sys:String>
+    <sys:String x:Key="Ui_9e4a53b33b0d" xml:space="preserve">Определять игру автоматически</sys:String>
+    <sys:String x:Key="Ui_55bc464ca374" xml:space="preserve">Калибровка осей</sys:String>
+    <sys:String x:Key="Ui_c110ea64b741" xml:space="preserve">Тормоз</sys:String>
+    <sys:String x:Key="Ui_b34724a152c9" xml:space="preserve">Время сброса газа при торможении</sys:String>
+    <sys:String x:Key="Ui_dc4e506ed294" xml:space="preserve">Линейность</sys:String>
+    <sys:String x:Key="Ui_8011b9f75b94" xml:space="preserve">Линейность тормоза</sys:String>
+    <sys:String x:Key="Ui_b990fab5dbc4" xml:space="preserve">Тормоз</sys:String>
+    <sys:String x:Key="Ui_a8ea852dab63" xml:space="preserve">Угол руля автомобиля</sys:String>
+    <sys:String x:Key="Ui_e398f7d43a7b" xml:space="preserve">Смещение центра</sys:String>
+    <sys:String x:Key="Ui_9ed79ee9b212" xml:space="preserve">Проверить обновления</sys:String>
+    <sys:String x:Key="Ui_67b696468610" xml:space="preserve">Обзор</sys:String>
+    <sys:String x:Key="Ui_b141eb1ee136" xml:space="preserve">Порог смены темпа нажатия</sys:String>
+    <sys:String x:Key="Ui_526e0087cc3f" xml:space="preserve">Описание</sys:String>
+    <sys:String x:Key="Ui_ae7d3c5843fe" xml:space="preserve">Результат проверки</sys:String>
+    <sys:String x:Key="Ui_eb1a70e39274" xml:space="preserve">Отклонить</sys:String>
+    <sys:String x:Key="Ui_e07e053c2e10" xml:space="preserve">Не сохранять</sys:String>
+    <sys:String x:Key="Ui_144884bad664" xml:space="preserve">Скрыть предупреждение</sys:String>
+    <sys:String x:Key="Ui_6ea67f029794" xml:space="preserve">Скачать обновление</sys:String>
+    <sys:String x:Key="Ui_cf7e2003932f" xml:space="preserve">Время возврата руля после отпускания клавиши.</sys:String>
+    <sys:String x:Key="Ui_1d84728ea880" xml:space="preserve">Время от центра до полного поворота при удержании клавиши.</sys:String>
+    <sys:String x:Key="Ui_5625033096a6" xml:space="preserve">Ограничить угол поворота</sys:String>
+    <sys:String x:Key="Ui_60e7fb8d49a2" xml:space="preserve">Полное нажатие (0–100%):</sys:String>
+    <sys:String x:Key="Ui_bbc0dc3c2d4c" xml:space="preserve">Состояние хаба, выходные оси и подключение симулятора.</sys:String>
+    <sys:String x:Key="Ui_a23cb954f828" xml:space="preserve">Выше 1 — точнее у центра. Ниже 1 — быстрее реакция на небольшое движение.</sys:String>
+    <sys:String x:Key="Ui_84852ef7bce5" xml:space="preserve">Чем выше значение, тем плавнее отклик тормоза в начале нажатия.</sys:String>
+    <sys:String x:Key="Ui_83f471b6e894" xml:space="preserve">Чем выше значение, тем точнее дозирование газа в начале нажатия.</sys:String>
+    <sys:String x:Key="Ui_ecf9ffc12b60" xml:space="preserve">Обнаружена другая игра</sys:String>
+    <sys:String x:Key="Ui_4626aac2f901" xml:space="preserve">Обнаружена другая игра</sys:String>
+    <sys:String x:Key="Ui_127c3f97b7a6" xml:space="preserve">Основные</sys:String>
+    <sys:String x:Key="Ui_6fc2adc0ceaa" xml:space="preserve">Поделитесь кодом настройки или сохраните профиль в файл.</sys:String>
+    <sys:String x:Key="Ui_f0f1765411c8" xml:space="preserve">Мгновенно поворачивать руль до упора.</sys:String>
+    <sys:String x:Key="Ui_5fb0deaf49b5" xml:space="preserve">Нажмите клавишу или кнопку мыши. Esc — отменить.</sys:String>
+    <sys:String x:Key="Ui_2e1c1069f24e" xml:space="preserve">Линейность руля</sys:String>
+    <sys:String x:Key="Ui_d1c76800f087" xml:space="preserve">Язык интерфейса</sys:String>
+    <sys:String x:Key="Ui_660384b1d7af" xml:space="preserve">Инверсия тормоза</sys:String>
+    <sys:String x:Key="Ui_8cfc7f4c3f57" xml:space="preserve">Инверсия газа</sys:String>
+    <sys:String x:Key="Ui_878e3ac30d94" xml:space="preserve">Предпросмотр: настройки и страницы приложения без подключения устройств.</sys:String>
+    <sys:String x:Key="Ui_23bf625ce5ab" xml:space="preserve">Назначение клавиш</sys:String>
+    <sys:String x:Key="Ui_ef8f8f7a8374" xml:space="preserve">Эта клавиша уже используется</sys:String>
+    <sys:String x:Key="Ui_58326a43567c" xml:space="preserve">Руление с клавиатуры</sys:String>
+    <sys:String x:Key="Ui_4eb746e348f9" xml:space="preserve">Руление клавишами</sys:String>
+    <sys:String x:Key="Ui_d7c7da8b1d85" xml:space="preserve">Язык, обновления и обслуживание приложения.</sys:String>
+    <sys:String x:Key="Ui_e574b3bde371" xml:space="preserve">Согласовать диапазон руля с углом поворота выбранного автомобиля.</sys:String>
+    <sys:String x:Key="Ui_5cffe59fd046" xml:space="preserve">Клавиатура, кнопки мыши и колесо прокрутки. Конфликты назначений проверяются автоматически.</sys:String>
+    <sys:String x:Key="Ui_1f284960cf0c" xml:space="preserve">Максимум</sys:String>
+    <sys:String x:Key="Ui_5425325f3103" xml:space="preserve">Полный диапазон руля</sys:String>
+    <sys:String x:Key="Ui_80329b381a36" xml:space="preserve">Минимум</sys:String>
+    <sys:String x:Key="Ui_7ce1afa3f281" xml:space="preserve">Режим</sys:String>
+    <sys:String x:Key="Ui_cdd6daa893b1" xml:space="preserve">Чувствительность мыши</sys:String>
+    <sys:String x:Key="Ui_2fc10512fb73" xml:space="preserve">Доступна новая версия</sys:String>
+    <sys:String x:Key="Ui_7a7633d3ca5f" xml:space="preserve">Профиль ещё не выбран</sys:String>
+    <sys:String x:Key="Ui_5f95c61312b0" xml:space="preserve">Особенности настройки и поведения автомобиля</sys:String>
+    <sys:String x:Key="Ui_71c8b87c75ad" xml:space="preserve">Выходные оси</sys:String>
+    <sys:String x:Key="Ui_e5f914fbed9b" xml:space="preserve">Выходные оси</sys:String>
+    <sys:String x:Key="Ui_d93e5286e800" xml:space="preserve">Насколько быстро руль реагирует на движение мыши.</sys:String>
+    <sys:String x:Key="Ui_4df234690b03" xml:space="preserve">КОД ПРОФИЛЯ ИЛИ ФАЙЛ</sys:String>
+    <sys:String x:Key="Ui_59e1f415bf9d" xml:space="preserve">ПРЕДПРОСМОТР</sys:String>
+    <sys:String x:Key="Ui_8f71e54796e7" xml:space="preserve">Основная кнопка</sys:String>
+    <sys:String x:Key="Ui_7a43745238a2" xml:space="preserve">Вставьте код VWH1-… или JSON</sys:String>
+    <sys:String x:Key="Ui_acc79880d626" xml:space="preserve">Вставьте код или откройте файл .vwhub, чтобы проверить настройки перед импортом.</sys:String>
+    <sys:String x:Key="Ui_6e80136eea32" xml:space="preserve">Педали</sys:String>
+    <sys:String x:Key="Ui_4a90af55e031" xml:space="preserve">Педали</sys:String>
+    <sys:String x:Key="Ui_b4a4c70ccf3a" xml:space="preserve">Переключать профиль при запуске поддерживаемого симулятора.</sys:String>
+    <sys:String x:Key="Ui_b608e3dfff6e" xml:space="preserve">Проверка выбранного виртуального контроллера и доступа к устройствам ввода. Связь с игрой проверяется отдельно.</sys:String>
+    <sys:String x:Key="Ui_7b2ff0886f69" xml:space="preserve">Проверка…</sys:String>
+    <sys:String x:Key="Ui_535e52e4a261" xml:space="preserve">Профили</sys:String>
+    <sys:String x:Key="Ui_b19457eeca75" xml:space="preserve">Что можно сделать</sys:String>
+    <sys:String x:Key="Ui_fe09770d531c" xml:space="preserve">Время отпускания (100–0%)</sys:String>
+    <sys:String x:Key="Ui_c28205673d49" xml:space="preserve">Стандартная калибровка</sys:String>
+    <sys:String x:Key="Ui_7b9f883f9636" xml:space="preserve">Линейность</sys:String>
+    <sys:String x:Key="Ui_4a2e856a7924" xml:space="preserve">Изменить направление оси тормоза.</sys:String>
+    <sys:String x:Key="Ui_309c0adfec27" xml:space="preserve">Изменить направление оси газа.</sys:String>
+    <sys:String x:Key="Ui_e90fafd8ddef" xml:space="preserve">Проверить устройство</sys:String>
+    <sys:String x:Key="Ui_51fc2ca654c7" xml:space="preserve">Дополнительная кнопка</sys:String>
+    <sys:String x:Key="Ui_35322b5bb5a2" xml:space="preserve">Сохранить изменения</sys:String>
+    <sys:String x:Key="Ui_76b810fdf9d9" xml:space="preserve">Сохранить в файл…</sys:String>
+    <sys:String x:Key="Ui_f12d9789f48a" xml:space="preserve">Чувствительность, кривая отклика, диапазон поворота и зависимость от скорости.</sys:String>
+    <sys:String x:Key="Ui_74a883a037bc" xml:space="preserve">Настройки</sys:String>
+    <sys:String x:Key="Ui_168b43930f68" xml:space="preserve">Переключиться на профиль обнаруженного симулятора?</sys:String>
+    <sys:String x:Key="Ui_755c8b2a9fb1" xml:space="preserve">Состояние</sys:String>
+    <sys:String x:Key="Ui_785d3986a74f" xml:space="preserve">Руль</sys:String>
+    <sys:String x:Key="Ui_305b8b980ec1" xml:space="preserve">Линейность и смещение</sys:String>
+    <sys:String x:Key="Ui_bbb99a3aa5b4" xml:space="preserve">Время поворота</sys:String>
+    <sys:String x:Key="Ui_f87df89a0839" xml:space="preserve">Возврат в центр</sys:String>
+    <sys:String x:Key="Ui_754b0d2e9711" xml:space="preserve">Руление</sys:String>
+    <sys:String x:Key="Ui_cddefdcc39b1" xml:space="preserve">Руление</sys:String>
+    <sys:String x:Key="Ui_d430f70620d8" xml:space="preserve">Не удалось запустить хаб</sys:String>
+    <sys:String x:Key="Ui_0db35ddaa9f6" xml:space="preserve">Газ</sys:String>
+    <sys:String x:Key="Ui_04b5622ee264" xml:space="preserve">Газ</sys:String>
+    <sys:String x:Key="Ui_d84f6e0617b2" xml:space="preserve">Линейность</sys:String>
+    <sys:String x:Key="Ui_951d97384917" xml:space="preserve">Линейность газа</sys:String>
+    <sys:String x:Key="Ui_897c55421a11" xml:space="preserve">Отклик газа и тормоза и время нажатия.</sys:String>
+    <sys:String x:Key="Ui_4003024a98dd" xml:space="preserve">Время нажатия двумя клавишами газа</sys:String>
+    <sys:String x:Key="Ui_a31428a467d6" xml:space="preserve">Диагностика устройства</sys:String>
+    <sys:String x:Key="Ui_e56d9ecfa817" xml:space="preserve">Диапазоны и направление осей.</sys:String>
+    <sys:String x:Key="Ui_2eb430faa424" xml:space="preserve">Управлять рулём с клавиатуры вместо мыши.</sys:String>
+    <sys:String x:Key="Ui_f2213bcf1956" xml:space="preserve">Имя или ник, необязательно</sys:String>
+    <sys:String x:Key="Ui_a25fed4fe254" xml:space="preserve">Положение центра в единицах устройства: от −32768 до 32768.</sys:String>
+    <sys:String x:Key="Ui_aed8c1840cfe" xml:space="preserve">Например: Assetto Corsa · GT3</sys:String>
+    <sys:String x:Key="Ui_7e688ff57e41" xml:space="preserve">Обзор</sys:String>
+    <sys:String x:Key="Ui_102815389c77" xml:space="preserve">Настройки</sys:String>
+    <sys:String x:Key="Ui_6dddc1bfad77" xml:space="preserve">Поддержать на Boosty</sys:String>
+    <sys:String x:Key="Ui_b7c6095c80ba" xml:space="preserve">Исходный код</sys:String>
+    <sys:String x:Key="Ui_3da42b09f945" xml:space="preserve">Сообщество Discord</sys:String>
+    <sys:String x:Key="Ui_26cda12d5ef9" xml:space="preserve">Профили</sys:String>
+    <sys:String x:Key="Ui_2ef57cfafd92" xml:space="preserve">Документация</sys:String>
+    <sys:String x:Key="Ui_b74bf22af826" xml:space="preserve">Журналы</sys:String>
+    <sys:String x:Key="Ui_4db779894a56" xml:space="preserve">Версии и изменения</sys:String>
+    <sys:String x:Key="Ui_RestoreSetting" xml:space="preserve">Вернуть</sys:String>
+    <sys:String x:Key="Ui_RestoreSettingHint" xml:space="preserve">Вернуть сохранённое значение этой настройки</sys:String>
+    <sys:String x:Key="Ui_ProfileSaved" xml:space="preserve">Все изменения сохранены</sys:String>
+    <sys:String x:Key="Ui_ProfileNew" xml:space="preserve">Новый профиль · сохраните настройки</sys:String>
+    <sys:String x:Key="Ui_ProfileModified" xml:space="preserve">Есть несохранённые изменения</sys:String>
+    <sys:String x:Key="Ui_UndoHint" xml:space="preserve">Отменить изменение профиля и несохранённый выбор устройств · Ctrl+Z</sys:String>
+    <sys:String x:Key="Ui_SaveHint" xml:space="preserve">Сохранить изменения профиля и выбор устройств ввода · Ctrl+S</sys:String>
+    <sys:String x:Key="Ui_About" xml:space="preserve">О программе</sys:String>
+    <sys:String x:Key="Ui_Documentation" xml:space="preserve">Wiki и руководства</sys:String>
+    <sys:String x:Key="Ui_Community" xml:space="preserve">Discord</sys:String>
+    <sys:String x:Key="Ui_Support" xml:space="preserve">Поддержать на Boosty</sys:String>
+    <sys:String x:Key="Ui_ProjectDescription" xml:space="preserve">vWheel Hub превращает мышь и клавиатуру в виртуальный гоночный руль.</sys:String>
+    <sys:String x:Key="Ui_DiscordDescription" xml:space="preserve">Обмен настройками и общение с другими гонщиками.</sys:String>
+    <sys:String x:Key="Ui_BoostyDescription" xml:space="preserve">Поддержите развитие проекта и следите за обновлениями.</sys:String>
+    <sys:String x:Key="Ui_SponsorsTitle" xml:space="preserve">Спасибо за поддержку</sys:String>
+    <sys:String x:Key="Ui_SponsorsDescription" xml:space="preserve">Каждый вклад помогает делать управление лучше.</sys:String>
+    <sys:String x:Key="Ui_BecomeSponsor" xml:space="preserve">Стать спонсором</sys:String>
+    <sys:String x:Key="Ui_Thanks" xml:space="preserve">Спасибо, что вы с vWheel Hub.</sys:String>
+    <sys:String x:Key="Ui_Repository" xml:space="preserve">Исходный код</sys:String>
+    <sys:String x:Key="Ui_Changelog" xml:space="preserve">Версии и изменения</sys:String>
+    <sys:String x:Key="Ui_NewProfile" xml:space="preserve">Новый профиль</sys:String>
+    <sys:String x:Key="Ui_Import" xml:space="preserve">Импортировать</sys:String>
+    <sys:String x:Key="Ui_Export" xml:space="preserve">Поделиться</sys:String>
+    <sys:String x:Key="Ui_ProfileActions" xml:space="preserve">Действия с профилем</sys:String>
+    <sys:String x:Key="Ui_ProfileDetails" xml:space="preserve">Сведения о профиле</sys:String>
+    <sys:String x:Key="Ui_ResetKeys" xml:space="preserve">Стандартные назначения</sys:String>
+    <sys:String x:Key="Ui_ClearKeys" xml:space="preserve">Очистить все назначения</sys:String>
+    <sys:String x:Key="Ui_On" xml:space="preserve">Вкл.</sys:String>
+    <sys:String x:Key="Ui_Off" xml:space="preserve">Выкл.</sys:String>
+    <sys:String x:Key="Ui_PreviewMode" xml:space="preserve">Предпросмотр · устройства не подключены</sys:String>
+    <sys:String x:Key="Ui_Cancel" xml:space="preserve">Отмена</sys:String>
+    <sys:String x:Key="Ui_Format_c235fd1930" xml:space="preserve">Захват мыши: {0}</sys:String>
+    <sys:String x:Key="Ui_Format_4c8196f66b" xml:space="preserve">{0:0.000} с</sys:String>
+    <sys:String x:Key="Ui_Format_5ed2e2e4c9" xml:space="preserve">Профиль: {0}</sys:String>
+    <sys:String x:Key="Ui_Message_1a05fda18b" xml:space="preserve">Не удалось создать профиль</sys:String>
+    <sys:String x:Key="Ui_Message_880328aec7" xml:space="preserve">Не удалось сохранить новый профиль.</sys:String>
+    <sys:String x:Key="Ui_Message_269c7045f7" xml:space="preserve">Нельзя переименовать</sys:String>
+    <sys:String x:Key="Ui_Message_d4c84c795f" xml:space="preserve">Стандартный профиль нельзя переименовать. Создайте его копию.</sys:String>
+    <sys:String x:Key="Ui_Message_13e348fdd0" xml:space="preserve">Проверьте название</sys:String>
+    <sys:String x:Key="Ui_Message_fda3dbb681" xml:space="preserve">Введите название профиля.</sys:String>
+    <sys:String x:Key="Ui_Message_cd0e64d3e9" xml:space="preserve">В названии нет допустимых символов.</sys:String>
+    <sys:String x:Key="Ui_Message_b89e58be8a" xml:space="preserve">Не удалось переименовать</sys:String>
+    <sys:String x:Key="Ui_Message_2fdef742b6" xml:space="preserve">Профиль «{0}» уже существует.</sys:String>
+    <sys:String x:Key="Ui_Message_50363249c1" xml:space="preserve">Не удалось сохранить новое название профиля.</sys:String>
+    <sys:String x:Key="Ui_Message_cfe1f0c0c8" xml:space="preserve">Нельзя удалить</sys:String>
+    <sys:String x:Key="Ui_Message_c992320e77" xml:space="preserve">Стандартный профиль нельзя удалить.</sys:String>
+    <sys:String x:Key="Ui_Message_4e5fc6f52f" xml:space="preserve">Удалить профиль</sys:String>
+    <sys:String x:Key="Ui_Message_785fb55893" xml:space="preserve">Удалить профиль «{0}»? Это действие нельзя отменить.</sys:String>
+    <sys:String x:Key="Ui_Message_6e455f706d" xml:space="preserve">Не удалось удалить</sys:String>
+    <sys:String x:Key="Ui_Message_f28cbdfe56" xml:space="preserve">Не удалось удалить файл профиля: {0}</sys:String>
+    <sys:String x:Key="Ui_Message_e94edb2b38" xml:space="preserve">{0} (копия)</sys:String>
+    <sys:String x:Key="Ui_Message_2d6ed53e7f" xml:space="preserve">Не удалось создать копию</sys:String>
+    <sys:String x:Key="Ui_Message_4701ba3995" xml:space="preserve">Не удалось сохранить копию профиля.</sys:String>
+    <sys:String x:Key="Ui_Message_8678e199a7" xml:space="preserve">Экспорт профиля…</sys:String>
+    <sys:String x:Key="Ui_Message_38d03c629a" xml:space="preserve">Копирование кода…</sys:String>
+    <sys:String x:Key="Ui_Message_a7e6dbd845" xml:space="preserve">Профиль экспортирован</sys:String>
+    <sys:String x:Key="Ui_Message_147304a111" xml:space="preserve">Код профиля скопирован. Теперь им можно поделиться.</sys:String>
+    <sys:String x:Key="Ui_Message_bcebda692c" xml:space="preserve">Выбор файла…</sys:String>
+    <sys:String x:Key="Ui_Message_09876dabd9" xml:space="preserve">Не удалось импортировать</sys:String>
+    <sys:String x:Key="Ui_Message_d826e1f97e" xml:space="preserve">Чтение буфера обмена…</sys:String>
+    <sys:String x:Key="Ui_Message_e7286e0417" xml:space="preserve">В буфере обмена нет подходящего кода профиля.</sys:String>
+    <sys:String x:Key="Ui_Message_04fee11023" xml:space="preserve">Заменить настройки?</sys:String>
+    <sys:String x:Key="Ui_Message_03c467e5ac" xml:space="preserve">В текущем профиле есть несохранённые изменения. Заменить их импортированными настройками?</sys:String>
+    <sys:String x:Key="Ui_Message_fd8c48f36d" xml:space="preserve">Профиль импортирован</sys:String>
+    <sys:String x:Key="Ui_Message_3e1a431d86" xml:space="preserve">Новый профиль {0}</sys:String>
+    <sys:String x:Key="Ui_Message_2bd3deb779" xml:space="preserve">{0} · настройка</sys:String>
+    <sys:String x:Key="Ui_Message_50f06ca758" xml:space="preserve">Универсальная настройка</sys:String>
+    <sys:String x:Key="Ui_Message_8d35b49867" xml:space="preserve">Код скопирован. Поделитесь им с другими гонщиками.</sys:String>
+    <sys:String x:Key="Ui_Message_a5126f46f8" xml:space="preserve">Не удалось скопировать код: {0}</sys:String>
+    <sys:String x:Key="Ui_Message_e28e63462f" xml:space="preserve">Профиль vWheel Hub (*.vwhub, *.json)</sys:String>
+    <sys:String x:Key="Ui_Message_6ae05840ac" xml:space="preserve">Все файлы (*.*)</sys:String>
+    <sys:String x:Key="Ui_Message_07ad645ec6" xml:space="preserve">Экспорт профиля</sys:String>
+    <sys:String x:Key="Ui_Message_b803216545" xml:space="preserve">Сохранён файл: {0}</sys:String>
+    <sys:String x:Key="Ui_Message_45f297da6c" xml:space="preserve">Не удалось сохранить файл: {0}</sys:String>
+    <sys:String x:Key="Ui_Message_baad7626ba" xml:space="preserve">Сохранить как отдельный профиль</sys:String>
+    <sys:String x:Key="Ui_Message_ae4e70372c" xml:space="preserve">Применить к текущему профилю ({0})</sys:String>
+    <sys:String x:Key="Ui_Message_74b84bb326" xml:space="preserve">Код профиля некорректен или повреждён.</sys:String>
+    <sys:String x:Key="Ui_Message_53b338d45a" xml:space="preserve">Импортированный профиль</sys:String>
+    <sys:String x:Key="Ui_Message_b1a4c78acc" xml:space="preserve">Автор: {0} · {1}</sys:String>
+    <sys:String x:Key="Ui_Message_471a26cb56" xml:space="preserve">Создан {0}</sys:String>
+    <sys:String x:Key="Ui_Message_f88169d7ab" xml:space="preserve">Сохранить для автомобиля ({0})</sys:String>
+    <sys:String x:Key="Ui_Message_5a839bae46" xml:space="preserve">Чувствительность: {0:0.00} · {1} Гц</sys:String>
+    <sys:String x:Key="Ui_Message_568ed9dc8d" xml:space="preserve">(линейная)</sys:String>
+    <sys:String x:Key="Ui_Message_fad8a5066b" xml:space="preserve">Кривая руля: γ = {0:0.00}{1}</sys:String>
+    <sys:String x:Key="Ui_Message_5e62a701ab" xml:space="preserve">Угол руля: {0:0}°</sys:String>
+    <sys:String x:Key="Ui_Message_c41ab16c71" xml:space="preserve">Угол руля: автоматически</sys:String>
+    <sys:String x:Key="Ui_Message_91590274ad" xml:space="preserve">Газ: до границы {0:0.000} с · после {1:0.000} с</sys:String>
+    <sys:String x:Key="Ui_Message_f2593f97e1" xml:space="preserve">Кривая газа: γ = {0:0.00}</sys:String>
+    <sys:String x:Key="Ui_Message_c9c47a6dc0" xml:space="preserve">Тормоз: до границы {0:0.000} с · после {1:0.000} с</sys:String>
+    <sys:String x:Key="Ui_Message_d5d188263a" xml:space="preserve">Кривая тормоза: γ = {0:0.00}</sys:String>
+    <sys:String x:Key="Ui_Message_7aae6111b1" xml:space="preserve">В буфере обмена нет текста.</sys:String>
+    <sys:String x:Key="Ui_Message_d3dae8fcb7" xml:space="preserve">Не удалось прочитать буфер обмена: {0}</sys:String>
+    <sys:String x:Key="Ui_Message_27fe4208cf" xml:space="preserve">Открыть профиль vWheel Hub</sys:String>
+    <sys:String x:Key="Ui_Message_c19f1be820" xml:space="preserve">Загружен файл: {0}</sys:String>
+    <sys:String x:Key="Ui_Message_7be4905ac4" xml:space="preserve">Файл «{0}» не содержит подходящего профиля.</sys:String>
+    <sys:String x:Key="Ui_Message_6ea8b29b14" xml:space="preserve">Не удалось открыть файл: {0}</sys:String>
+    <sys:String x:Key="Ui_ProfilesTitle" xml:space="preserve">Профили</sys:String>
+    <sys:String x:Key="Ui_ProfilesDescription" xml:space="preserve">Настройка для каждого автомобиля. Создайте свою или импортируйте готовую.</sys:String>
+    <sys:String x:Key="Ui_DuplicateProfile" xml:space="preserve">Создать копию</sys:String>
+    <sys:String x:Key="Ui_RenameProfile" xml:space="preserve">Переименовать…</sys:String>
+    <sys:String x:Key="Ui_DeleteProfile" xml:space="preserve">Удалить профиль…</sys:String>
+    <sys:String x:Key="Ui_HertzFormat" xml:space="preserve">{0} Гц</sys:String>
+    <sys:String x:Key="Ui_ProfileName" xml:space="preserve">Название профиля</sys:String>
+    <sys:String x:Key="Ui_Continue" xml:space="preserve">Продолжить</sys:String>
+    <sys:String x:Key="Status_HubRunning" xml:space="preserve">Хаб включён</sys:String>
+    <sys:String x:Key="Status_HubStopped" xml:space="preserve">Хаб выключен</sys:String>
+    <sys:String x:Key="Ui_AxisGas" xml:space="preserve">ГАЗ</sys:String>
+    <sys:String x:Key="Ui_AxisBrake" xml:space="preserve">ТОРМОЗ</sys:String>
+    <sys:String x:Key="Ui_Input" xml:space="preserve">Вход</sys:String>
+    <sys:String x:Key="Ui_Output" xml:space="preserve">Выход</sys:String>
+    <sys:String x:Key="Ui_UnsavedMessage" xml:space="preserve">Сохранить изменения перед продолжением?</sys:String>
+    <sys:String x:Key="Msg_Updates_Checking" xml:space="preserve">Проверка обновлений…</sys:String>
+    <sys:String x:Key="Msg_Updates_NewVersionAvailableFormat" xml:space="preserve">Доступна версия {0}</sys:String>
+    <sys:String x:Key="Msg_Updates_UpToDate" xml:space="preserve">Установлена последняя версия.</sys:String>
+    <sys:String x:Key="Msg_Updates_Cancelled" xml:space="preserve">Проверка обновлений отменена.</sys:String>
+    <sys:String x:Key="Msg_Updates_Failed" xml:space="preserve">Не удалось проверить обновления.</sys:String>
+    <sys:String x:Key="Status_Running" xml:space="preserve">Работает</sys:String>
+    <sys:String x:Key="Status_Stopped" xml:space="preserve">Остановлен</sys:String>
+    <sys:String x:Key="Status_Fault" xml:space="preserve">Ошибка</sys:String>
+    <sys:String x:Key="Status_StartingHub" xml:space="preserve">Запуск хаба…</sys:String>
+    <sys:String x:Key="Status_StoppingHub" xml:space="preserve">Остановка хаба…</sys:String>
+    <sys:String x:Key="Status_OutputReady" xml:space="preserve">Устройство готово к проверке</sys:String>
+    <sys:String x:Key="Status_CheckingDiagnostics" xml:space="preserve">Проверка устройства…</sys:String>
+    <sys:String x:Key="Status_DiagnosticFailed" xml:space="preserve">Не удалось проверить устройство</sys:String>
+    <sys:String x:Key="Status_Error" xml:space="preserve">Ошибка</sys:String>
+    <sys:String x:Key="Title_StartError" xml:space="preserve">Не удалось запустить хаб</sys:String>
+    <sys:String x:Key="Title_UnsavedChanges" xml:space="preserve">Несохранённые изменения</sys:String>
+    <sys:String x:Key="Msg_UnsavedChanges_Prompt" xml:space="preserve">В профиле «{0}» есть изменения. Сохранить их перед переключением на «{1}»?</sys:String>
+    <sys:String x:Key="Btn_Save" xml:space="preserve">Сохранить</sys:String>
+    <sys:String x:Key="Btn_Discard" xml:space="preserve">Не сохранять</sys:String>
+    <sys:String x:Key="Title_RuntimeFault" xml:space="preserve">Ошибка хаба</sys:String>
+    <sys:String x:Key="Ui_NavKeys" xml:space="preserve">Клавиши</sys:String>
+    <sys:String x:Key="Ui_NumberSecondsFormat" xml:space="preserve">0.000 с</sys:String>
+    <sys:String x:Key="Ui_Message_InvalidProfileName" xml:space="preserve">Проверьте название профиля</sys:String>
+    <sys:String x:Key="Ui_Message_EnterProfileName" xml:space="preserve">Введите допустимое название профиля.</sys:String>
+    <sys:String x:Key="Ui_ProfileExistsFormat" xml:space="preserve">Профиль «{0}» уже существует. Выберите другое название.</sys:String>
+    <sys:String x:Key="Ui_TabGas" xml:space="preserve">Газ</sys:String>
+    <sys:String x:Key="Ui_TabBrake" xml:space="preserve">Тормоз</sys:String>
+    <sys:String x:Key="Nav_Controls" xml:space="preserve">Управление</sys:String>
+    <sys:String x:Key="Nav_General" xml:space="preserve">Общие</sys:String>
+    <sys:String x:Key="Ui_PreviewDiagnosticsNote" xml:space="preserve">Предпросмотр: результаты проверки демонстрационные, установленные драйверы не проверяются.</sys:String>
+    <sys:String x:Key="Profiles_SearchPlaceholder" xml:space="preserve">Игра, класс или машина…</sys:String>
+    <sys:String x:Key="Profiles_SearchHint" xml:space="preserve">Поиск по всем профилям · Ctrl+F</sys:String>
+    <sys:String x:Key="Profiles_TotalCount" xml:space="preserve">Всего профилей: {0}</sys:String>
+    <sys:String x:Key="Profiles_SearchCount" xml:space="preserve">Найдено профилей: {0}</sys:String>
+    <sys:String x:Key="Profiles_BaseProfile" xml:space="preserve">Общий профиль</sys:String>
+    <sys:String x:Key="Profiles_GameProfile" xml:space="preserve">Настройки игры</sys:String>
+    <sys:String x:Key="Profiles_ClassProfile" xml:space="preserve">Настройки класса</sys:String>
+    <sys:String x:Key="Profiles_CarProfile" xml:space="preserve">Настройки машины</sys:String>
+    <sys:String x:Key="Profiles_CarCountHint" xml:space="preserve">Количество профилей машин в группе</sys:String>
+    <sys:String x:Key="Profiles_QuickSettingsTitle" xml:space="preserve">Быстрая настройка</sys:String>
+    <sys:String x:Key="Profiles_QuickSettingsHint" xml:space="preserve">Основное для выбранного профиля. Нажмите на название раздела, чтобы открыть все его настройки.</sys:String>
+    <sys:String x:Key="Profiles_ToggleGroup" xml:space="preserve">Развернуть или свернуть группу</sys:String>
+    <sys:String x:Key="Profiles_CollapseAll" xml:space="preserve">Свернуть группы</sys:String>
+    <sys:String x:Key="Profiles_ClearSearch" xml:space="preserve">Очистить поиск</sys:String>
+    <sys:String x:Key="Profiles_ShowCurrent" xml:space="preserve">К текущему профилю</sys:String>
+    <sys:String x:Key="Profiles_NoResults" xml:space="preserve">Профили не найдены</sys:String>
+    <sys:String x:Key="Profiles_NoResultsHint" xml:space="preserve">Попробуйте название игры, класса или часть названия машины.</sys:String>
+    <sys:String x:Key="Profiles_UnsavedYes" xml:space="preserve">Да</sys:String>
+    <sys:String x:Key="Profiles_UnsavedNo" xml:space="preserve">Нет</sys:String>
+    <sys:String x:Key="ProfileSetting_MouseSensitivity" xml:space="preserve">Чувствительность мыши</sys:String>
+    <sys:String x:Key="ProfileSetting_SteeringOffset" xml:space="preserve">Смещение центра</sys:String>
+    <sys:String x:Key="ProfileSetting_SteeringGamma" xml:space="preserve">Нелинейность руля</sys:String>
+    <sys:String x:Key="ProfileSetting_PollingRate" xml:space="preserve">Частота обновления</sys:String>
+    <sys:String x:Key="ProfileSetting_GasThreshold" xml:space="preserve">Порог смены темпа нажатия газа</sys:String>
+    <sys:String x:Key="ProfileSetting_GasAttackTurbo" xml:space="preserve">Время нажатия газа обеими клавишами</sys:String>
+    <sys:String x:Key="ProfileSetting_GasAttackFast" xml:space="preserve">Время нажатия газа до порога</sys:String>
+    <sys:String x:Key="ProfileSetting_GasAttackSlow" xml:space="preserve">Время нажатия газа от порога до 100%</sys:String>
+    <sys:String x:Key="ProfileSetting_GasDecay" xml:space="preserve">Время отпускания газа</sys:String>
+    <sys:String x:Key="ProfileSetting_GasInstantCut" xml:space="preserve">Время сброса газа при торможении</sys:String>
+    <sys:String x:Key="ProfileSetting_GasGamma" xml:space="preserve">Нелинейность газа</sys:String>
+    <sys:String x:Key="ProfileSetting_BrakeThreshold" xml:space="preserve">Порог смены темпа нажатия тормоза</sys:String>
+    <sys:String x:Key="ProfileSetting_BrakeAttackFast" xml:space="preserve">Время нажатия тормоза до порога</sys:String>
+    <sys:String x:Key="ProfileSetting_BrakeAttackSlow" xml:space="preserve">Время нажатия тормоза от порога до 100%</sys:String>
+    <sys:String x:Key="ProfileSetting_BrakeDecay" xml:space="preserve">Время отпускания тормоза</sys:String>
+    <sys:String x:Key="ProfileSetting_BrakeGamma" xml:space="preserve">Нелинейность тормоза</sys:String>
+    <sys:String x:Key="ProfileSetting_UseSteeringLockClamp" xml:space="preserve">Ограничитель поворота</sys:String>
+    <sys:String x:Key="ProfileSetting_CarSteeringLock" xml:space="preserve">Угол поворота руля машины</sys:String>
+    <sys:String x:Key="ProfileSetting_GlobalSteeringRange" xml:space="preserve">Общий диапазон руления</sys:String>
+    <sys:String x:Key="ProfileSetting_OutputMode" xml:space="preserve">Виртуальный контроллер</sys:String>
+    <sys:String x:Key="ProfileSetting_OutSteerMin" xml:space="preserve">Минимум оси руля</sys:String>
+    <sys:String x:Key="ProfileSetting_OutSteerMax" xml:space="preserve">Максимум оси руля</sys:String>
+    <sys:String x:Key="ProfileSetting_OutGasMin" xml:space="preserve">Минимум оси газа</sys:String>
+    <sys:String x:Key="ProfileSetting_OutGasMax" xml:space="preserve">Максимум оси газа</sys:String>
+    <sys:String x:Key="ProfileSetting_OutBrakeMin" xml:space="preserve">Минимум оси тормоза</sys:String>
+    <sys:String x:Key="ProfileSetting_OutBrakeMax" xml:space="preserve">Максимум оси тормоза</sys:String>
+    <sys:String x:Key="ProfileSetting_InvertSteering" xml:space="preserve">Инверсия руля</sys:String>
+    <sys:String x:Key="ProfileSetting_InvertGas" xml:space="preserve">Инверсия газа</sys:String>
+    <sys:String x:Key="ProfileSetting_InvertBrake" xml:space="preserve">Инверсия тормоза</sys:String>
+    <sys:String x:Key="ProfileSetting_UseKeyboardOnlyMode" xml:space="preserve">Руление с клавиатуры</sys:String>
+    <sys:String x:Key="ProfileSetting_KeySteerRampUpMs" xml:space="preserve">Время поворота с клавиатуры</sys:String>
+    <sys:String x:Key="ProfileSetting_KeySteerRampDownMs" xml:space="preserve">Время возврата руля</sys:String>
+    <sys:String x:Key="ProfileSetting_KeySteerSnapToFullLock" xml:space="preserve">Мгновенный поворот до упора</sys:String>
+    <sys:String x:Key="ProfileSetting_KeySteerLeft1" xml:space="preserve">Руль влево · клавиша 1</sys:String>
+    <sys:String x:Key="ProfileSetting_KeySteerLeft2" xml:space="preserve">Руль влево · клавиша 2</sys:String>
+    <sys:String x:Key="ProfileSetting_KeySteerRight1" xml:space="preserve">Руль вправо · клавиша 1</sys:String>
+    <sys:String x:Key="ProfileSetting_KeySteerRight2" xml:space="preserve">Руль вправо · клавиша 2</sys:String>
+    <sys:String x:Key="ProfileSetting_KeyGas1" xml:space="preserve">Газ · клавиша 1</sys:String>
+    <sys:String x:Key="ProfileSetting_KeyGas2" xml:space="preserve">Газ · клавиша 2</sys:String>
+    <sys:String x:Key="ProfileSetting_KeyBrake1" xml:space="preserve">Тормоз · клавиша 1</sys:String>
+    <sys:String x:Key="ProfileSetting_KeyBrake2" xml:space="preserve">Тормоз · клавиша 2</sys:String>
+    <sys:String x:Key="ProfileSetting_KeyShiftUp1" xml:space="preserve">Передача вверх · клавиша 1</sys:String>
+    <sys:String x:Key="ProfileSetting_KeyShiftUp2" xml:space="preserve">Передача вверх · клавиша 2</sys:String>
+    <sys:String x:Key="ProfileSetting_KeyShiftDown1" xml:space="preserve">Передача вниз · клавиша 1</sys:String>
+    <sys:String x:Key="ProfileSetting_KeyShiftDown2" xml:space="preserve">Передача вниз · клавиша 2</sys:String>
+    <sys:String x:Key="ProfileSetting_KeyCenterSteering1" xml:space="preserve">Центрирование руля · клавиша 1</sys:String>
+    <sys:String x:Key="ProfileSetting_KeyCenterSteering2" xml:space="preserve">Центрирование руля · клавиша 2</sys:String>
+    <sys:String x:Key="ProfileSetting_KeyToggleHub1" xml:space="preserve">Включение хаба · клавиша 1</sys:String>
+    <sys:String x:Key="ProfileSetting_KeyToggleHub2" xml:space="preserve">Включение хаба · клавиша 2</sys:String>
+    <sys:String x:Key="ProfileSetting_KeyToggleLock1" xml:space="preserve">Блокировка мыши · клавиша 1</sys:String>
+    <sys:String x:Key="ProfileSetting_KeyToggleLock2" xml:space="preserve">Блокировка мыши · клавиша 2</sys:String>
+    <sys:String x:Key="ProfileSetting_KeyUnlockCursor1" xml:space="preserve">Освобождение курсора · клавиша 1</sys:String>
+    <sys:String x:Key="ProfileSetting_KeyUnlockCursor2" xml:space="preserve">Освобождение курсора · клавиша 2</sys:String>
+    <sys:String x:Key="Summary_ComparedWith" xml:space="preserve">Сравнение с: {0}</sys:String>
+    <sys:String x:Key="Summary_FactoryDefaults" xml:space="preserve">настройками по умолчанию</sys:String>
+    <sys:String x:Key="Summary_Title" xml:space="preserve">Особенности профиля</sys:String>
+    <sys:String x:Key="Summary_Matching" xml:space="preserve">Индивидуальных отличий нет</sys:String>
+    <sys:String x:Key="Summary_MatchingHint" xml:space="preserve">Все значения совпадают с базой сравнения. Основные параметры доступны выше, остальные — в разделе «Управление».</sys:String>
+    <sys:String x:Key="Summary_ReadError" xml:space="preserve">Не удалось прочитать базовый профиль. Сравнение недоступно.</sys:String>
+    <sys:String x:Key="Summary_Hint" xml:space="preserve">Показаны только отличия. Нажмите на группу, чтобы перейти к её настройкам.</sys:String>
+    <sys:String x:Key="Summary_OneDifference" xml:space="preserve">{0}: {1} · в базе {2}</sys:String>
+    <sys:String x:Key="Summary_DifferenceCount" xml:space="preserve">Изменённых параметров: {0}</sys:String>
+    <sys:String x:Key="Summary_Details" xml:space="preserve">Все отличия</sys:String>
+    <sys:String x:Key="Summary_Base" xml:space="preserve">В базе сравнения</sys:String>
+    <sys:String x:Key="Summary_Enabled" xml:space="preserve">Включено</sys:String>
+    <sys:String x:Key="Summary_Disabled" xml:space="preserve">Выключено</sys:String>
+    <sys:String x:Key="Summary_Unassigned" xml:space="preserve">Не назначено</sys:String>
+    <sys:String x:Key="Summary_Seconds" xml:space="preserve">{0} с</sys:String>
+    <sys:String x:Key="Summary_BaselineValue" xml:space="preserve">В базе: {0}</sys:String>
+    <sys:String x:Key="Summary_Milliseconds" xml:space="preserve">{0} мс</sys:String>
+    <sys:String x:Key="Readiness_CheckFailed" xml:space="preserve">Не удалось проверить контроллер</sys:String>
+    <sys:String x:Key="Readiness_OutputUnavailable" xml:space="preserve">Виртуальный контроллер недоступен</sys:String>
+    <sys:String x:Key="Readiness_InputUnavailable" xml:space="preserve">Нет доступа к мыши или клавиатуре</sys:String>
+    <sys:String x:Key="Readiness_RetryAdvice" xml:space="preserve">Откройте диагностику устройства и повторите проверку.</sys:String>
+    <sys:String x:Key="Readiness_WindowsOutputAdvice" xml:space="preserve">Откройте диагностику здесь, чтобы проверить и исправить подключение виртуального руля.</sys:String>
+    <sys:String x:Key="Readiness_LinuxOutputAdvice" xml:space="preserve">Проверьте /dev/uinput и право вашего пользователя на запись.</sys:String>
+    <sys:String x:Key="Readiness_LinuxInputAdvice" xml:space="preserve">Проверьте доступ к мыши и клавиатуре через /dev/input/event*. После изменения групп пользователя войдите в систему заново.</sys:String>
+    <sys:String x:Key="Readiness_Fix" xml:space="preserve">Исправить…</sys:String>
+    <sys:String x:Key="Readiness_GuideDescription" xml:space="preserve">Первоначальная настройка, назначение управления в игре и ответы на вопросы.</sys:String>
+    <sys:String x:Key="Supporters_Vip" xml:space="preserve">Особая благодарность · VIP-спонсоры</sys:String>
+    <sys:String x:Key="Supporters_Project" xml:space="preserve">Поддержали проект</sys:String>
+    <sys:String x:Key="Supporters_Thanks" xml:space="preserve">Также благодарим</sys:String>
+    <sys:String x:Key="InputFix_Title" xml:space="preserve">LMU — совместимость ввода</sys:String>
+    <sys:String x:Key="InputFix_Description" xml:space="preserve">Режим DirectInput Fallback для ввода с частотой до 1000 Гц. Перед изменением закройте игру. Исходный файл настроек сохраняется.</sys:String>
+    <sys:String x:Key="InputFix_NotChecked" xml:space="preserve">Настройки ввода ещё не проверены.</sys:String>
+    <sys:String x:Key="InputFix_NotFound" xml:space="preserve">Файл управления LMU не найден.</sys:String>
+    <sys:String x:Key="InputFix_Applied" xml:space="preserve">Режим совместимости включён.</sys:String>
+    <sys:String x:Key="InputFix_Ready" xml:space="preserve">Можно включить режим совместимости.</sys:String>
+    <sys:String x:Key="InputFix_Failed" xml:space="preserve">Не удалось изменить настройки. Закройте игру и проверьте доступ к её файлам.</sys:String>
+    <sys:String x:Key="InputFix_Check" xml:space="preserve">Проверить</sys:String>
+    <sys:String x:Key="InputFix_Apply" xml:space="preserve">Включить</sys:String>
+
+    <!-- Edition and overview controls -->
+    <sys:String x:Key="Overview_PollingRate">Частота опроса</sys:String>
+    <sys:String x:Key="Overview_PollingHint">50–1000 Гц. После сохранения применяется ко всем профилям этой игры. Изменение не запускает хаб.</sys:String>
+    <sys:String x:Key="Edition_Description">Редакция FREE — открытый исходный код</sys:String>
+    <sys:String x:Key="Language_Description">Изменения применяются сразу. Непереведённый текст отображается на английском.</sys:String>
+    <sys:String x:Key="Desktop_Preferences">Запуск и окно</sys:String>
+    <sys:String x:Key="Desktop_AutoStartHub">Включать хаб при запуске приложения</sys:String>
+    <sys:String x:Key="Desktop_AutoStartHubHint">Курсор остаётся свободным до ручной блокировки.</sys:String>
+    <sys:String x:Key="Desktop_StartMinimized">Запускать окно свёрнутым</sys:String>
+    <sys:String x:Key="Desktop_StartMinimizedHint">После ручного открытия приложения.</sys:String>
+    <sys:String x:Key="Desktop_MinimizeToTray">Сворачивать в трей</sys:String>
+    <sys:String x:Key="Desktop_MinimizeToTrayHint">При сворачивании скрывать окно с панели задач.</sys:String>
+    <sys:String x:Key="Desktop_CloseToTray">Закрывать в трей</sys:String>
+    <sys:String x:Key="Desktop_CloseToTrayHint">Крестик скрывает окно. Для завершения выберите «Выйти» в трее.</sys:String>
+    <sys:String x:Key="Desktop_MouseLockSounds">Звук блокировки мыши</sys:String>
+    <sys:String x:Key="Desktop_MouseLockSoundsHint">Разные короткие сигналы при захвате и освобождении мыши. Не зависит от звука скольжения и TC.</sys:String>
+    <sys:String x:Key="Desktop_TrayFallback">Если системный трей недоступен, окно остаётся на панели задач, а крестик завершает работу.</sys:String>
+    <sys:String x:Key="Desktop_TrayOpen">Открыть vWheel Hub</sys:String>
+    <sys:String x:Key="Desktop_TrayStart">Включить хаб</sys:String>
+    <sys:String x:Key="Desktop_TrayStop">Остановить хаб</sys:String>
+    <sys:String x:Key="Desktop_TrayExit">Выйти</sys:String>
+    <sys:String x:Key="Settings_WebLinks" xml:space="preserve">Проект и документация</sys:String>
+    <sys:String x:Key="Settings_LocalDirectories" xml:space="preserve">Папки приложения</sys:String>
+    <sys:String x:Key="Ui_OpenDeviceDiagnostics" xml:space="preserve">Проверить устройство</sys:String>
+    <sys:String x:Key="Status_DeviceCheckReady" xml:space="preserve">Проверка завершена в {0}: устройство готово</sys:String>
+    <sys:String x:Key="Status_DeviceCheckIssues" xml:space="preserve">Проверка завершена в {0}: есть проблемы</sys:String>
+    <sys:String x:Key="Status_DeviceCheckCancelled" xml:space="preserve">Проверка отменена</sys:String>
+    <sys:String x:Key="Settings_CommunityLinks">Сообщество и поддержка</sys:String>
+    <sys:String x:Key="Ui_NumberPercentFormat">0.##' %'</sys:String>
+    <sys:String x:Key="Ui_NumberDegreesFormat">0 °</sys:String>
+    <sys:String x:Key="Ui_AxesControls">Управление осями</sys:String>
+    <sys:String x:Key="Ui_AxisSteering">Руль</sys:String>
+
+    <!-- Shared UI text extracted from code -->
+    <sys:String x:Key="OutputMonitor_Steer_02f4a3" xml:space="preserve">Руль</sys:String>
+    <sys:String x:Key="OutputMonitor_Gas_ead965" xml:space="preserve">Газ</sys:String>
+    <sys:String x:Key="OutputMonitor_Brake_d5ff6c" xml:space="preserve">Тормоз</sys:String>
+    <sys:String x:Key="OutputMonitor_Output_monitor_dc5721" xml:space="preserve">Расчётный выход управления</sys:String>
+    <sys:String x:Key="OutputMonitor_Quick_settings_766f62" xml:space="preserve">Быстрые настройки · </sys:String>
+    <sys:String x:Key="OutputMonitor_White_output_range_Yellow_thresholds_Cyan_steering_lock_35e496" xml:space="preserve">Белые: диапазон выхода. Жёлтые: пороги. Голубые: угол руля. Перетащите маркер.</sys:String>
+    <sys:String x:Key="OutputMonitor_Drag_a_marker_or_enter_an_exact_value_be1fb1" xml:space="preserve">Перетащите маркер или введите точное значение</sys:String>
+    <sys:String x:Key="OutputMonitor_Lock_71dc3a" xml:space="preserve">Угол, °</sys:String>
+    <sys:String x:Key="OutputMonitor_Threshold_f64037" xml:space="preserve">Порог, %</sys:String>
+    <sys:String x:Key="OutputMonitor_Minimum_5d398e" xml:space="preserve">Минимум</sys:String>
+    <sys:String x:Key="OutputMonitor_Maximum_a8df2f" xml:space="preserve">Максимум</sys:String>
+    <sys:String x:Key="OutputMonitor_MarkersFormat" xml:space="preserve">Маркеры выхода: {0}</sys:String>
+    <sys:String x:Key="Common_Yes" xml:space="preserve">Да</sys:String>
+    <sys:String x:Key="Common_No" xml:space="preserve">Нет</sys:String>
+    <sys:String x:Key="Common_OK" xml:space="preserve">ОК</sys:String>
+    <sys:String x:Key="Common_Notice" xml:space="preserve">Уведомление</sys:String>
+    <sys:String x:Key="Desktop_TrayTooltipFormat" xml:space="preserve">vWheel Hub · {0}</sys:String>
+    <sys:String x:Key="Ui_NumberMsFormat">0 мс</sys:String>
+
+    <!-- Platform diagnostics -->
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_92" xml:space="preserve">Отсутствует</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_93" xml:space="preserve">Библиотека vJoyInterface.dll не найдена</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_94" xml:space="preserve">Нажмите «Скачать vJoy» и сначала установите драйвер. При необходимости скопируйте vJoyInterface.dll в папку приложения.</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_95" xml:space="preserve">Драйвер vJoy не установлен или выключен в Windows</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_96" xml:space="preserve">Нажмите «Скачать vJoy», установите драйвер и убедитесь, что устройство включено в диспетчере устройств Windows.</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_97" xml:space="preserve">Свободно</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_98" xml:space="preserve">Подключено к хабу</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_99" xml:space="preserve">Занято</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_100" xml:space="preserve">Устройство vJoy №{0} используется другим приложением</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_101" xml:space="preserve">Закройте другие приложения (например UCR или vJoyFeeder), использующие устройство vJoy №{0}.</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_102" xml:space="preserve">Отсутствует</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_103" xml:space="preserve">Устройство vJoy №{0} не создано</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_104" xml:space="preserve">Запустите vJoyConfig (vJoyConf.exe), добавьте устройство №{0} и нажмите Apply.</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_105" xml:space="preserve">У устройства vJoy №{0} отсутствуют оси ({1}) и недостаточно кнопок (нужно {2}, сейчас {3})</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_106" xml:space="preserve">Откройте vJoyConfig (vJoyConf.exe), включите оси X, Y, Z и задайте 8 кнопок для устройства №{0}, затем нажмите Apply.</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_107" xml:space="preserve">У устройства vJoy №{0} отсутствуют необходимые оси: {1}</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_108" xml:space="preserve">Откройте vJoyConfig (vJoyConf.exe), включите оси ({0}) для устройства №{1} и нажмите Apply.</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_109" xml:space="preserve">У устройства vJoy №{0} недостаточно кнопок (нужно {1}, сейчас {2})</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_110" xml:space="preserve">Откройте vJoyConfig (vJoyConf.exe), задайте 8 кнопок для устройства №{0} и нажмите Apply.</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_111" xml:space="preserve">Устройство vJoy №{0} настроено и готово ({1} кнопок, оси: X, Y, Z)</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_112" xml:space="preserve">Всё настроено правильно.</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_113" xml:space="preserve">Примечание: vJoyInterface.dll рядом с vWheel Hub ({0}) отличается от файла в установленном vJoy ({1}). Если vJoy работает неправильно, вручную замените файл в папке приложения файлом «{2}».</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_114" xml:space="preserve">неизвестно</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_115" xml:space="preserve">X (руль)</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_116" xml:space="preserve">Y (газ)</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_117" xml:space="preserve">Z (тормоз)</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyDiagnosticService_120" xml:space="preserve">Rz (сцепление)</sys:String>
+    <sys:String x:Key="DiagPlatform_WindowsOutputDiagnostics_131" xml:space="preserve">Виртуальное устройство vJoy готово.</sys:String>
+    <sys:String x:Key="DiagPlatform_WindowsOutputDiagnostics_132" xml:space="preserve">Состояние устройства: {0} (ID: {1})</sys:String>
+    <sys:String x:Key="DiagPlatform_WindowsOutputDiagnostics_133" xml:space="preserve">, отсутствуют оси: {0}</sys:String>
+    <sys:String x:Key="DiagPlatform_WindowsOutputDiagnostics_134" xml:space="preserve">Конфигурация vJoy неверна</sys:String>
+    <sys:String x:Key="DiagPlatform_WindowsOutputDiagnostics_137" xml:space="preserve">Неподдерживаемый режим выходного устройства: {0}</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_138" xml:space="preserve">Модуль ядра uinput не обнаружен, /dev/uinput отсутствует.</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_139" xml:space="preserve">Узел /dev/uinput отсутствует, хотя модуль загружен.</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_140" xml:space="preserve">Нет прав на запись в /dev/uinput.</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_141" xml:space="preserve">Не удалось открыть /dev/uinput, код errno: {0}.</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_142" xml:space="preserve">Неожиданная ошибка проверки /dev/uinput: {0}</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_143" xml:space="preserve">
+Не обнаружена клавиатура с правами чтения.</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_144" xml:space="preserve">Контроллер Xbox 360 через Linux uinput готов</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_145" xml:space="preserve">Виртуальный руль через Linux uinput готов</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_146" xml:space="preserve">Модуль ядра uinput не загружен, /dev/uinput отсутствует</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_147" xml:space="preserve">Модуль ядра uinput не обнаружен в /sys/class/misc/uinput или /proc/modules.</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_148" xml:space="preserve">Настройте загрузку модуля uinput при запуске системы (например добавьте uinput в /etc/modules-load.d/uinput.conf).</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_149" xml:space="preserve">Убедитесь, что CONFIG_INPUT_UINPUT включён в конфигурации ядра вашего дистрибутива.</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_150" xml:space="preserve">Если приложение работает в контейнере, предоставьте контейнеру доступ к устройству uinput.</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_151" xml:space="preserve">Узел устройства /dev/uinput не найден</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_152" xml:space="preserve">Модуль загружен, но служба udev не создала /dev/uinput.</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_153" xml:space="preserve">Убедитесь, что служба udev (systemd-udevd) работает и создаёт узлы устройств в /dev.</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_154" xml:space="preserve">Проверьте правила udev, отвечающие за создание uinput при загрузке.</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_155" xml:space="preserve">Нет прав на доступ к /dev/uinput</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_156" xml:space="preserve">У текущего пользователя нет прав на запись в /dev/uinput (errno {0}).</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_157" xml:space="preserve">Добавьте свою учётную запись в системную группу input.</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_158" xml:space="preserve">Установите правило udev, например /etc/udev/rules.d/99-uinput.rules с TAG+="uaccess" или MODE="0660", GROUP="input".</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_159" xml:space="preserve">Выйдите из системы и войдите снова, чтобы применились изменения групп.</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_160" xml:space="preserve">Не удалось получить доступ к /dev/uinput (errno {0})</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_161" xml:space="preserve">Неизвестная ошибка доступа к /dev/uinput (errno {0}).</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_162" xml:space="preserve">Проверьте системные журналы dmesg или journalctl на ошибки подсистемы ввода ядра.</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_163" xml:space="preserve">Папка /dev/input не найдена</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_164" xml:space="preserve">Папка подсистемы ввода /dev/input отсутствует в этой системе.</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_165" xml:space="preserve">Убедитесь, что подсистема ввода ядра Linux (CONFIG_INPUT) включена.</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_166" xml:space="preserve">При запуске в контейнере подключите папку /dev/input хост-системы.</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_167" xml:space="preserve">Устройства /dev/input/event* не найдены</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_168" xml:space="preserve">В /dev/input пока нет зарегистрированных узлов устройств event.</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_169" xml:space="preserve">Подключите физическую мышь или клавиатуру.</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_170" xml:space="preserve">Убедитесь, что драйверы устройств ввода USB или PS/2 загружены.</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_171" xml:space="preserve">Нет прав на чтение устройств /dev/input/event*</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_172" xml:space="preserve">Найдено устройств event: {0}, но у текущего пользователя нет прав чтения (errno 13).</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_173" xml:space="preserve">Добавьте свою учётную запись в системную группу input.</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_174" xml:space="preserve">Выйдите из системы и войдите снова, чтобы применились изменения групп.</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_175" xml:space="preserve">Не обнаружена мышь с правами чтения</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_176" xml:space="preserve">Найдено доступных для чтения устройств ввода: {0}, но ни одно не передаёт относительное движение X (REL_X).</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_177" xml:space="preserve">Подключите физическую мышь или явно задайте путь к устройству ввода.</sys:String>
+    <sys:String x:Key="DiagPlatform_LinuxOutputDiagnostics_178" xml:space="preserve">Устройства ввода готовы (доступно для чтения {0} из {1}, мышь обнаружена)</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyBytesFormat" xml:space="preserve">{0} байт</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyHandbrakeAxis" xml:space="preserve">Slider0 (ручник)</sys:String>
+    <sys:String x:Key="DiagPlatform_VJoyUnknownAxisFormat" xml:space="preserve">Ось 0x{0:X}</sys:String>
+    <sys:String x:Key="Prep_LinuxChanges" xml:space="preserve">При необходимости хаб запросит права администратора для загрузки uinput, установки правил udev для активного локального пользователя и записи автозагрузки модуля. Доступ распространяется на физические устройства ввода. Оригиналы системных файлов сохраняются; отмена не перезаписывает последующие правки. Затем выберите мышь и клавиатуру; хаб запомнит выбор.</sys:String>
+    <sys:String x:Key="Prep_WindowsChanges" xml:space="preserve">При необходимости хаб скачает vJoy 2.1.9.1 из релиза издателя, проверит SHA-256 и запустит установщик. Windows запросит права администратора. Настройка руля подтверждается отдельно. Может потребоваться перезагрузка.</sys:String>
+    <sys:String x:Key="Prep_InputSelectionRequired" xml:space="preserve">Подключите выбранные мышь и клавиатуру или запустите подготовку для выбора устройств. При неоднозначности или отключении устройства автоматической замены не будет.</sys:String>
+    <sys:String x:Key="Prep_SelectDevice" xml:space="preserve">Выбор устройства ввода</sys:String>
+    <sys:String x:Key="Prep_NextDevice" xml:space="preserve">Пропустить устройство</sys:String>
+    <sys:String x:Key="Common_Select" xml:space="preserve">Выбрать</sys:String>
+    <sys:String x:Key="OutputTest_Title">Проверка и назначение управления</sys:String>
+    <sys:String x:Key="OutputTest_Hint">Выберите действие и режим. После запуска будет 5 секунд, чтобы перейти в игру. Оси проходят полный ход с переходами по 0,5 секунды. Обычное управление хаба на время теста приостанавливается. Монитор расчётного выхода не показывает тестовый сигнал и не подтверждает выход устройства.</sys:String>
+    <sys:String x:Key="OutputTest_StopHint">Остановка: Escape в любом окне или кнопка «Остановить». После теста отпустите назначенные клавиши. Захват курсора можно включить снова вручную.</sys:String>
+    <sys:String x:Key="OutputTest_Ready">Готово к запуску</sys:String>
+    <sys:String x:Key="OutputTest_ContextChanged">Тест отменён: изменился профиль или сеанс хаба. Проверьте текущий профиль и запустите тест снова.</sys:String>
+    <sys:String x:Key="OutputTest_Start">Запустить</sys:String>
+    <sys:String x:Key="OutputTest_Stop">Остановить</sys:String>
+    <sys:String x:Key="OutputTest_Running">Сигнал повторяется · Escape — остановить</sys:String>
+    <sys:String x:Key="OutputTest_Countdown">Начало через {0} с… Перейдите в игру.</sys:String>
+    <sys:String x:Key="OutputTest_Error">Тест остановлен: {0}</sys:String>
+    <sys:String x:Key="OutputTest_SteeringBoth">Руль: влево-вправо</sys:String>
+    <sys:String x:Key="OutputTest_SteeringLeft">Руль: только влево</sys:String>
+    <sys:String x:Key="OutputTest_SteeringRight">Руль: только вправо</sys:String>
+    <sys:String x:Key="OutputTest_Gas">Газ: нажимать и отпускать</sys:String>
+    <sys:String x:Key="OutputTest_Brake">Тормоз: нажимать и отпускать</sys:String>
+    <sys:String x:Key="OutputTest_Nav">Назначение в игре</sys:String>
+    <sys:String x:Key="OutputTest_Unavailable">Тестовый вывод недоступен в режиме предпросмотра.</sys:String>
+    <sys:String x:Key="OutputTest_ShiftDown">Передача вниз</sys:String>
+    <sys:String x:Key="OutputTest_ShiftUp">Передача вверх</sys:String>
+    <sys:String x:Key="OutputTest_Mode">Режим</sys:String>
+    <sys:String x:Key="OutputTest_Once">Один раз</sys:String>
+    <sys:String x:Key="OutputTest_Repeat">Повторять до остановки</sys:String>
+    <sys:String x:Key="OutputTest_OnceHint">«Один раз»: короткое нажатие передачи или один проход оси с возвратом в нейтраль. После этого тест остановится сам.</sys:String>
+    <sys:String x:Key="OutputTest_RepeatHint">«Повторять»: выбранный сигнал повторяется, пока вы не остановите тест.</sys:String>
+    <sys:String x:Key="OutputTest_Sound">Звуки отсчёта, начала и завершения</sys:String>
+    <sys:String x:Key="OutputTest_Sending">Выполняется одно действие · Escape — остановить</sys:String>
+    <sys:String x:Key="InputDevices_Title">Устройства ввода</sys:String>
+    <sys:String x:Key="InputDevices_StopHint">Поиск, проверка и сохранение останавливают хаб. Сохранённая пара действует во всех профилях.</sys:String>
+    <sys:String x:Key="InputDevices_Refresh">Обновить список</sys:String>
+    <sys:String x:Key="InputDevices_Check">Проверить выбранные</sys:String>
+    <sys:String x:Key="InputDevices_StopCheck">Остановить проверку</sys:String>
+    <sys:String x:Key="InputDevices_Mouse">Мышь</sys:String>
+    <sys:String x:Key="InputDevices_Keyboard">Клавиатура</sys:String>
+    <sys:String x:Key="InputDevices_Select">Выберите устройство</sys:String>
+    <sys:String x:Key="InputDevices_FindMouse">Определить по движению</sys:String>
+    <sys:String x:Key="InputDevices_FindKeyboard">Определить по нажатию</sys:String>
+    <sys:String x:Key="InputDevices_Choose">Выберите устройства.</sys:String>
+    <sys:String x:Key="InputDevices_None">Мышь или клавиатура не найдена. Подключите устройства и обновите список. Если нет доступа, откройте диагностику устройств и настройте разрешения.</sys:String>
+    <sys:String x:Key="InputDevices_Missing">Ранее выбранное устройство недоступно. Явно выберите замену.</sys:String>
+    <sys:String x:Key="InputDevices_Error">Не удалось открыть устройства или сохранить выбор. Обновите список и проверьте доступ в диагностике устройств. Подробности — в логе хаба.</sys:String>
+    <sys:String x:Key="InputDevices_Checking">Подвигайте выбранной мышью или нажимайте клавиши, чтобы проверить ввод. Управление остановлено.</sys:String>
+    <sys:String x:Key="InputDevices_MoveMouse">В течение 10 секунд подвигайте мышью, которую хотите выбрать.</sys:String>
+    <sys:String x:Key="InputDevices_PressKey">В течение 10 секунд нажмите клавишу на клавиатуре, которую хотите выбрать.</sys:String>
+    <sys:String x:Key="InputDevices_Found">Устройство выбрано. Поиск остановлен.</sys:String>
+    <sys:String x:Key="InputDevices_Timeout">Ввод не обнаружен. Повторите попытку или выберите устройство из списка.</sys:String>
+    <sys:String x:Key="InputDevices_Saved">Выбор сохранён для всех профилей. Когда будете готовы, запустите управление.</sys:String>
+    <sys:String x:Key="InputDevices_Unavailable">Устройство недоступно или не выбрано.</sys:String>
+    <sys:String x:Key="InputDevices_Activity">Ввод поступает</sys:String>
+    <sys:String x:Key="InputDevices_Idle">Подключено — ожидание ввода</sys:String>
+
+    <!-- First-run welcome and guided setup -->
+    <sys:String x:Key="Tour_Open">Как начать</sys:String>
+    <sys:String x:Key="Tour_Example">ПРИМЕР — это не текущий статус вашей игры</sys:String>
+    <sys:String x:Key="Tour_Progress">ШАГ {0} ИЗ {1}</sys:String>
+    <sys:String x:Key="Tour_Start">Пройти гайд</sys:String>
+    <sys:String x:Key="Tour_Next">Далее</sys:String>
+    <sys:String x:Key="Tour_Back">Назад</sys:String>
+    <sys:String x:Key="Tour_Finish">Завершить</sys:String>
+    <sys:String x:Key="Tour_Skip">Выйти из гайда</sys:String>
+    <sys:String x:Key="Tour_Later">Пока пропустить</sys:String>
+    <sys:String x:Key="Tour_WelcomeTitle">Добро пожаловать в vWheel Hub</sys:String>
+    <sys:String x:Key="Tour_WelcomePath">Мышь и клавиатура → виртуальный игровой контроллер</sys:String>
+    <sys:String x:Key="Tour_WelcomeBody">Спасибо за скачивание! Сначала выберите язык. Этот небольшой гайд покажет, где выбрать устройства, назначить управление и подготовиться к заезду. Подсветим настоящие вкладки и объясним частые затруднения.</sys:String>
+    <sys:String x:Key="Tour_WelcomeTip">Около 4 минут. Во время гайда хаб остановлен; настройки игры и назначения не меняются. Гайд можно повторно открыть кнопкой «Как начать» в боковом меню. Выше перечислены установленные языки; недостающие переводы показываются на английском.</sys:String>
+    <sys:String x:Key="Tour_ProfilesTitle">Начните с профиля</sys:String>
+    <sys:String x:Key="Tour_ProfilesPath">Профили → игра → профиль</sys:String>
+    <sys:String x:Key="Tour_ProfilesBody">Профиль хранит настройки руля, педалей и клавиш. Здесь выберите игру и профиль. Universal подойдёт для начала, если у игры нет отдельной интеграции. Для разных машин или стилей вождения можно создать отдельные профили.</sys:String>
+    <sys:String x:Key="Tour_ProfilesTip">Перед настройкой проверьте название профиля над вкладками Controls. Автоопределение игры может предложить другой контекст; если есть несохранённые изменения, обратите внимание на предложение переключиться.</sys:String>
+    <sys:String x:Key="Tour_OutputTitle">Что получает игра</sys:String>
+    <sys:String x:Key="Tour_OutputPath">Управление → Выходные оси</sys:String>
+    <sys:String x:Key="Tour_OutputBody">Здесь меняются диапазоны и направление осей. Проверка и исправление подключения находятся на Dashboard.</sys:String>
+    <sys:String x:Key="Tour_OutputWindows">Windows использует vJoy. Если нужна настройка, Dashboard покажет проблему и откроет исправление устройства. Изменения конфигурации требуют подтверждения.</sys:String>
+    <sys:String x:Key="Tour_OutputLinux">Linux: используйте нативный вывод uinput и предоставьте запрошенный доступ к вводу/uinput. Включайте хаб до запуска игры. Для LMU через Steam/Proton отключите Steam Input для игры, чтобы она видела виртуальный руль напрямую.</sys:String>
+    <sys:String x:Key="Tour_InputTitle">Какими устройствами управляете</sys:String>
+    <sys:String x:Key="Tour_InputPath">Управление → Устройства ввода</sys:String>
+    <sys:String x:Key="Tour_InputBody">Выберите мышь и клавиатуру в карточках или определите их по движению и нажатию. После обнаружения поиск остановится. Верхняя кнопка «Сохранить» сохранит выбор вместе с остальными изменениями. Общий статус над вкладками показывает, что изменения ещё не сохранены.</sys:String>
+    <sys:String x:Key="Tour_InputTip">«Проверить выбранные» только показывает активность. Остановка проверки сохраняет черновик. Верхняя кнопка отмены также отменяет несохранённый выбор устройств. Сохранённые мышь и клавиатура остаются общими для всех профилей.</sys:String>
+    <sys:String x:Key="Tour_KeysTitle">Что делает каждая клавиша</sys:String>
+    <sys:String x:Key="Tour_KeysPath">Управление → Клавиши</sys:String>
+    <sys:String x:Key="Tour_KeysBody">Здесь назначаются газ, тормоз, передачи, команды хаба и виртуальные кнопки игры. Нажмите поле клавиши и нужную клавишу или кнопку мыши.</sys:String>
+    <sys:String x:Key="Tour_KeysTip">Есть два уровня: физические клавиши назначаются в хабе, а виртуальные оси и кнопки хаба — в игре. Дальше разберём второй уровень.</sys:String>
+    <sys:String x:Key="Tour_AssignmentTitle">Назначьте управление в игре</sys:String>
+    <sys:String x:Key="Tour_AssignmentPath">Управление → Назначение в игре</sys:String>
+    <sys:String x:Key="Tour_AssignmentBody">Выберите руль, газ, тормоз или переключение передачи. Для одного назначения используйте «Один раз», чтобы повторные нажатия потом не листали меню. Нажмите запуск, перейдите в игру и откройте нужное назначение: сигнал начнётся через 5 секунд.</sys:String>
+    <sys:String x:Key="Tour_AssignmentTip">Режим повтора работает до остановки. Escape или кнопка остановки прекращают сигнал. Звуки помогают следить за отсчётом. Выбор физических устройств — отдельный шаг; знать название внутренней кнопки геймпада для этого не нужно.</sys:String>
+    <sys:String x:Key="Tour_AxesTitle">Настройте руль и педали</sys:String>
+    <sys:String x:Key="Tour_AxesPath">Управление → Управление осями → Руль / Газ / Тормоз</sys:String>
+    <sys:String x:Key="Tour_AxesBody">Начните со стандартных значений и меняйте по одной настройке. Руль определяет реакцию на движение мыши или клавиши поворота. Газ и тормоз задают скорость нажатия и отпускания виртуальных педалей. При включённом хабе следите за монитором вывода, а затем проверяйте результат на трассе.</sys:String>
+    <sys:String x:Key="Tour_AxesTip">Используйте инструмент назначения, когда нужен известный сигнал на выходе. Сам гайд не запускает сигналы и не меняет ваши назначения.</sys:String>
+    <sys:String x:Key="Tour_ReadyTitle">Сохраните и начинайте</sys:String>
+    <sys:String x:Key="Tour_ReadyPath">Обзор → запуск хаба</sys:String>
+    <sys:String x:Key="Tour_ReadyBody">Перед выходом сохраните профиль. Включите хаб, затем запустите игру и выйдите на трассу. Включайте захват мыши для управления без ухода курсора из игры; отключайте его, чтобы снова пользоваться рабочим столом. Горячие клавиши хаба и захвата мыши настраиваются в назначениях клавиш.</sys:String>
+    <sys:String x:Key="Tour_ReadyTip">Если нет реакции: проверьте активность физических устройств → назначения в хабе → виртуальный вывод → назначения в игре. Гайд всегда доступен через «Как начать». После завершения вы вернётесь на прежнюю страницу.</sys:String>
+    <sys:String x:Key="Tour_ShowPage">Показать вкладку</sys:String>
+    <sys:String x:Key="Tour_ShowExplanation">Показать пояснение</sys:String>
+    <sys:String x:Key="Tour_DashboardTitle">Начните с обзора</sys:String>
+    <sys:String x:Key="Tour_DashboardPath">Обзор</sys:String>
+    <sys:String x:Key="Tour_DashboardBody">Это первая страница при запуске. Здесь видны текущая игра, состояние хаба и диагностика устройства. Переключатель хаба сверху запускает и останавливает управление. Монитор внизу показывает руль, газ и тормоз. Подключённый контроллер и подключённая игра — разные вещи.</sys:String>
+    <sys:String x:Key="Tour_DashboardTip">Дальше пройдём по боковому меню и вкладкам управления в том порядке, в котором они расположены. Во время гайда хаб остаётся остановленным.</sys:String>
+    <sys:String x:Key="Tour_SettingsTitle">Настройки приложения</sys:String>
+    <sys:String x:Key="Tour_SettingsPath">Настройки → Общие</sys:String>
+    <sys:String x:Key="Tour_SettingsBody">Здесь настраивается запуск и поведение приложения на рабочем столе: автозапуск управления, сворачивание, системный трей и звуки захвата мыши. Язык также меняется кнопкой в заголовке окна. Эти параметры удобнее настроить после того, как первый профиль заработает.</sys:String>
+    <sys:String x:Key="Tour_SettingsTip">Кнопка «Как начать» в боковом меню открывает гайд снова, когда понадобится. После пропуска или завершения гайд отмечается просмотренным.</sys:String>
+    <sys:String x:Key="InputDevices_CancelFind">Отменить поиск</sys:String>
+    <sys:String x:Key="InputDevices_Unsaved">Выбор не сохранён — нажмите «Сохранить» сверху</sys:String>
+    <sys:String x:Key="InputDevices_SavedShort">Сохранено</sys:String>
+    <sys:String x:Key="Ui_ChangesSaveError">Не удалось сохранить часть изменений. Несохранённые изменения сохранены в черновике. Проверьте статус устройств ввода или журнал.</sys:String>
+    <sys:String x:Key="InputDevices_FindPair">Определить мышь и клавиатуру</sys:String>
+    <sys:String x:Key="InputDevices_PairMouse">Подвигайте мышью, которую хотите использовать.</sys:String>
+    <sys:String x:Key="InputDevices_PairKeyboard">Теперь нажмите клавишу на нужной клавиатуре.</sys:String>
+    <sys:String x:Key="InputDevices_PairFound">Оба устройства выбраны. Нажмите «Сохранить» сверху, чтобы применить их.</sys:String>
+    <sys:String x:Key="Output_WheelPrepare">Настроить виртуальный руль…</sys:String>
+    <sys:String x:Key="Output_WheelPrepareHint">Проверяет выбранное устройство vJoy или создаёт его, если номер ещё не настроен. Существующие конфигурации сохраняются. Data Out и назначения управления в игре настраиваются отдельно.</sys:String>
+    <sys:String x:Key="Output_WheelConfirm">Проверить совместимость устройства vJoy {0} с рулём? Если номер ещё не настроен, создать устройство с 8 осями, 128 кнопками, одним дискретным POV и всеми FFB-эффектами. Существующие устройства не перезаписываются. Закройте игры и другие feeder-программы: создание устройства может перезапустить драйвер. Может потребоваться разрешение администратора. Data Out и назначения в игре настраиваются отдельно.</sys:String>
+    <sys:String x:Key="Output_WheelIncomplete">Устройству vJoy {0} требуется настройка POV / FFB для руля.</sys:String>
+    <sys:String x:Key="Output_WheelStopFirst">Перед подготовкой руля остановите управление хаба.</sys:String>
+    <sys:String x:Key="Output_WheelReady">Конфигурация руля проверена. Сохраните профиль, включите управление хаба и выберите пользовательскую конфигурацию руля в игре.</sys:String>
+    <sys:String x:Key="Output_WheelFailed">Не удалось подготовить руль. Проверьте драйвер и не занято ли выбранное устройство другим feeder.</sys:String>
+    <sys:String x:Key="Output_VJoyExistingProtected">Устройство vJoy {0} уже существует. FREE означает лишь, что оно сейчас не используется. Хаб сохранит его конфигурацию. Используйте подходящее существующее устройство без изменений или выберите ещё не настроенный номер. Автоматическая замена недоступна до реализации резервного копирования и восстановления.</sys:String>
+    <sys:String x:Key="Output_VJoyConfigurationUnknown">Не удалось безопасно проверить сохранённую конфигурацию устройства vJoy {0}. Проверьте доступность драйвера и повторите проверку устройства.</sys:String>
+    <sys:String x:Key="Output_VJoyBackup">Сохранить резервную копию vJoy</sys:String>
+    <sys:String x:Key="Output_VJoyBackupSaved">Проверенная резервная копия и запись операции сохранены: {0}</sys:String>
+    <sys:String x:Key="Output_VJoyBackupFailed">Не удалось завершить проверенное сохранение резервной копии или журнала vJoy. Без проверенной копии настройка не продолжается.</sys:String>
+    <sys:String x:Key="Output_VJoyInspect">Проверить все устройства vJoy</sys:String>
+    <sys:String x:Key="Output_VJoyUseExisting">Использовать существующее без изменений</sys:String>
+    <sys:String x:Key="Output_VJoyCheck">Проверить устройство</sys:String>
+    <sys:String x:Key="Output_VJoySharedSelected">Общий выход хаба: vJoy №{0}. Этот номер сохраняется между играми и перезапусками.</sys:String>
+    <sys:String x:Key="Output_VJoyNotSelected">Виртуальный руль требует настройки. Откройте диагностику устройств на Dashboard.</sys:String>
+    <sys:String x:Key="Output_VJoySelectionIssue">Общий выход vJoy требует внимания. Хаб не заменяет устройство и не переключается на другой номер автоматически.</sys:String>
+    <sys:String x:Key="Output_VJoyExisting">существует</sys:String>
+    <sys:String x:Key="Output_VJoyBusy">занято другой feeder-программой</sys:String>
+    <sys:String x:Key="Output_VJoyUnconfigured">номер не настроен</sys:String>
+    <sys:String x:Key="Output_VJoyPersisted">конфигурация сохранена; устройство недоступно</sys:String>
+    <sys:String x:Key="Output_VJoyUnknown">не удалось проверить</sys:String>
+    <sys:String x:Key="Output_VJoyInventoryRow">№{0}: {1}; осей {2}, кнопок {3}, дискретных POV {4}, непрерывных POV {5}</sys:String>
+    <sys:String x:Key="Output_VJoySelectCompatible">Выберите доступное существующее устройство с нужными возможностями. Занятое или неподходящее устройство не будет перенастроено.</sys:String>
+    <sys:String x:Key="Output_VJoyAdoptConfirm">Использовать vJoy №{0} как общий выход хаба без изменения его конфигурации? После сохранения этот профиль перейдёт с индивидуального устройства №{1} на общий выход. Остальные сохранённые профили сохранят прежний выбор. Смена номера выхода может потребовать повторных назначений в игре. Выбор устройства не разрешает его удаление.</sys:String>
+    <sys:String x:Key="Output_VJoyAdopted">vJoy №{0} выбран общим выходом. Сохраните этот профиль для его использования. Остальные профили сохраняют прежний выбор до явной миграции.</sys:String>
+    <sys:String x:Key="Output_VJoyNoUnusedNumbers">Подтверждённых ненастроенных номеров vJoy нет. Выберите подходящее существующее устройство без изменений; конфигурации не перезаписываются.</sys:String>
+    <sys:String x:Key="Output_VJoyCreate">Создать выделенное устройство хаба</sys:String>
+    <sys:String x:Key="Output_VJoyCreateConfirm">Создать vJoy №{0} для vWheel Hub? Остальные существующие или непроверенные номера ({1}) останутся без изменений. Новый руль получит 8 осей, 128 кнопок, дискретный POV и FFB. До настройки сохраняется проверенная резервная копия. Закройте игры и feeder-программы: создание может перезапустить драйвер и потребовать разрешения администратора. Data Out и назначения в игре настраиваются отдельно. После сохранения этот профиль использует общий выход; остальные профили сохранят прежний выбор.</sys:String>
+    <sys:String x:Key="Output_VJoyReadyUnchanged">Общее устройство vJoy готово. Конфигурация проверена без изменений. Включите общий выход в тех профилях, которые хотите явно перенести на него.</sys:String>
+    <sys:String x:Key="ProfileSetting_UseHubVJoyDevice">Использовать общий выход vJoy хаба</sys:String>
+    <sys:String x:Key="Output_VJoyPreview" xml:space="preserve">Предварительный просмотр настройки vJoy</sys:String>
+    <sys:String x:Key="Output_VJoyChangeExisting" xml:space="preserve">Просмотреть изменения выбранного устройства…</sys:String>
+    <sys:String x:Key="Output_VJoyLayout" xml:space="preserve">Осей {0}; кнопок {1}; дискретных POV {2}; непрерывных POV {3}; все эффекты FFB: {4}</sys:String>
+    <sys:String x:Key="Output_VJoyExactPreview" xml:space="preserve">vJoy №{0}
+
+Сейчас → {1}
+Требуется → {2}
+
+{4}
+
+Проверенная исходная копия: {3}
+
+Закройте игры и другие feeder-программы. Может потребоваться разрешение администратора. Точно показанная конфигурация и запись о выполненной операции сохраняются вместе. При сбое допускается восстановление только совпадающего результата хаба по этой копии, включая удаление только что созданной конфигурации. Внешние правки сохраняются. До применения конфигурации может потребоваться перезапуск драйвера или Windows. Data Out и назначения в игре настраиваются отдельно.</sys:String>
+    <sys:String x:Key="Output_VJoyExistingOrigin" xml:space="preserve">Это существующее устройство. Изменение конфигурации не делает его собственностью хаба и не разрешает его удаление. Лишние дискретные POV сохраняются; возможная замена непрерывных POV показана выше. Другие устройства не изменяются.</sys:String>
+    <sys:String x:Key="Output_VJoyNewOrigin" xml:space="preserve">Этот номер проверен как ненастроенный. Он станет выделенным общим выходом хаба. Существующие конфигурации не меняются. Остальные сохранённые профили сохраняют прежний выбор до явной миграции.</sys:String>
+    <sys:String x:Key="Output_VJoySavedRestart" xml:space="preserve">Конфигурация vJoy сохранена и проверена. Перезапустите драйвер или Windows, затем проверьте то же устройство. Хаб сохраняет его номер и не выбирает другой выход. Если выбор выхода профиля изменился, сохраните профиль.</sys:String>
+    <sys:String x:Key="Output_VJoySetupStopped" xml:space="preserve">Настройка vJoy остановлена. Сохраните резервную копию и журнал; перед повторением проверьте указанное состояние.</sys:String>
+    <sys:String x:Key="Output_VJoyElevationDeclined" xml:space="preserve">Разрешение администратора отклонено. Неподтверждённые изменения не откатываются и не заменяются.</sys:String>
+    <sys:String x:Key="Output_VJoyUseSetupCard" xml:space="preserve">Откройте Dashboard и диагностику устройств для настройки виртуального руля.</sys:String>
+    <sys:String x:Key="Output_VJoyApplyChanges">Применить изменения</sys:String>
+    <x:String x:Key="Output_VJoyResume">Продолжить незавершённую настройку</x:String>
+    <x:String x:Key="Output_VJoyCancelSetup">Отменить незавершённую настройку</x:String>
+    <x:String x:Key="Output_VJoyPendingConflict">Сохранённая операция конфликтует с текущим состоянием или устарела. Сохраните копию; отмена доступна только при исходном состоянии либо проверенном результате Hub.</x:String>
+    <x:String x:Key="Output_VJoyResumeConfirm">Продолжить одобренную настройку vJoy №{0}? Будут использованы тот же номер и точная сохранённая конфигурация. Уже записанный результат проверяется без повторной записи. Неисполненный просмотр действует 30 минут.
+Копия: {1}
+Закройте игры и другие feeder-программы. Windows может запросить права администратора; может потребоваться перезапуск драйвера или Windows.</x:String>
+    <x:String x:Key="Output_VJoyCancelRestoreConfirm">Отменить настройку vJoy №{0} и восстановить исходное отсутствие конфигурации? Будет удалена только точная проверенная конфигурация, созданная этой операцией. Внешние изменения блокируют восстановление. Другие устройства и профили сохраняются.
+Копия: {1}
+Закройте игры и feeder-программы. Могут потребоваться права администратора и перезапуск драйвера или Windows.</x:String>
+    <x:String x:Key="Output_VJoyCancelUnwrittenConfirm">Отменить незавершённую настройку vJoy №{0}? Исходное состояние присутствует и будет проверено повторно. Конфигурация устройства не изменяется. Резерв номера снимается, копия сохраняется.
+Копия: {1}</x:String>
+    <x:String x:Key="Output_VJoyCancelled">Незавершённая настройка отменена. Исходное состояние проверено, копия сохранена.</x:String>
+    <x:String x:Key="Output_VJoyCancelledRestart">Настройка отменена, исходная конфигурация восстановлена. Перезапустите драйвер или Windows перед использованием vJoy; копия сохранена.</x:String>
+    <x:String x:Key="Output_VJoyRemove">Удалить выбранное устройство, созданное Hub…</x:String>
+    <x:String x:Key="Output_VJoyRemoveConfirm">Удалить выбранное устройство vJoy №{0}, созданное Hub?
+Сейчас: {1}
+Результат: сохранённая конфигурация этого номера отсутствует.
+Копия: {2}
+Создание и каждое изменение Hub проверяются по защищённым квитанциям записи. Принятые существующие устройства и внешние правки защищены. Другие номера и общий выход на другом номере сохраняются. Профили и игровые привязки не редактируются; профилям с удалённым номером потребуется явный выбор выхода. Закройте игры и feeder-программы. Windows запросит права администратора; после удаления перезапустите драйвер или Windows.</x:String>
+    <x:String x:Key="Output_VJoyRemoved">Устройство, созданное Hub, удалено. Копия сохранена. Перезапустите драйвер или Windows и проверьте выход перед запуском управления.</x:String>
+    <x:String x:Key="Output_ButtonsTitle">Виртуальные кнопки</x:String>
+    <x:String x:Key="Output_ButtonsHint">Назначьте клавиши кнопкам игры. Кнопки 1 и 2 заняты передачами.</x:String>
+    <x:String x:Key="Output_ButtonsAdd">Добавить виртуальную кнопку</x:String>
+    <x:String x:Key="Output_ButtonsDelete">Удалить назначение</x:String>
+    <x:String x:Key="Output_ButtonsInvalid">Назначение не применено.</x:String>
+    <x:String x:Key="ProfileSetting_VirtualButtons">Назначения виртуальных кнопок</x:String>
+    <x:String x:Key="Profiles_ForzaCarFallback">Автомобиль Forza №{0}</x:String>
+    <x:String x:Key="Profiles_ForzaCarName">Ваше название автомобиля Forza</x:String>
+    <x:String x:Key="Profiles_ForzaCarNameHint">Сохраните профиль, чтобы запомнить название. Числовой ID автомобиля и путь профиля не изменяются, поэтому автоматический выбор сохраняется. Название из каталога не требуется.</x:String>
+    <x:String x:Key="Output_MigrationTitle">Перевести сохранённые профили на общее устройство…</x:String>
+    <x:String x:Key="Output_MigrationSaveFirst">Сохраните или отмените текущие правки профиля перед переходом сохранённых профилей.</x:String>
+    <x:String x:Key="Output_MigrationNoChanges">Для такого перехода нет сохранённых профилей с необходимыми изменениями.</x:String>
+    <x:String x:Key="Output_MigrationJoin">{0}: индивидуальный №{1} → общий №{2}</x:String>
+    <x:String x:Key="Output_MigrationKeep">{0}: сохранить индивидуальный №{1} (защитить исключение наследования)</x:String>
+    <x:String x:Key="Output_MigrationConfirm">Перевести сохранённые профили vJoy с индивидуальным ID №{0} на общее устройство №{1}?
+
+{2}
+
+Каталог резервных копий: {3}
+Меняется только выбор общего выхода. Индивидуальные ID, калибровка осей, клавиши, игровые привязки и остальные настройки сохраняются. Профили с другими ID остаются индивидуальными, включая исключения наследования. Все сохранённые файлы проверяются повторно перед применением; внешние правки останавливают переход.</x:String>
+    <x:String x:Key="Output_MigrationDone">Сохранённые профили используют просмотренные варианты выхода. Копии сохранены: {0}</x:String>
+    <x:String x:Key="Output_MigrationFailed">Переход профилей остановлен. Сохраните каталог резервных копий.</x:String>
+    <x:String x:Key="Output_VJoyCancelRepairConfirm">Отменить незавершённое изменение vJoy №{0} и восстановить точную исходную конфигурацию? Внешние правки блокируют восстановление. Выбранный номер, другие устройства и профили сохраняются.
+Копия: {1}
+Закройте игры и feeder-программы. Могут потребоваться права администратора и перезапуск драйвера или Windows.</x:String>
+    <x:String x:Key="Output_VJoyRestoreMissing">Восстановить отсутствующее устройство Hub…</x:String>
+    <x:String x:Key="Output_VJoyRestoreMissingHint">Восстанавливается только сохранённый номер общего устройства по проверенной истории Hub. Другой номер не выбирается. Изменённый драйвер, существующая конфигурация или принятое внешнее устройство блокируют действие. Игровые привязки не редактируются; проверьте их после перезапуска драйвера или Windows.</x:String>
+    <x:String x:Key="Output_VJoyResumeRemovalConfirm">Продолжить одобренное удаление устройства vJoy №{0}, созданного Hub? Удаляется только его точная проверенная конфигурация. Общий выбор будет очищен; после этого профилям потребуется явный выбор выхода. Внешние правки блокируют удаление; другие устройства и игровые привязки сохраняются.
+Копия: {1}
+Закройте игры и feeder-программы. Могут потребоваться права администратора и перезапуск драйвера или Windows.</x:String>
+    <x:String x:Key="Output_DeviceNotChecked">Виртуальное устройство: не проверено</x:String>
+    <x:String x:Key="Output_DeviceReady">Виртуальное устройство: готово</x:String>
+    <x:String x:Key="Output_DeviceNeedsAttention">Виртуальное устройство: требуется проверка</x:String>
+    <x:String x:Key="Output_GameBindingsUnverified">Назначения в игре: проверьте руль, педали и кнопки в самой игре. Готовность устройства не подтверждает эти назначения.</x:String>
+    <x:String x:Key="Output_GameDataReceiving">Подключение к данным игры: поступают корректные данные. Активность заезда проверяется отдельно.</x:String>
+    <x:String x:Key="Output_GameDataUnverified">Подключение к данным игры: не подтверждено существующим приёмником.</x:String>
+<x:String x:Key="OutputTest_Button">Виртуальная кнопка</x:String>
+<x:String x:Key="OutputTest_ButtonNumber">Кнопка из назначений</x:String>
+<x:String x:Key="OutputTest_ButtonHint">Откройте назначение управления в игре и выберите действие для привязки. Затем запустите одиночный тест: после обратного отсчёта будет нажата только выбранная кнопка. Вне экрана назначения она может выполнить уже назначенное игровое действие.</x:String>
+    <x:String x:Key="Output_ButtonsName">Название</x:String>
+    <x:String x:Key="Output_ButtonsKey">Клавиша</x:String>
+    <x:String x:Key="Output_ButtonsNumber">Кнопка</x:String>
+    <x:String x:Key="Output_Axis">Ось</x:String>
+    <x:String x:Key="Output_Invert">Инверсия</x:String>
+<x:String x:Key="OutputTest_NoProfileButtons">Добавьте виртуальную кнопку в разделе «Клавиши», затем выберите её здесь.</x:String>
+    <x:String x:Key="Output_ButtonsKeyConflict">Не применено: {0} уже назначена другому действию. Выберите другую клавишу.</x:String>
+    <sys:String x:Key="Nav_CollapseSidebar">Свернуть меню</sys:String>
+    <sys:String x:Key="Nav_ExpandSidebar">Развернуть меню</sys:String>
+  <sys:String x:Key="Vehicle_Confirmed">Машина подтверждена данными игры</sys:String>
+  <sys:String x:Key="Vehicle_Waiting">Ожидание данных о машине от игры</sys:String>
+  <sys:String x:Key="Vehicle_Unsupported">Определение машины для этой игры недоступно</sys:String>
+  <sys:String x:Key="Vehicle_DetectionDisabled">Автоопределение игры выключено</sys:String>
+  <sys:String x:Key="Vehicle_DifferentProfile">Определена другая машина; текущий профиль остаётся выбранным</sys:String>
+  <sys:String x:Key="Vehicle_GameNotRunning">Игра не запущена</sys:String>
+  <sys:String x:Key="Vehicle_LastProfile">Последний подтверждённый профиль</sys:String>
+  <sys:String x:Key="Vehicle_SelectedProfile">Выбранный профиль</sys:String>
+    <sys:String x:Key="Overview_WindowFocus">Фокус окна</sys:String>
+    <sys:String x:Key="Overview_WindowFocusBehavior">Переключение окон</sys:String>
+    <sys:String x:Key="Overview_PauseOnFocusLoss">Приостанавливать управление при переключении из игры</sys:String>
+    <sys:String x:Key="Overview_PauseOnFocusLossHint">Для продолжения вернитесь в игру и отпустите назначенные кнопки. Если выключено, оси и кнопки работают в других окнах.</sys:String>
+    <sys:String x:Key="ProfileSetting_PauseControlsOnFocusLoss">Пауза управления вне окна игры</sys:String>
+    <sys:String x:Key="Overview_ReleaseCursorOnFocusLoss">Освобождать курсор при переключении из игры</sys:String>
+    <sys:String x:Key="Overview_ReleaseCursorOnFocusLossHint">При возврате восстанавливает ранее включённую ручную блокировку. Не зависит от паузы управления.</sys:String>
+    <sys:String x:Key="ProfileSetting_ReleaseCursorOnFocusLoss">Освобождение курсора вне окна игры</sys:String>
+    <sys:String x:Key="Offer_Enable">Включить</sys:String>
+    <sys:String x:Key="Offer_Abs">Помощник ABS</sys:String>
+    <sys:String x:Key="Offer_AbsInfo">Снижает торможение при блокировке колёс.</sys:String>
+    <sys:String x:Key="Offer_Tc">Помощник TC</sys:String>
+    <sys:String x:Key="Offer_TcInfo">Снижает газ при пробуксовке колёс.</sys:String>
+    <sys:String x:Key="Offer_Speed">Руление с учётом скорости</sys:String>
+    <sys:String x:Key="Offer_SpeedInfo">Изменяет отклик руля с учётом скорости машины в игре.</sys:String>
+    <sys:String x:Key="Offer_Slip">Порог проскальзывания</sys:String>
+    <sys:String x:Key="Offer_Drop">Максимальное снижение (%)</sys:String>
+    <sys:String x:Key="Offer_Recover">Скорость восстановления</sys:String>
+    <sys:String x:Key="Offer_Minimum">Минимальная скорость (км/ч)</sys:String>
+    <sys:String x:Key="Offer_Maximum">Максимальная скорость (км/ч)</sys:String>
+    <sys:String x:Key="Offer_Intensity">Интенсивность (%)</sys:String>
+    <sys:String x:Key="Offer_Sound">Звуковой отклик</sys:String>
+    <sys:String x:Key="Offer_SoundTab">Звук · PRO</sys:String>
+    <sys:String x:Key="Offer_SoundInfo">Звуковая обратная связь о сцеплении и работе помощников.</sys:String>
+    <sys:String x:Key="Offer_Volume">Громкость (%)</sys:String>
+    <sys:String x:Key="Offer_Pitch">Частота (Гц)</sys:String>
+    <sys:String x:Key="Offer_Front">Передняя ось</sys:String>
+    <sys:String x:Key="Offer_Rear">Задняя ось</sys:String>
+    <sys:String x:Key="Offer_Data">Данные игры</sys:String>
+    <sys:String x:Key="Offer_DataTab">Подключение игр · PRO</sys:String>
+    <sys:String x:Key="Offer_DataInfo">Данные игры позволяют автоматически выбирать машину и использовать доступные помощники.</sys:String>
+    <sys:String x:Key="Offer_Prepare">Подготовить игру</sys:String>
+    <sys:String x:Key="Offer_Menu">Меню игры</sys:String>
+    <sys:String x:Key="Offer_MenuInfo">Приостанавливает управление и освобождает курсор по данным меню игры.</sys:String>
+    <sys:String x:Key="Offer_Pause">Приостанавливать управление в меню игры</sys:String>
+    <sys:String x:Key="Offer_Cursor">Освобождать курсор в меню игры</sys:String>
+    <sys:String x:Key="Offer_Count">Данные игры и {0} PRO-функций</sys:String>
+    <sys:String x:Key="Offer_TireSound">Звуковая обратная связь шин</sys:String>
+    <sys:String x:Key="Offer_TcSound">Звук TC</sys:String>
+    <sys:String x:Key="Import_TargetExistsTitle">Заменить сохранённый профиль?</sys:String>
+    <sys:String x:Key="Import_TargetExists">Профиль {0} уже существует. Заменить его настройки импортируемым пресетом?</sys:String>
+    <sys:String x:Key="Import_Replace">Заменить</sys:String>
+    <sys:String x:Key="Import_SaveFailed">Не удалось сохранить импортируемый профиль. Текущий профиль не заменён.</sys:String>
+    <sys:String x:Key="CursorLock_Hint">Захватывает курсор. Поведение управления при разблокировке выбирается на Dashboard.</sys:String>
+    <sys:String x:Key="CursorUnlock_Title">Когда курсор разблокирован</sys:String>
+    <sys:String x:Key="CursorUnlock_Continue">Продолжать всё управление, включая руль мышью</sys:String>
+    <sys:String x:Key="CursorUnlock_Steering">Приостановить только руление мышью</sys:String>
+    <sys:String x:Key="CursorUnlock_All">Приостановить всё управление</sys:String>
+    <sys:String x:Key="CursorUnlock_Hint">Поведение при выключенном Lock Mouse. Сохраняется в этом профиле. Настройки переключения окон и игровых меню действуют отдельно.</sys:String>
+    <sys:String x:Key="Page_TrailBraking_HubRateHint">Изменение частоты хаба не влияет на результирующее поведение педали.</sys:String>
+    <sys:String x:Key="Page_TrailBraking_Title">Трейл-брейкинг</sys:String>
+    <sys:String x:Key="Ui_6363d1b49d13" xml:space="preserve">Время в секундах для полного отпускания тормоза.</sys:String>
+    <sys:String x:Key="Ui_91f36abf8342" xml:space="preserve">Плавно уменьшает давление на тормоз при увеличении угла поворота руля.</sys:String>
+    <sys:String x:Key="Ui_98c04661f1f2" xml:space="preserve">Трейл-брейкинг</sys:String>
+    <sys:String x:Key="Ui_d5b82d4193ca" xml:space="preserve">Ниже этого уровня помощник не уменьшает усилие тормоза.</sys:String>
+    <sys:String x:Key="Ui_cf2045189856" xml:space="preserve">Интенсивность</sys:String>
+    <sys:String x:Key="Page_TrailBraking_Desc">Автоматически снижает тормозное давление по мере поворота руля. Это предотвращает блокировку передних шин на входе в поворот и помогает автомобилю довернуться.</sys:String>
+    <sys:String x:Key="Ui_a2d2ba9e4847" xml:space="preserve">Насколько сильно ослаблять тормоз при повороте руля.</sys:String>
+    <sys:String x:Key="Ui_a665858de703" xml:space="preserve">Полное отпускание</sys:String>
+    <sys:String x:Key="Ui_c701a8607d51" xml:space="preserve">Минимальное усилие</sys:String>
+</ResourceDictionary>

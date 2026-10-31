@@ -1,0 +1,60 @@
+<UserControl xmlns:controls="clr-namespace:SimRacingHub.Avalonia.Controls" xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:shell="clr-namespace:SimRacingHub.Application.Features.Shell;assembly=vWheelHub.Application"
+             xmlns:supporters="clr-namespace:SimRacingHub.Application.Features.Supporters;assembly=vWheelHub.Application"
+             x:Class="SimRacingHub.Avalonia.Views.AppSettings.AboutView" x:DataType="shell:AppShellViewModel" x:CompileBindings="True">
+ <UserControl.Resources>
+  <DataTemplate x:Key="SupporterNameTemplate" x:DataType="supporters:Supporter">
+   <Border Classes="hub-card" Padding="14,10" Margin="0,0,8,8" MaxWidth="360">
+    <TextBlock Text="{Binding Name}" TextWrapping="Wrap" FontSize="14"/>
+   </Border>
+  </DataTemplate>
+  <ItemsPanelTemplate x:Key="SupporterNamesPanel"><WrapPanel/></ItemsPanelTemplate>
+ </UserControl.Resources>
+ <ScrollViewer Classes="hub-scroll" HorizontalScrollBarVisibility="Disabled">
+  <StackPanel Spacing="22" Margin="0,0,16,24" MaxWidth="1000" HorizontalAlignment="Stretch">
+   <TextBlock Text="{DynamicResource Ui_About}" FontSize="24" FontWeight="SemiBold" />
+   <Border Classes="hub-card" Padding="24">
+    <StackPanel Spacing="18">
+     <Grid ColumnDefinitions="48,*">
+      <PathIcon Data="{StaticResource IconXboxController}" Width="36" Height="36" Foreground="{DynamicResource SystemAccentColorBrush}" VerticalAlignment="Top" Margin="0,4,12,0" />
+      <StackPanel Grid.Column="1" Spacing="6">
+       <StackPanel Orientation="Horizontal" Spacing="12"><TextBlock Text="vWheel Hub" FontSize="28" FontWeight="SemiBold"/><TextBlock Text="{Binding Version}" Classes="hub-secondary" VerticalAlignment="Center" /><TextBlock Name="AboutEdition" Text="{Binding Edition}" Foreground="{DynamicResource SystemAccentColorBrush}" VerticalAlignment="Center"/></StackPanel>
+       <TextBlock Text="{DynamicResource Ui_ProjectDescription}" Classes="hub-secondary" FontSize="13" TextWrapping="Wrap" MaxWidth="640" HorizontalAlignment="Left" />
+      </StackPanel>
+     </Grid>
+     <StackPanel Orientation="Horizontal" Spacing="10"><Button Name="AboutRepository" Command="{Binding AppSettings.OpenGitHubCommand}"><StackPanel Orientation="Horizontal" Spacing="7"><PathIcon Data="{StaticResource IconGitHub}" Width="16" Height="16"/><TextBlock Text="{DynamicResource Ui_Repository}"/></StackPanel></Button><Button Name="AboutChangelog" Command="{Binding AppSettings.OpenReleasesCommand}"><StackPanel Orientation="Horizontal" Spacing="7"><PathIcon Data="{StaticResource IconArrowDownload}" Width="16" Height="16"/><TextBlock Text="{DynamicResource Ui_Changelog}"/></StackPanel></Button></StackPanel>
+    </StackPanel>
+   </Border>
+   <StackPanel Spacing="8">
+    <Button Name="AboutWiki" Classes="hub-resource" Command="{Binding AppSettings.OpenWikiCommand}">
+     <Grid ColumnDefinitions="32,*"><PathIcon Data="{StaticResource IconWikiFilled}" Width="20" Height="20"/><StackPanel Grid.Column="1" Spacing="3"><TextBlock Text="{DynamicResource Ui_Documentation}" FontSize="14"/><TextBlock Text="{DynamicResource Readiness_GuideDescription}" Classes="hub-secondary" TextWrapping="Wrap"/></StackPanel></Grid>
+    </Button>
+    <Button Name="AboutDiscord" Classes="hub-resource" Command="{Binding AppSettings.OpenDiscordCommand}">
+     <Grid ColumnDefinitions="32,*"><PathIcon Data="{StaticResource IconDiscord}" Width="20" Height="20"/><StackPanel Grid.Column="1" Spacing="3"><TextBlock Text="{DynamicResource Ui_Community}" FontSize="14"/><TextBlock Text="{DynamicResource Ui_DiscordDescription}" Classes="hub-secondary" TextWrapping="Wrap"/></StackPanel></Grid>
+    </Button>
+    <Button Name="AboutBoosty" Classes="hub-resource" Command="{Binding AppSettings.OpenBoostyCommand}">
+     <Grid ColumnDefinitions="32,*"><PathIcon Data="{StaticResource IconBoosty}" Width="20" Height="20"/><StackPanel Grid.Column="1" Spacing="3"><TextBlock Text="{DynamicResource Ui_Support}" FontSize="14"/><TextBlock Text="{DynamicResource Ui_BoostyDescription}" Classes="hub-secondary" TextWrapping="Wrap"/></StackPanel></Grid>
+    </Button>
+   </StackPanel>
+   <StackPanel Spacing="10">
+    <TextBlock Text="{DynamicResource Ui_SponsorsTitle}" FontSize="18" FontWeight="SemiBold" />
+    <TextBlock Text="{DynamicResource Ui_SponsorsDescription}" Classes="hub-secondary" TextWrapping="Wrap" />
+    <StackPanel Name="VipSupportersGroup" IsVisible="{Binding Supporters.HasVipSponsors, FallbackValue=False}" Spacing="8">
+     <TextBlock Text="{DynamicResource Supporters_Vip}" FontWeight="SemiBold" Foreground="{DynamicResource SystemAccentColorBrush}"/>
+     <ItemsControl Name="VipSupportersList" ItemsSource="{Binding Supporters.VipSponsors}" ItemTemplate="{StaticResource SupporterNameTemplate}" ItemsPanel="{StaticResource SupporterNamesPanel}"/>
+    </StackPanel>
+    <StackPanel Name="ProjectSupportersGroup" IsVisible="{Binding Supporters.HasProjectSupporters, FallbackValue=False}" Spacing="8">
+     <TextBlock Text="{DynamicResource Supporters_Project}" FontWeight="SemiBold"/>
+     <ItemsControl ItemsSource="{Binding Supporters.ProjectSupporters}" ItemTemplate="{StaticResource SupporterNameTemplate}" ItemsPanel="{StaticResource SupporterNamesPanel}"/>
+    </StackPanel>
+    <StackPanel Name="OtherThanksGroup" IsVisible="{Binding Supporters.HasThanks, FallbackValue=False}" Spacing="8">
+     <TextBlock Text="{DynamicResource Supporters_Thanks}" FontWeight="SemiBold"/>
+     <ItemsControl ItemsSource="{Binding Supporters.Thanks}" ItemTemplate="{StaticResource SupporterNameTemplate}" ItemsPanel="{StaticResource SupporterNamesPanel}"/>
+    </StackPanel>
+    <Button Name="AboutSponsor" Command="{Binding AppSettings.OpenBoostyCommand}" Margin="0,2,0,0"><StackPanel Orientation="Horizontal" Spacing="7"><PathIcon Data="{StaticResource IconBoosty}" Width="16" Height="16"/><TextBlock Text="{DynamicResource Ui_BecomeSponsor}"/></StackPanel></Button>
+   </StackPanel>
+   <Separator Background="{DynamicResource CardStrokeColorDefaultBrush}" />
+   <StackPanel Spacing="5"><TextBlock Text="{DynamicResource Ui_Thanks}" Classes="hub-secondary"/><TextBlock Text="{Binding Copyright}" FontSize="11" Foreground="{DynamicResource TextFillColorTertiaryBrush}" TextWrapping="Wrap"/></StackPanel>
+  </StackPanel>
+ </ScrollViewer>
+</UserControl>

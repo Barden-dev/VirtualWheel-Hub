@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AssemblyName>vWheelHub.Linux</AssemblyName>
+    <RootNamespace>SimRacingHub.Linux</RootNamespace>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\vWheelHub.Core\vWheelHub.Core.csproj" />
+    <ProjectReference Include="..\vWheelHub.Application\vWheelHub.Application.csproj" />
+  </ItemGroup>
+
+
+
+  <ItemGroup>
+    <EmbeddedResource Include="prepare-devices.sh" LogicalName="vWheelHub.PrepareDevices" />
+  </ItemGroup>
+</Project>

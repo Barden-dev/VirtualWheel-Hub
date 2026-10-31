@@ -1,0 +1,157 @@
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:pedalsVm="clr-namespace:SimRacingHub.Application.Features.Pedals;assembly=vWheelHub.Application" xmlns:conv="clr-namespace:SimRacingHub.Avalonia.Converters" xmlns:controls="clr-namespace:SimRacingHub.Avalonia.Controls" mc:Ignorable="d" d:DesignWidth="850" d:DesignHeight="1500" x:Name="PedalsRoot" x:Class="SimRacingHub.Avalonia.Views.Pedals.PedalsView" x:DataType="pedalsVm:PedalsViewModel" x:CompileBindings="True" Foreground="{DynamicResource TextFillColorPrimaryBrush}">
+    <UserControl.Styles>
+        <Style Selector="TabControl.axes-embedded /template/ ItemsPresenter#PART_ItemsPresenter">
+            <Setter Property="IsVisible" Value="False"/>
+        </Style>
+    </UserControl.Styles>
+    <UserControl.Resources>
+        <conv:NullableNumericConverter x:Key="NumericConv"/>
+        <conv:RatioPercentConverter x:Key="PercentConv"/>
+        <conv:BooleanToBrushConverter x:Key="StatusBrushConv"/>
+    </UserControl.Resources>
+    <ScrollViewer Name="PedalScroll" Classes="hub-scroll" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <StackPanel Spacing="18" Margin="0,0,16,24">
+            <StackPanel Spacing="4" IsVisible="{Binding ShowPageHeader, ElementName=PedalsRoot}">
+                <TextBlock Text="{DynamicResource Ui_4a90af55e031}" FontSize="24" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                <TextBlock Text="{DynamicResource Ui_897c55421a11}" FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+            </StackPanel>
+            <TabControl Name="PedalTabs" SelectedIndex="{Binding SelectedTabIndex, ElementName=PedalsRoot, Mode=TwoWay}" Classes.axes-embedded="{Binding !ShowTabHeaders, ElementName=PedalsRoot}" Padding="0" Margin="0">
+                <TabItem Name="GasTab" Header="{DynamicResource Ui_TabGas}">
+                    <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="6" Padding="16">
+                        <StackPanel Spacing="14">
+                            <TextBlock Text="{DynamicResource Ui_0db35ddaa9f6}" FontWeight="SemiBold" FontSize="14" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                            <Grid Name="ThrottleDynamicsGrid" ColumnDefinitions="*,300" RowDefinitions="Auto,Auto">
+                                <StackPanel Grid.Column="0" Spacing="12" Margin="0,0,16,0">
+                                    <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" RowSpacing="4">
+                                        <ToggleSwitch Name="InvertThrottleSwitch" IsChecked="{Binding Throttle.EffectiveInvertThrottle, Mode=TwoWay}" Content="{DynamicResource Ui_8cfc7f4c3f57}" FontSize="12"/>
+                                        <Button Grid.Column="1" Name="ResetInvertThrottleButton" Classes="setting-revert" controls:SettingRevert.Session="{Binding ProfileSession}" controls:SettingRevert.PropertyName="InvertGas" Content="{DynamicResource Ui_RestoreSetting}" ToolTip.Tip="{DynamicResource Ui_RestoreSettingHint}"/>
+                                        <TextBlock Grid.Row="1" Grid.ColumnSpan="2" Text="{DynamicResource Ui_309c0adfec27}" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                    </Grid>
+                                    <StackPanel Spacing="4">
+                                        <Grid ColumnDefinitions="*">
+                                            <TextBlock Grid.Column="0" Text="{DynamicResource Ui_d84f6e0617b2}" FontWeight="SemiBold" FontSize="12" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextWrapping="Wrap"/>
+                                        </Grid>
+                                        <TextBlock Text="{DynamicResource Ui_83f471b6e894}" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                        <Grid ColumnDefinitions="*,150,Auto" Margin="0,2,0,0" ColumnSpacing="12">
+                                            <Slider Grid.Column="0" Name="ThrottleLinearitySlider" Value="{Binding Throttle.EffectiveThrottleLinearity, Mode=TwoWay}" Minimum="0.2" Maximum="3.0" SmallChange="0.05" LargeChange="0.1" VerticalAlignment="Center"/>
+                                            <NumericUpDown Grid.Column="1" Name="ThrottleLinearityBox" Value="{Binding Throttle.EffectiveThrottleLinearity, Converter={StaticResource NumericConv}, Mode=TwoWay}" Minimum="0.2" Maximum="3.0" Increment="0.05" FormatString="0.00" Width="150" VerticalAlignment="Center" FontSize="13" MinHeight="32"/>
+                                            <Button Grid.Column="2" Name="ResetThrottleLinearityButton" Classes="setting-revert" controls:SettingRevert.Session="{Binding ProfileSession}" controls:SettingRevert.PropertyName="GasGamma" Content="{DynamicResource Ui_RestoreSetting}" ToolTip.Tip="{DynamicResource Ui_RestoreSettingHint}" VerticalAlignment="Center"/>
+                                        </Grid>
+                                    </StackPanel>
+                                    <StackPanel Spacing="12">
+                                        <Grid ColumnDefinitions="*,150,Auto" ColumnSpacing="12">
+                                            <TextBlock Text="{DynamicResource Ui_b141eb1ee136}" FontWeight="SemiBold" FontSize="12" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextWrapping="Wrap" Grid.Column="0" VerticalAlignment="Center"/>
+                                            <NumericUpDown Name="ThrottleDeadzoneBox" Value="{Binding Throttle.EffectiveThrottleDeadzone, Converter={StaticResource PercentConv}, Mode=TwoWay}" Minimum="0.0" Maximum="100" Increment="1" FormatString="{DynamicResource Ui_NumberPercentFormat}" Grid.Column="1" VerticalAlignment="Center" Width="150" FontSize="13" MinHeight="32"/>
+                                            <Button Name="ResetThrottleDeadzoneButton" Classes="setting-revert" controls:SettingRevert.Session="{Binding ProfileSession}" controls:SettingRevert.PropertyName="GasThreshold" Content="{DynamicResource Ui_RestoreSetting}" ToolTip.Tip="{DynamicResource Ui_RestoreSettingHint}" Grid.Column="2" VerticalAlignment="Center"/>
+                                        </Grid>
+                                        <Grid ColumnDefinitions="*,150,Auto" ColumnSpacing="12">
+                                            <TextBlock Text="{DynamicResource Ui_af2d089f586c}" FontWeight="SemiBold" FontSize="12" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextWrapping="Wrap" Grid.Column="0" VerticalAlignment="Center"/>
+                                            <NumericUpDown Name="GasAttackFastBox" Value="{Binding Throttle.EffectiveGasAttackFastSeconds, Converter={StaticResource NumericConv}, Mode=TwoWay}" Minimum="0.002" Maximum="65536" Increment="0.01" FormatString="{DynamicResource Ui_NumberSecondsFormat}" Grid.Column="1" VerticalAlignment="Center" Width="150" FontSize="13" MinHeight="32"/>
+                                            <Button Name="ResetGasAttackFastButton" Classes="setting-revert" controls:SettingRevert.Session="{Binding ProfileSession}" controls:SettingRevert.PropertyName="GasAttackFastSeconds" Content="{DynamicResource Ui_RestoreSetting}" ToolTip.Tip="{DynamicResource Ui_RestoreSettingHint}" Grid.Column="2" VerticalAlignment="Center"/>
+                                        </Grid>
+                                        <Grid ColumnDefinitions="*,150,Auto" ColumnSpacing="12">
+                                            <TextBlock Text="{DynamicResource Ui_bff4b3769649}" FontWeight="SemiBold" FontSize="12" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextWrapping="Wrap" Grid.Column="0" VerticalAlignment="Center"/>
+                                            <NumericUpDown Name="GasAttackSlowBox" Value="{Binding Throttle.EffectiveGasAttackSlowSeconds, Converter={StaticResource NumericConv}, Mode=TwoWay}" Minimum="0.002" Maximum="65536" Increment="0.01" FormatString="{DynamicResource Ui_NumberSecondsFormat}" Grid.Column="1" VerticalAlignment="Center" Width="150" FontSize="13" MinHeight="32"/>
+                                            <Button Name="ResetGasAttackSlowButton" Classes="setting-revert" controls:SettingRevert.Session="{Binding ProfileSession}" controls:SettingRevert.PropertyName="GasAttackSlowSeconds" Content="{DynamicResource Ui_RestoreSetting}" ToolTip.Tip="{DynamicResource Ui_RestoreSettingHint}" Grid.Column="2" VerticalAlignment="Center"/>
+                                        </Grid>
+                                        <Border Background="{DynamicResource ControlFillColorDefaultBrush}" CornerRadius="4" Padding="8,6">
+                                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                                <TextBlock Text="{DynamicResource Ui_60e7fb8d49a2}" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                                                <TextBlock Grid.Column="1" controls:LocalizedText.Value="{Binding Throttle.EffectiveGasEstimatedFullPressSeconds}" controls:LocalizedText.Format="{DynamicResource Ui_Format_4c8196f66b}" FontWeight="SemiBold" FontSize="11" Foreground="#4ADE80" VerticalAlignment="Center"/>
+                                            </Grid>
+                                        </Border>
+                                        <Grid ColumnDefinitions="*,150,Auto" ColumnSpacing="12">
+                                            <TextBlock Text="{DynamicResource Ui_fe09770d531c}" FontWeight="SemiBold" FontSize="12" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextWrapping="Wrap" Grid.Column="0" VerticalAlignment="Center"/>
+                                            <NumericUpDown Name="GasDecayBox" Value="{Binding Throttle.EffectiveGasDecaySeconds, Converter={StaticResource NumericConv}, Mode=TwoWay}" Minimum="0.002" Maximum="65536" Increment="0.01" FormatString="{DynamicResource Ui_NumberSecondsFormat}" Grid.Column="1" VerticalAlignment="Center" Width="150" FontSize="13" MinHeight="32"/>
+                                            <Button Name="ResetGasDecayButton" Classes="setting-revert" controls:SettingRevert.Session="{Binding ProfileSession}" controls:SettingRevert.PropertyName="GasDecaySeconds" Content="{DynamicResource Ui_RestoreSetting}" ToolTip.Tip="{DynamicResource Ui_RestoreSettingHint}" Grid.Column="2" VerticalAlignment="Center"/>
+                                        </Grid>
+                                        <Separator Background="{DynamicResource CardStrokeColorDefaultBrush}" Margin="0,2"/>
+                                        <Grid ColumnDefinitions="*,150,Auto" ColumnSpacing="12">
+                                            <TextBlock Text="{DynamicResource Ui_4003024a98dd}" FontWeight="SemiBold" FontSize="12" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextWrapping="Wrap" Grid.Column="0" VerticalAlignment="Center"/>
+                                            <NumericUpDown Name="ThrottleTurboBox" Value="{Binding Throttle.EffectiveThrottleTurbo, Converter={StaticResource NumericConv}, Mode=TwoWay}" Minimum="0.002" Maximum="65536" Increment="0.01" FormatString="{DynamicResource Ui_NumberSecondsFormat}" Grid.Column="1" VerticalAlignment="Center" Width="150" FontSize="13" MinHeight="32"/>
+                                            <Button Name="ResetThrottleTurboButton" Classes="setting-revert" controls:SettingRevert.Session="{Binding ProfileSession}" controls:SettingRevert.PropertyName="GasAttackTurboSeconds" Content="{DynamicResource Ui_RestoreSetting}" ToolTip.Tip="{DynamicResource Ui_RestoreSettingHint}" Grid.Column="2" VerticalAlignment="Center"/>
+                                        </Grid>
+                                        <Grid ColumnDefinitions="*,150,Auto" ColumnSpacing="12">
+                                            <TextBlock Text="{DynamicResource Ui_b34724a152c9}" FontWeight="SemiBold" FontSize="12" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextWrapping="Wrap" Grid.Column="0" VerticalAlignment="Center"/>
+                                            <NumericUpDown Name="GasInstantCutBox" Value="{Binding Throttle.EffectiveGasInstantCutSeconds, Converter={StaticResource NumericConv}, Mode=TwoWay}" Minimum="0.002" Maximum="65536" Increment="0.01" FormatString="{DynamicResource Ui_NumberSecondsFormat}" Grid.Column="1" VerticalAlignment="Center" Width="150" FontSize="13" MinHeight="32"/>
+                                            <Button Name="ResetGasInstantCutButton" Classes="setting-revert" controls:SettingRevert.Session="{Binding ProfileSession}" controls:SettingRevert.PropertyName="GasInstantCutSeconds" Content="{DynamicResource Ui_RestoreSetting}" ToolTip.Tip="{DynamicResource Ui_RestoreSettingHint}" Grid.Column="2" VerticalAlignment="Center"/>
+                                        </Grid>
+                                    </StackPanel>
+                                </StackPanel>
+                                <Border Grid.Column="1" Background="{DynamicResource ControlFillColorDefaultBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="6" Padding="8">
+                                    <StackPanel Spacing="6">
+                                        <TextBlock Text="{DynamicResource Ui_951d97384917}" FontWeight="SemiBold" FontSize="11" Foreground="#4ADE80" HorizontalAlignment="Center" TextWrapping="Wrap"/>
+                                        <controls:ResponseCurveControl Name="ThrottleResponseCurve" Gamma="{Binding Throttle.EffectiveThrottleLinearity}" InputValue="{Binding Output.ThrottleInput}" IsBipolar="False" CurveBrush="#4ADE80" Height="180" Width="280"/>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+                        <controls:FeaturePreview Name="ThrottleOffer" Heading="{DynamicResource Offer_Tc}" Summary="{DynamicResource Offer_TcInfo}"><controls:FeaturePreview.Sample><StackPanel Spacing="10"><ToggleSwitch Content="{DynamicResource Offer_Enable}" IsChecked="False"/><Grid ColumnDefinitions="*,150" ColumnSpacing="12"><TextBlock Text="{DynamicResource Offer_Slip}" VerticalAlignment="Center" TextWrapping="Wrap"/><NumericUpDown Grid.Column="1" Value="0.05" Minimum="0" Maximum="1000"/></Grid><Grid ColumnDefinitions="*,150" ColumnSpacing="12"><TextBlock Text="{DynamicResource Offer_Drop}" VerticalAlignment="Center" TextWrapping="Wrap"/><NumericUpDown Grid.Column="1" Value="15" Minimum="0" Maximum="1000"/></Grid><Grid ColumnDefinitions="*,150" ColumnSpacing="12"><TextBlock Text="{DynamicResource Offer_Recover}" VerticalAlignment="Center" TextWrapping="Wrap"/><NumericUpDown Grid.Column="1" Value="4" Minimum="0" Maximum="1000"/></Grid><Grid ColumnDefinitions="*,150" ColumnSpacing="12"><TextBlock Text="{DynamicResource Offer_Minimum}" VerticalAlignment="Center" TextWrapping="Wrap"/><NumericUpDown Grid.Column="1" Value="5" Minimum="0" Maximum="1000"/></Grid></StackPanel></controls:FeaturePreview.Sample></controls:FeaturePreview>
+</StackPanel>
+                    </Border>
+                </TabItem>
+                <TabItem Name="BrakeTab" Header="{DynamicResource Ui_TabBrake}">
+                    <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="6" Padding="16">
+                        <StackPanel Spacing="14">
+                            <TextBlock Text="{DynamicResource Ui_b990fab5dbc4}" FontWeight="SemiBold" FontSize="14" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                            <Grid Name="BrakeDynamicsGrid" ColumnDefinitions="*,300" RowDefinitions="Auto,Auto">
+                                <StackPanel Grid.Column="0" Spacing="12" Margin="0,0,16,0">
+                                    <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" RowSpacing="4">
+                                        <ToggleSwitch Name="InvertBrakeSwitch" IsChecked="{Binding Brake.EffectiveInvertBrake, Mode=TwoWay}" Content="{DynamicResource Ui_660384b1d7af}" FontSize="12"/>
+                                        <Button Grid.Column="1" Name="ResetInvertBrakeButton" Classes="setting-revert" controls:SettingRevert.Session="{Binding ProfileSession}" controls:SettingRevert.PropertyName="InvertBrake" Content="{DynamicResource Ui_RestoreSetting}" ToolTip.Tip="{DynamicResource Ui_RestoreSettingHint}"/>
+                                        <TextBlock Grid.Row="1" Grid.ColumnSpan="2" Text="{DynamicResource Ui_4a2e856a7924}" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                    </Grid>
+                                    <StackPanel Spacing="4">
+                                        <Grid ColumnDefinitions="*">
+                                            <TextBlock Grid.Column="0" Text="{DynamicResource Ui_dc4e506ed294}" FontWeight="SemiBold" FontSize="12" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextWrapping="Wrap"/>
+                                        </Grid>
+                                        <TextBlock Text="{DynamicResource Ui_84852ef7bce5}" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                        <Grid ColumnDefinitions="*,150,Auto" Margin="0,2,0,0" ColumnSpacing="12">
+                                            <Slider Grid.Column="0" Name="BrakeLinearitySlider" Value="{Binding Brake.EffectiveBrakeLinearity, Mode=TwoWay}" Minimum="0.2" Maximum="3.0" SmallChange="0.05" LargeChange="0.1" VerticalAlignment="Center"/>
+                                            <NumericUpDown Grid.Column="1" Name="BrakeLinearityBox" Value="{Binding Brake.EffectiveBrakeLinearity, Converter={StaticResource NumericConv}, Mode=TwoWay}" Minimum="0.2" Maximum="3.0" Increment="0.05" FormatString="0.00" Width="150" VerticalAlignment="Center" FontSize="13" MinHeight="32"/>
+                                            <Button Grid.Column="2" Name="ResetBrakeLinearityButton" Classes="setting-revert" controls:SettingRevert.Session="{Binding ProfileSession}" controls:SettingRevert.PropertyName="BrakeGamma" Content="{DynamicResource Ui_RestoreSetting}" ToolTip.Tip="{DynamicResource Ui_RestoreSettingHint}" VerticalAlignment="Center"/>
+                                        </Grid>
+                                    </StackPanel>
+                                    <StackPanel Spacing="12">
+                                        <Grid ColumnDefinitions="*,150,Auto" ColumnSpacing="12">
+                                            <TextBlock Text="{DynamicResource Ui_b141eb1ee136}" FontWeight="SemiBold" FontSize="12" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextWrapping="Wrap" Grid.Column="0" VerticalAlignment="Center"/>
+                                            <NumericUpDown Name="BrakeDeadzoneBox" Value="{Binding Brake.EffectiveBrakeDeadzone, Converter={StaticResource PercentConv}, Mode=TwoWay}" Minimum="0.0" Maximum="100" Increment="1" FormatString="{DynamicResource Ui_NumberPercentFormat}" Grid.Column="1" VerticalAlignment="Center" Width="150" FontSize="13" MinHeight="32"/>
+                                            <Button Name="ResetBrakeDeadzoneButton" Classes="setting-revert" controls:SettingRevert.Session="{Binding ProfileSession}" controls:SettingRevert.PropertyName="BrakeThreshold" Content="{DynamicResource Ui_RestoreSetting}" ToolTip.Tip="{DynamicResource Ui_RestoreSettingHint}" Grid.Column="2" VerticalAlignment="Center"/>
+                                        </Grid>
+                                        <Grid ColumnDefinitions="*,150,Auto" ColumnSpacing="12">
+                                            <TextBlock Text="{DynamicResource Ui_af2d089f586c}" FontWeight="SemiBold" FontSize="12" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextWrapping="Wrap" Grid.Column="0" VerticalAlignment="Center"/>
+                                            <NumericUpDown Name="BrakeAttackFastBox" Value="{Binding Brake.EffectiveBrakeAttackFastSeconds, Converter={StaticResource NumericConv}, Mode=TwoWay}" Minimum="0.002" Maximum="65536" Increment="0.01" FormatString="{DynamicResource Ui_NumberSecondsFormat}" Grid.Column="1" VerticalAlignment="Center" Width="150" FontSize="13" MinHeight="32"/>
+                                            <Button Name="ResetBrakeAttackFastButton" Classes="setting-revert" controls:SettingRevert.Session="{Binding ProfileSession}" controls:SettingRevert.PropertyName="BrakeAttackFastSeconds" Content="{DynamicResource Ui_RestoreSetting}" ToolTip.Tip="{DynamicResource Ui_RestoreSettingHint}" Grid.Column="2" VerticalAlignment="Center"/>
+                                        </Grid>
+                                        <Grid ColumnDefinitions="*,150,Auto" ColumnSpacing="12">
+                                            <TextBlock Text="{DynamicResource Ui_bff4b3769649}" FontWeight="SemiBold" FontSize="12" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextWrapping="Wrap" Grid.Column="0" VerticalAlignment="Center"/>
+                                            <NumericUpDown Name="BrakeAttackSlowBox" Value="{Binding Brake.EffectiveBrakeAttackSlowSeconds, Converter={StaticResource NumericConv}, Mode=TwoWay}" Minimum="0.002" Maximum="65536" Increment="0.01" FormatString="{DynamicResource Ui_NumberSecondsFormat}" Grid.Column="1" VerticalAlignment="Center" Width="150" FontSize="13" MinHeight="32"/>
+                                            <Button Name="ResetBrakeAttackSlowButton" Classes="setting-revert" controls:SettingRevert.Session="{Binding ProfileSession}" controls:SettingRevert.PropertyName="BrakeAttackSlowSeconds" Content="{DynamicResource Ui_RestoreSetting}" ToolTip.Tip="{DynamicResource Ui_RestoreSettingHint}" Grid.Column="2" VerticalAlignment="Center"/>
+                                        </Grid>
+                                        <Border Background="{DynamicResource ControlFillColorDefaultBrush}" CornerRadius="4" Padding="8,6">
+                                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                                <TextBlock Text="{DynamicResource Ui_60e7fb8d49a2}" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                                                <TextBlock Grid.Column="1" controls:LocalizedText.Value="{Binding Brake.EffectiveBrakeEstimatedFullPressSeconds}" controls:LocalizedText.Format="{DynamicResource Ui_Format_4c8196f66b}" FontWeight="SemiBold" FontSize="11" Foreground="#F87171" VerticalAlignment="Center"/>
+                                            </Grid>
+                                        </Border>
+                                        <Grid ColumnDefinitions="*,150,Auto" ColumnSpacing="12">
+                                            <TextBlock Text="{DynamicResource Ui_fe09770d531c}" FontWeight="SemiBold" FontSize="12" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextWrapping="Wrap" Grid.Column="0" VerticalAlignment="Center"/>
+                                            <NumericUpDown Name="BrakeDecayBox" Value="{Binding Brake.EffectiveBrakeDecaySeconds, Converter={StaticResource NumericConv}, Mode=TwoWay}" Minimum="0.002" Maximum="65536" Increment="0.01" FormatString="{DynamicResource Ui_NumberSecondsFormat}" Grid.Column="1" VerticalAlignment="Center" Width="150" FontSize="13" MinHeight="32"/>
+                                            <Button Name="ResetBrakeDecayButton" Classes="setting-revert" controls:SettingRevert.Session="{Binding ProfileSession}" controls:SettingRevert.PropertyName="BrakeDecaySeconds" Content="{DynamicResource Ui_RestoreSetting}" ToolTip.Tip="{DynamicResource Ui_RestoreSettingHint}" Grid.Column="2" VerticalAlignment="Center"/>
+                                        </Grid>
+                                    </StackPanel>
+                                </StackPanel>
+                                <Border Grid.Column="1" Background="{DynamicResource ControlFillColorDefaultBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="6" Padding="8">
+                                    <StackPanel Spacing="6">
+                                        <TextBlock Text="{DynamicResource Ui_8011b9f75b94}" FontWeight="SemiBold" FontSize="11" Foreground="#F87171" HorizontalAlignment="Center" TextWrapping="Wrap"/>
+                                        <controls:ResponseCurveControl Name="BrakeResponseCurve" Gamma="{Binding Brake.EffectiveBrakeLinearity}" InputValue="{Binding Output.BrakeInput}" IsBipolar="False" CurveBrush="#F87171" Height="180" Width="280"/>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+                        <controls:FeaturePreview Name="BrakeOffer" Heading="{DynamicResource Offer_Abs}" Summary="{DynamicResource Offer_AbsInfo}"><controls:FeaturePreview.Sample><StackPanel Spacing="10"><ToggleSwitch Content="{DynamicResource Offer_Enable}" IsChecked="False"/><Grid ColumnDefinitions="*,150" ColumnSpacing="12"><TextBlock Text="{DynamicResource Offer_Slip}" VerticalAlignment="Center" TextWrapping="Wrap"/><NumericUpDown Grid.Column="1" Value="0.1" Minimum="0" Maximum="1000"/></Grid><Grid ColumnDefinitions="*,150" ColumnSpacing="12"><TextBlock Text="{DynamicResource Offer_Drop}" VerticalAlignment="Center" TextWrapping="Wrap"/><NumericUpDown Grid.Column="1" Value="10" Minimum="0" Maximum="1000"/></Grid><Grid ColumnDefinitions="*,150" ColumnSpacing="12"><TextBlock Text="{DynamicResource Offer_Recover}" VerticalAlignment="Center" TextWrapping="Wrap"/><NumericUpDown Grid.Column="1" Value="3" Minimum="0" Maximum="1000"/></Grid><Grid ColumnDefinitions="*,150" ColumnSpacing="12"><TextBlock Text="{DynamicResource Offer_Minimum}" VerticalAlignment="Center" TextWrapping="Wrap"/><NumericUpDown Grid.Column="1" Value="10" Minimum="0" Maximum="1000"/></Grid></StackPanel></controls:FeaturePreview.Sample></controls:FeaturePreview>
+</StackPanel>
+                    </Border>
+                </TabItem>
+            </TabControl>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

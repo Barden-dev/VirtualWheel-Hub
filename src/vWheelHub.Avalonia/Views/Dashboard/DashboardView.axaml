@@ -1,0 +1,188 @@
+<UserControl xmlns:shell="clr-namespace:SimRacingHub.Application.Features.Shell;assembly=vWheelHub.Application" xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:outputVm="clr-namespace:SimRacingHub.Application.Features.Output;assembly=vWheelHub.Application" xmlns:vm="clr-namespace:SimRacingHub.Application.Features.Dashboard;assembly=vWheelHub.Application" xmlns:controls="clr-namespace:SimRacingHub.Avalonia.Controls" xmlns:conv="clr-namespace:SimRacingHub.Avalonia.Converters" xmlns:dashboard="clr-namespace:SimRacingHub.Avalonia.Views.Dashboard" mc:Ignorable="d" d:DesignWidth="850" d:DesignHeight="1000" x:Class="SimRacingHub.Avalonia.Views.Dashboard.DashboardView" x:DataType="vm:DashboardViewModel" x:CompileBindings="True" Foreground="{DynamicResource TextFillColorPrimaryBrush}">
+    <UserControl.Resources>
+        <conv:BooleanToBrushConverter x:Key="StatusBrushConv"/>
+        <conv:BooleanToBrushConverter x:Key="TrueRedBrushConv" TrueBrush="#EF4444" FalseBrush="#4ADE80"/>
+            <conv:NullableNumericConverter x:Key="NumericConv"/>
+    </UserControl.Resources>
+    <ScrollViewer Classes="hub-scroll" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <StackPanel Spacing="18" Margin="0,0,16,24">
+            <StackPanel Spacing="4">
+                <TextBlock Text="{DynamicResource Ui_7e688ff57e41}" FontSize="24" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                <TextBlock Text="{DynamicResource Ui_bbc0dc3c2d4c}" FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+            </StackPanel>
+            <Panel IsVisible="{Binding !IsDeviceSetupOpen}">
+            <Panel IsVisible="{Binding Readiness.NeedsAttention, FallbackValue=False}">
+                <dashboard:DeviceReadinessNotice DataContext="{Binding Readiness}"/>
+            </Panel>
+            </Panel>
+            <Panel IsVisible="{Binding IsDeviceSetupOpen}">
+<Border DataContext="{ReflectionBinding DeviceSetup}" x:DataType="outputVm:OutputViewModel" Name="DeviceDiagnosticsCard" Background="{DynamicResource LayerFillColorDefaultBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="6" Padding="16,14">
+                <StackPanel Spacing="12">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Column="0" Spacing="2">
+                            <TextBlock Text="{DynamicResource Ui_a31428a467d6}" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                            <TextBlock Text="{DynamicResource Ui_b608e3dfff6e}" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8"><Button Classes="accent" Name="CheckDiagnosticButton" Content="{DynamicResource Ui_e90fafd8ddef}" Command="{Binding CheckDiagnosticCommand}" IsEnabled="{Binding !IsCheckingDiagnostic}" Padding="12,6" CornerRadius="4" FontSize="11"/>
+                            <Button Name="CloseDeviceSetupButton" Content="×" ToolTip.Tip="{DynamicResource Common_Close}" Command="{ReflectionBinding $parent[Window].DataContext.Dashboard.CloseDeviceSetupCommand}"/>
+                        </StackPanel>
+                    </Grid>
+                    <StackPanel IsVisible="{Binding ShowVJoySettings}" Spacing="8">
+                        <StackPanel IsVisible="{Binding !Readiness.IsOutputReady}">
+                        <Button Name="PrepareWheelButton" Content="{DynamicResource Readiness_Fix}" Command="{Binding ConnectWheelCommand}" IsEnabled="{Binding !IsBusy}" IsVisible="{Binding Readiness.NeedsAttention, FallbackValue=False}"/>
+                        </StackPanel>
+                        <StackPanel IsVisible="{Binding HasPendingVJoySetup}" Spacing="8">
+                            <Button Name="ResumePendingVJoyButton" Content="{DynamicResource Output_VJoyResume}" Command="{Binding ResumePendingVJoyCommand}" IsEnabled="{Binding !IsBusy}"/>
+                            <Button Name="CancelPendingVJoyButton" Content="{DynamicResource Output_VJoyCancelSetup}" Command="{Binding CancelPendingVJoyCommand}" IsEnabled="{Binding !IsBusy}"/>
+                        </StackPanel>
+                    </StackPanel>
+                    <TextBlock Name="DiagnosticPreviewNote" Text="{DynamicResource Ui_PreviewDiagnosticsNote}" IsVisible="{ReflectionBinding $parent[Window].DataContext.IsPreviewMode, FallbackValue=False}" Classes="hub-secondary" FontSize="11" TextWrapping="Wrap"/>
+                    <ProgressBar Name="DiagnosticProgress" IsIndeterminate="True" IsVisible="{Binding IsCheckingDiagnostic}" Height="3"/>
+                    <!-- Status Display -->
+                    <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" CornerRadius="6" Padding="12">
+                        <Grid ColumnDefinitions="Auto,*,Auto">
+                            <!-- Indicator Dot -->
+                            <Border Grid.Column="0" Width="10" Height="10" CornerRadius="5" Background="{Binding DeviceDiagnosticSnapshot.IsAvailable, FallbackValue=False, Converter={StaticResource StatusBrushConv}}" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                                <TextBlock Name="DiagnosticStatusText" Text="{Binding StatusMessage, FallbackValue='Ready to diagnose output device'}" FontWeight="SemiBold" FontSize="12" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextWrapping="Wrap"/>
+                                <TextBlock Name="DiagnosticSnapshotStatusText" Text="{Binding DeviceDiagnosticSnapshot.StatusText}" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" IsVisible="{Binding HasDiagnosticSnapshot}" TextWrapping="Wrap"/>
+                            </StackPanel>
+                            <Border Grid.Column="2" IsVisible="{Binding IsCheckingDiagnostic}" Background="{DynamicResource CardStrokeColorDefaultBrush}" CornerRadius="4" Padding="8,4">
+                                <TextBlock Text="{DynamicResource Ui_7b2ff0886f69}" FontSize="11" Foreground="#FBBF24" TextWrapping="Wrap"/>
+                            </Border>
+                        </Grid>
+                    </Border>
+                    <!-- Error Details if probe failed or unavailable -->
+                    <TextBlock Name="InputAccessAdvice" Text="{Binding InputAccessAdvice}" IsVisible="{Binding HasInputAccessIssue}" TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                    <Border Name="DiagnosticErrorCard" IsVisible="{Binding HasDiagnosticErrorDetails}" Background="#7F1D1D" BorderBrush="#DC2626" BorderThickness="1" CornerRadius="6" Padding="12,8">
+                        <StackPanel Spacing="4">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <PathIcon Data="{StaticResource IconWarning}" Width="16" Height="16"/>
+                                <TextBlock Text="{DynamicResource Ui_ae7d3c5843fe}" FontWeight="SemiBold" FontSize="11.5" Foreground="#FECACA"/>
+                            </StackPanel>
+                            <TextBlock Name="DiagnosticErrorDetailsText" Text="{Binding DeviceDiagnosticSnapshot.ErrorDetails}" Foreground="#FCA5A5" FontSize="11" TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Border>
+<Expander x:CompileBindings="False" Name="LmuInputDiagnostics" DataContext="{ReflectionBinding $parent[Window].DataContext.AppSettings}" IsVisible="{Binding SupportsInputCompatibility}" Header="{DynamicResource InputFix_Title}" HorizontalAlignment="Stretch">                <StackPanel Spacing="10">
+                    <TextBlock Text="{DynamicResource InputFix_Description}" TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                    <TextBlock Text="{Binding InputCompatibilityStatusText}" TextWrapping="Wrap"/>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Button Name="CheckInputCompatibilityButton" Content="{DynamicResource InputFix_Check}" Command="{Binding CheckInputCompatibilityCommand}" IsEnabled="{Binding !IsCheckingInputCompatibility}"/>
+                        <Button Name="ApplyInputCompatibilityButton" Content="{DynamicResource InputFix_Apply}" Command="{Binding ApplyInputCompatibilityCommand}" IsEnabled="{Binding CanApplyInputCompatibility}"/>
+                    </StackPanel>
+                </StackPanel>
+</Expander>
+                    <!-- Recommended Actions List -->
+                    <StackPanel Name="DiagnosticActionsPanel" Spacing="6" IsVisible="{Binding HasDiagnosticActions}">
+                        <TextBlock Text="{DynamicResource Ui_b19457eeca75}" FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                        <ItemsControl Name="RecommendedActionsList" ItemsSource="{Binding DeviceDiagnosticSnapshot.RecommendedActions}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" CornerRadius="4" Padding="10,6" Margin="0,2">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <PathIcon Data="{StaticResource IconCircle}" Width="16" Height="16" Foreground="{DynamicResource SystemAccentColorBrush}"/>
+                                            <TextBlock Text="{Binding}" FontSize="11" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextWrapping="Wrap"/>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+            </Panel>
+
+
+            <Border Name="FaultBanner" IsVisible="{Binding HasFault}" Background="#7F1D1D" BorderBrush="#DC2626" BorderThickness="1" CornerRadius="6" Padding="14,10">
+                <Grid ColumnDefinitions="Auto,*">
+                    <PathIcon Data="{StaticResource IconDismissCircle}" Width="16" Height="16" Grid.Column="0" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock Text="{DynamicResource Ui_d430f70620d8}" FontWeight="SemiBold" FontSize="12.5" Foreground="#FECACA"/>
+                        <TextBlock Name="FaultMessageText" Text="{Binding FaultMessage, FallbackValue='Unknown error'}" FontSize="11" Foreground="#FCA5A5" TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+            <Border Name="PendingContextBanner" IsVisible="{Binding HasPendingContext}" Background="#78350F" BorderBrush="#F59E0B" BorderThickness="1" CornerRadius="6" Padding="14,10">
+                <Grid ColumnDefinitions="*,Auto">
+                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                        <TextBlock Text="{DynamicResource Ui_4626aac2f901}" FontWeight="SemiBold" Foreground="#FDE68A" FontSize="12" TextWrapping="Wrap"/>
+                        <TextBlock Text="{DynamicResource Ui_168b43930f68}" Foreground="#FEF3C7" FontSize="11" TextWrapping="Wrap"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                        <Button Classes="accent" Name="ApplyPendingContextButton" Content="{DynamicResource Ui_4b8eea178c46}" Command="{Binding ApplyPendingContextCommand}" Padding="10,4" FontSize="11"/>
+                        <Button Name="DiscardPendingContextButton" Content="{DynamicResource Ui_eb1a70e39274}" Command="{Binding DiscardPendingContextCommand}" Padding="10,4" FontSize="11"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+            <Border Background="{DynamicResource LayerFillColorDefaultBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="6" Padding="16,14">
+                <StackPanel Spacing="14">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                            <Border Name="HubStatusIndicator" Width="12" Height="12" CornerRadius="6" Background="{Binding IsHubRunning, Converter={StaticResource StatusBrushConv}}" VerticalAlignment="Center"/>
+                            <TextBlock Text="{DynamicResource Ui_755c8b2a9fb1}" FontWeight="SemiBold" FontSize="13" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
+                            <TextBlock Name="StatusMessageText" Text="{Binding StatusMessage}" FontWeight="SemiBold" FontSize="13" Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
+                            <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" CornerRadius="4" Padding="8,3" Margin="8,0,0,0" VerticalAlignment="Center">
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <PathIcon Data="{StaticResource IconXboxController}" Width="16" Height="16" VerticalAlignment="Center"/>
+                                    <TextBlock Name="GameContextText" Text="{Binding GameContextDisplayName}" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource SystemAccentColorBrush}" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" CornerRadius="4" Padding="8,3" VerticalAlignment="Center">
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <PathIcon Data="{StaticResource IconLockClosed}" Width="16" Height="16" VerticalAlignment="Center"/>
+                                    <TextBlock Name="LockStatusText" controls:LocalizedText.Value="{Binding IsLocked}" controls:LocalizedText.Format="{DynamicResource Ui_Format_c235fd1930}" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                        <Border Grid.Column="1" Background="{DynamicResource ControlFillColorDefaultBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="4" Padding="8,4" VerticalAlignment="Center">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <TextBlock Text="{DynamicResource Ui_7ce1afa3f281}" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                                <TextBlock Name="DeviceModeText" Text="{Binding SelectedOutputMode}" FontWeight="SemiBold" FontSize="11" Foreground="#4ADE80" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                    <WrapPanel Margin="0,4,0,0">
+                        <Button Name="CheckDiagnosticsButton" IsVisible="{Binding !IsDeviceSetupOpen}" Command="{ReflectionBinding $parent[Window].DataContext.OpenDeviceDiagnosticsCommand}" Padding="12,8" CornerRadius="6" Margin="0,0,10,8">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <PathIcon Data="{StaticResource IconSearch}" Width="16" Height="16"/>
+                                <TextBlock Text="{DynamicResource Ui_OpenDeviceDiagnostics}" FontSize="12" TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </Button>
+                    </WrapPanel>
+
+                </StackPanel>
+            </Border>
+
+            <Border Name="CursorUnlockSettings" Classes="hub-card" Padding="18">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="{DynamicResource CursorUnlock_Title}" FontSize="16" FontWeight="SemiBold"/>
+                    <ComboBox Name="CursorUnlockedModeSelector" HorizontalAlignment="Stretch" SelectedIndex="{Binding CursorUnlockedMode, Mode=TwoWay}">
+                        <ComboBox.SelectionBoxItemTemplate>
+                            <DataTemplate><TextBlock Text="{ReflectionBinding $parent[ComboBox].DataContext.CursorUnlockedModeLabel}" TextTrimming="CharacterEllipsis"/></DataTemplate>
+                        </ComboBox.SelectionBoxItemTemplate>
+                        <ComboBoxItem Content="{DynamicResource CursorUnlock_Continue}"/>
+                        <ComboBoxItem Content="{DynamicResource CursorUnlock_Steering}"/>
+                        <ComboBoxItem Content="{DynamicResource CursorUnlock_All}"/>
+                    </ComboBox>
+                    <TextBlock Text="{DynamicResource CursorUnlock_Hint}" Classes="hub-secondary" TextWrapping="Wrap" FontSize="11"/>
+                </StackPanel>
+            </Border>
+            <Border Name="WindowFocusSettings" Classes="hub-card" Padding="18">
+                <StackPanel Spacing="16">
+                    <TextBlock Text="{DynamicResource Overview_WindowFocusBehavior}" FontSize="16" FontWeight="SemiBold"/>
+                    <StackPanel Spacing="6">
+                        <ToggleSwitch Name="PauseControlsOnFocusLossSwitch" Content="{DynamicResource Overview_PauseOnFocusLoss}" IsChecked="{Binding PauseControlsOnFocusLoss, Mode=TwoWay}"/>
+                        <TextBlock Text="{DynamicResource Overview_PauseOnFocusLossHint}" Classes="hub-secondary" TextWrapping="Wrap" FontSize="11"/>
+                    </StackPanel>
+                    <Separator/>
+                    <StackPanel Spacing="6">
+                        <ToggleSwitch Name="ReleaseCursorOnFocusLossSwitch" Content="{DynamicResource Overview_ReleaseCursorOnFocusLoss}" IsChecked="{Binding ReleaseCursorOnFocusLoss, Mode=TwoWay}"/>
+                        <TextBlock Text="{DynamicResource Overview_ReleaseCursorOnFocusLossHint}" Classes="hub-secondary" TextWrapping="Wrap" FontSize="11"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+<controls:FeaturePreview Name="MenuOffer" Heading="{DynamicResource Offer_Menu}" Summary="{DynamicResource Offer_MenuInfo}"><controls:FeaturePreview.Sample><StackPanel Spacing="10"><ToggleSwitch Content="{DynamicResource Offer_Pause}"/><ToggleSwitch Content="{DynamicResource Offer_Cursor}"/></StackPanel></controls:FeaturePreview.Sample></controls:FeaturePreview>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

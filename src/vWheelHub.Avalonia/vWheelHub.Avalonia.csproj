@@ -1,0 +1,48 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>vWheelHub</AssemblyName>
+    <RootNamespace>SimRacingHub.Avalonia</RootNamespace>
+    <ApplicationIcon>../../icon.ico</ApplicationIcon>
+    <ApplicationManifest Condition="'$(OS)' == 'Windows_NT' Or $([System.String]::Copy('$(RuntimeIdentifier)').StartsWith('win-'))">../../app.manifest</ApplicationManifest>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Version>2.0</Version>
+    <AssemblyVersion>$(Version).0.0</AssemblyVersion>
+    <FileVersion>$(Version).0.0</FileVersion>
+    <InformationalVersion>$(Version)</InformationalVersion>
+    <Company>Barden-dev</Company>
+    <Copyright>Copyright (c) 2026 Barden-dev. All Rights Reserved.</Copyright>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="12.1.4" />
+    <PackageReference Include="Avalonia.Desktop" Version="12.1.4" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.4" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.4" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\vWheelHub.Core\vWheelHub.Core.csproj" />
+    <ProjectReference Include="..\vWheelHub.Application\vWheelHub.Application.csproj" />
+    <ProjectReference Include="..\vWheelHub.Linux\vWheelHub.Linux.csproj" />
+    <ProjectReference Include="..\vWheelHub.Windows\vWheelHub.Windows.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\Resources\Localization\*.xaml" Link="Resources\Localization\%(Filename)%(Extension)">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="../../icon.ico" LogicalName="SimRacingHub.TrayIcon.ico" />
+  </ItemGroup>
+</Project>

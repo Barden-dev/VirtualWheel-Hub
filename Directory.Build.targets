@@ -1,0 +1,14 @@
+<Project>
+  <!-- Native NuGet packages can mark their own symbols for publication even when
+       DebugType=None. Symbols are never release payloads. The audit also rejects
+       any symbol that reaches the final directory. -->
+  <Target Name="ExcludeDistributionSymbols" AfterTargets="ComputeFilesToPublish"
+          Condition="'$(VWheelDistributionBuild)' == 'true'">
+    <ItemGroup>
+      <ResolvedFileToPublish Remove="@(ResolvedFileToPublish)"
+        Condition="'%(ResolvedFileToPublish.Extension)' == '.pdb'" />
+      <ResolvedFileToPublish Remove="@(ResolvedFileToPublish)"
+        Condition="'$(RuntimeIdentifier)' == 'linux-x64' And '%(ResolvedFileToPublish.Filename)%(ResolvedFileToPublish.Extension)' == 'vJoyInterface.dll'" />
+    </ItemGroup>
+  </Target>
+</Project>

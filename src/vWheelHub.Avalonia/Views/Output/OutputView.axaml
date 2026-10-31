@@ -1,0 +1,56 @@
+<UserControl xmlns:controls="clr-namespace:SimRacingHub.Avalonia.Controls" xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:outputVm="clr-namespace:SimRacingHub.Application.Features.Output;assembly=vWheelHub.Application" xmlns:conv="clr-namespace:SimRacingHub.Avalonia.Converters" mc:Ignorable="d" d:DesignWidth="850" d:DesignHeight="1000" x:Class="SimRacingHub.Avalonia.Views.Output.OutputView" x:DataType="outputVm:OutputViewModel" x:CompileBindings="True" Foreground="{DynamicResource TextFillColorPrimaryBrush}">
+    <UserControl.Resources>
+        <conv:NullableNumericConverter x:Key="NumericConv"/>
+        <conv:BooleanToBrushConverter x:Key="StatusBrushConv"/>
+    </UserControl.Resources>
+    <ScrollViewer Classes="hub-scroll" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <StackPanel Spacing="18" Margin="0,0,16,24">
+            <!-- Title & Subtitle Header -->
+            <StackPanel Spacing="4">
+                <TextBlock Text="{DynamicResource Ui_e5f914fbed9b}" FontSize="24" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" IsVisible="False"/>
+                <TextBlock Text="{DynamicResource Ui_e56d9ecfa817}" FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+            </StackPanel>
+            <Border Name="AxisCalibrationCard" Classes="hub-card" Padding="16">
+                <StackPanel Spacing="12">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock Text="{DynamicResource Ui_55bc464ca374}" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                        <Button Name="ResetCalibrationButton" Grid.Column="1" Content="{DynamicResource Ui_c28205673d49}" Command="{Binding ResetCalibrationCommand}"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="*,150,150,90" ColumnSpacing="12">
+                        <TextBlock Text="{DynamicResource Output_Axis}"/>
+                        <TextBlock Grid.Column="1" Text="{DynamicResource Ui_80329b381a36}"/>
+                        <TextBlock Grid.Column="2" Text="{DynamicResource Ui_1f284960cf0c}"/>
+                        <TextBlock Grid.Column="3" Text="{DynamicResource Output_Invert}"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="*,150,150,90" ColumnSpacing="12">
+                        <TextBlock Text="{DynamicResource Ui_785d3986a74f}" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                        <NumericUpDown Name="OutSteerMinBox" Grid.Column="1" Value="{Binding EffectiveOutSteerMin, Converter={StaticResource NumericConv}}" Minimum="0" Maximum="32768" Increment="100" FormatString="0" MinHeight="32"/>
+                        <NumericUpDown Name="OutSteerMaxBox" Grid.Column="2" Value="{Binding EffectiveOutSteerMax, Converter={StaticResource NumericConv}}" Minimum="0" Maximum="32768" Increment="100" FormatString="0" MinHeight="32"/>
+                        <ToggleSwitch Name="InvertSteeringSwitch" Grid.Column="3" IsChecked="{Binding EffectiveInvertSteering, Mode=TwoWay}" ToolTip.Tip="{DynamicResource Output_Invert}"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="*,150,150,90" ColumnSpacing="12">
+                        <TextBlock Text="{DynamicResource Ui_04b5622ee264}" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                        <NumericUpDown Name="OutGasMinBox" Grid.Column="1" Value="{Binding EffectiveOutGasMin, Converter={StaticResource NumericConv}}" Minimum="0" Maximum="32768" Increment="100" FormatString="0" MinHeight="32"/>
+                        <NumericUpDown Name="OutGasMaxBox" Grid.Column="2" Value="{Binding EffectiveOutGasMax, Converter={StaticResource NumericConv}}" Minimum="0" Maximum="32768" Increment="100" FormatString="0" MinHeight="32"/>
+                        <ToggleSwitch Name="InvertGasSwitch" Grid.Column="3" IsChecked="{Binding EffectiveInvertGas, Mode=TwoWay}" ToolTip.Tip="{DynamicResource Output_Invert}"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="*,150,150,90" ColumnSpacing="12">
+                        <TextBlock Text="{DynamicResource Ui_c110ea64b741}" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                        <NumericUpDown Name="OutBrakeMinBox" Grid.Column="1" Value="{Binding EffectiveOutBrakeMin, Converter={StaticResource NumericConv}}" Minimum="0" Maximum="32768" Increment="100" FormatString="0" MinHeight="32"/>
+                        <NumericUpDown Name="OutBrakeMaxBox" Grid.Column="2" Value="{Binding EffectiveOutBrakeMax, Converter={StaticResource NumericConv}}" Minimum="0" Maximum="32768" Increment="100" FormatString="0" MinHeight="32"/>
+                        <ToggleSwitch Name="InvertBrakeSwitch" Grid.Column="3" IsChecked="{Binding EffectiveInvertBrake, Mode=TwoWay}" ToolTip.Tip="{DynamicResource Output_Invert}"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+            <Border Name="PollingRateSettings" Classes="hub-card" Padding="16,14">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="18">
+                    <StackPanel Spacing="3" VerticalAlignment="Center">
+                        <TextBlock Text="{DynamicResource Overview_PollingRate}" FontSize="14" FontWeight="SemiBold"/>
+                        <TextBlock Text="{DynamicResource Overview_PollingHint}" Classes="hub-secondary" FontSize="11" TextWrapping="Wrap"/>
+                    </StackPanel>
+                    <NumericUpDown Grid.Column="1" Name="PollingRateBox" Width="150" Minimum="50" Maximum="1000" Increment="50" FormatString="{DynamicResource Ui_HertzFormat}" Value="{Binding PollingRate, Converter={StaticResource NumericConv}, Mode=TwoWay}" FontSize="13" MinHeight="32"/>
+                </Grid>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

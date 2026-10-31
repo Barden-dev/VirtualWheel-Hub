@@ -1,0 +1,48 @@
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:contracts="clr-namespace:SimRacingHub.Application.Contracts;assembly=vWheelHub.Application"
+             x:Class="SimRacingHub.Avalonia.Views.InputDevices.InputDevicesView" x:CompileBindings="False"
+             Foreground="{DynamicResource TextFillColorPrimaryBrush}">
+  <Grid RowDefinitions="Auto,*" RowSpacing="12" Margin="0,0,16,0">
+    <StackPanel Spacing="6">
+      <TextBlock Text="{DynamicResource InputDevices_Title}" FontSize="24" FontWeight="SemiBold" IsVisible="False"/>
+      <TextBlock Text="{DynamicResource InputDevices_StopHint}" TextWrapping="Wrap" Classes="hub-secondary"/>
+    </StackPanel>
+    <ScrollViewer Grid.Row="1" Classes="hub-scroll" HorizontalScrollBarVisibility="Disabled">
+    <StackPanel Spacing="14" Margin="0,0,0,24">
+      <WrapPanel>
+        <Button Name="IdentifyPairButton" Classes="accent" Content="{Binding IdentifyPairText}" Command="{Binding IdentifyPairCommand}" IsEnabled="{Binding CanIdentifyPair}" Margin="0,0,8,8"/>
+        <Button Name="RefreshDevicesButton" Command="{Binding RefreshDevicesCommand}" IsEnabled="{Binding CanRefresh}" Content="{DynamicResource InputDevices_Refresh}" Margin="0,0,8,8"/>
+        <Button Name="CheckDevicesButton" Command="{Binding BeginCheckingCommand}" IsEnabled="{Binding CanCheck}" IsVisible="{Binding ShowCheck}" Content="{DynamicResource InputDevices_Check}" Margin="0,0,8,8"/>
+        <Button Name="StopCheckingButton" Content="{DynamicResource InputDevices_StopCheck}" Command="{Binding CancelCheckingCommand}" IsVisible="{Binding ShowStop}" IsEnabled="{Binding CanRefresh}" Margin="0,0,8,8"/>
+      </WrapPanel>
+      <TextBlock Name="InputDevicesStatusText" Text="{Binding StatusText}" IsVisible="{Binding ShowStatus}" TextWrapping="Wrap"/>
+      <Border Classes="hub-card" Padding="18">
+        <StackPanel Spacing="10">
+          <TextBlock Text="{DynamicResource InputDevices_Mouse}" FontSize="17" FontWeight="SemiBold"/>
+          <ComboBox Name="MouseDeviceBox" ItemsSource="{Binding Mice}" SelectedItem="{Binding SelectedMouse, Mode=TwoWay}" IsEnabled="{Binding CanSelectDevices}" HorizontalAlignment="Stretch" PlaceholderText="{DynamicResource InputDevices_Select}">
+            <ComboBox.ItemTemplate><DataTemplate x:DataType="contracts:InputDeviceOption">
+              <StackPanel Spacing="3"><TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis"/>
+                <TextBlock Text="{Binding Path}" FontSize="11" Opacity="0.65" TextTrimming="CharacterEllipsis"/></StackPanel>
+            </DataTemplate></ComboBox.ItemTemplate>
+          </ComboBox>
+          <TextBlock Name="MouseActivityText" Text="{Binding MouseActivityText}" TextWrapping="Wrap"/>
+          <Button Name="IdentifyMouseButton" Content="{Binding IdentifyMouseText}" Command="{Binding IdentifyMouseCommand}" IsEnabled="{Binding CanIdentifyMouse}" HorizontalAlignment="Left"/>
+        </StackPanel>
+      </Border>
+      <Border Classes="hub-card" Padding="18">
+        <StackPanel Spacing="10">
+          <TextBlock Text="{DynamicResource InputDevices_Keyboard}" FontSize="17" FontWeight="SemiBold"/>
+          <ComboBox Name="KeyboardDeviceBox" ItemsSource="{Binding Keyboards}" SelectedItem="{Binding SelectedKeyboard, Mode=TwoWay}" IsEnabled="{Binding CanSelectDevices}" HorizontalAlignment="Stretch" PlaceholderText="{DynamicResource InputDevices_Select}">
+            <ComboBox.ItemTemplate><DataTemplate x:DataType="contracts:InputDeviceOption">
+              <StackPanel Spacing="3"><TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis"/>
+                <TextBlock Text="{Binding Path}" FontSize="11" Opacity="0.65" TextTrimming="CharacterEllipsis"/></StackPanel>
+            </DataTemplate></ComboBox.ItemTemplate>
+          </ComboBox>
+          <TextBlock Name="KeyboardActivityText" Text="{Binding KeyboardActivityText}" TextWrapping="Wrap"/>
+          <Button Name="IdentifyKeyboardButton" Content="{Binding IdentifyKeyboardText}" Command="{Binding IdentifyKeyboardCommand}" IsEnabled="{Binding CanIdentifyKeyboard}" HorizontalAlignment="Left"/>
+        </StackPanel>
+      </Border>
+    </StackPanel>
+    </ScrollViewer>
+  </Grid>
+</UserControl>
