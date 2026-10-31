@@ -1,4 +1,4 @@
-# vWheel Hub Free
+# vWheel Hub
 
 Mouse and keyboard steering for racing games on Windows and Linux, with a shared
 Avalonia desktop interface.
