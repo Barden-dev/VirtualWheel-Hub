@@ -36,6 +36,19 @@ namespace SimRacingHub.Application.Features.Shell
         private readonly ProfileContextChangeCoordinator _contextChanges;
         private bool _eventsSubscribed;
         private bool _adoptingContext;
+        private string? _outputStartFailureMessage;
+
+        public void AcknowledgeOutputRecovery()
+        {
+            if (IsHubRunning || _runtimeSession.HasFault || _outputStartFailureMessage == null ||
+                FaultMessage != _outputStartFailureMessage) return;
+            _outputStartFailureMessage = null;
+            HasFault = false;
+            FaultMessage = null;
+            StatusMessage = _localizationManager.GetString("Status_Stopped", "Stopped");
+        }
+
+
         [ObservableProperty]
         private bool _isInitialized;
         [ObservableProperty]
@@ -332,6 +345,7 @@ namespace SimRacingHub.Application.Features.Shell
             {
                 RunOnUi(() =>
                 {
+                    _outputStartFailureMessage = _runtimeSession.LastStartFailureWasOutput ? ex.Message : null;
                     HasFault = true;
                     FaultMessage = ex.Message;
                 });
@@ -549,6 +563,7 @@ namespace SimRacingHub.Application.Features.Shell
         {
             RunOnUi(() =>
             {
+                _outputStartFailureMessage = null;
                 HasFault = true;
                 FaultMessage = faultMessage;
                 _ = _dialogService.ShowNoticeAsync(new DialogNoticeRequest(_localizationManager.GetString("Title_RuntimeFault", "Runtime Fault"), faultMessage, DialogSeverity.Error));

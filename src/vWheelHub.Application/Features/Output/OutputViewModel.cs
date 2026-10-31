@@ -26,6 +26,8 @@ namespace SimRacingHub.Application.Features.Output
         private readonly ILocalizationManager _localizationManager;
         private readonly IUiDispatcher? _uiDispatcher;
         private readonly IUserDialogService? _dialogs;
+        private readonly IExternalLauncher? _externalLauncher;
+        public Action? OutputRecovered { get; set; }
         private readonly SimRacingHub.Application.Runtime.IRuntimeSession? _runtime;
 
         public bool ShowVJoySettings => IsVJoySupported && SelectedOutputMode == OutputDeviceMode.VJoy;
@@ -272,7 +274,8 @@ namespace SimRacingHub.Application.Features.Output
             ILocalizationManager localizationManager,
             IUiDispatcher? uiDispatcher = null,
             IUserDialogService? dialogs = null,
-            SimRacingHub.Application.Runtime.IRuntimeSession? runtime = null)
+            SimRacingHub.Application.Runtime.IRuntimeSession? runtime = null,
+            IExternalLauncher? externalLauncher = null)
         {
             _profileSession = profileSession ?? throw new ArgumentNullException(nameof(profileSession));
             _outputDiagnostics = outputDiagnostics ?? throw new ArgumentNullException(nameof(outputDiagnostics));
@@ -280,6 +283,7 @@ namespace SimRacingHub.Application.Features.Output
             _localizationManager = localizationManager ?? throw new ArgumentNullException(nameof(localizationManager));
             _uiDispatcher = uiDispatcher;
             _dialogs = dialogs;
+            _externalLauncher = externalLauncher;
             _runtime = runtime;
 
             StatusMessage = _localizationManager.GetString("Status_OutputReady", "Ready to diagnose output device");
@@ -513,6 +517,7 @@ namespace SimRacingHub.Application.Features.Output
                     _diagnosticSucceeded = snapshot.IsAvailable && input?.IsAvailable != false;
                     StatusMessage = CompletedDiagnosticText;
                     HasInputAccessIssue = input?.IsAvailable == false;
+                    if (snapshot.IsAvailable) OutputRecovered?.Invoke();
                 });
 
                 return snapshot;

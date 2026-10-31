@@ -55,7 +55,8 @@ internal sealed class VJoySetupService
         // Exact desired bytes and original backup are verified before the user
         // approves, rather than guessed after an external configuration tool.
         _journal.Prepare(before, expected, operationId: id, purpose: create ? "wheel-create" : "wheel-reconfigure",
-            allowCreatedRollback: true, beforeDeviceStatus: capabilities.Status, previousSelectionFingerprint: selection?.Fingerprint);
+            allowCreatedRollback: true, beforeDeviceStatus: capabilities.Status, previousSelectionFingerprint: selection?.Fingerprint,
+            previousSelection: create ? selection : null);
         var target = new VJoyDeviceInfo(inspected.DeviceId, VJoyWrapper.VJD_STAT_FREE, true,
             Enumerable.Range(0x30, 8).ToArray(), 128, povs, 0, true, expected.Fingerprint());
         return new(id, capabilities, target, true, !create, _journal.BackupPath(id), expected.Fingerprint());

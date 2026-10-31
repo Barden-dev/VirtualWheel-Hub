@@ -402,7 +402,7 @@
     <sys:String x:Key="Readiness_WindowsOutputAdvice" xml:space="preserve">Open device diagnostics here to check and repair the virtual wheel.</sys:String>
     <sys:String x:Key="Readiness_LinuxOutputAdvice" xml:space="preserve">Check /dev/uinput and your user’s write permissions.</sys:String>
     <sys:String x:Key="Readiness_LinuxInputAdvice" xml:space="preserve">Check access to /dev/input/event* for your mouse and keyboard. Sign in again after changing group membership.</sys:String>
-    <sys:String x:Key="Readiness_Fix" xml:space="preserve">Fix…</sys:String>
+    <sys:String x:Key="Readiness_Fix" xml:space="preserve">Fix</sys:String>
     <sys:String x:Key="Readiness_GuideDescription" xml:space="preserve">First setup, game control assignments and answers to common questions.</sys:String>
     <sys:String x:Key="Supporters_Vip" xml:space="preserve">Special thanks · VIP Sponsors</sys:String>
     <sys:String x:Key="Supporters_Project" xml:space="preserve">Project supporters</sys:String>
@@ -691,10 +691,10 @@ No readable keyboard detected.</sys:String>
     <sys:String x:Key="Output_VJoyInventoryRow">#{0}: {1}; axes {2}, buttons {3}, discrete POV {4}, continuous POV {5}</sys:String>
     <sys:String x:Key="Output_VJoySelectCompatible">Choose an accessible existing device with the required capabilities. An occupied or incompatible device will not be reconfigured.</sys:String>
     <sys:String x:Key="Output_VJoyAdoptConfirm">Use vJoy #{0} as the shared hub output without changing its configuration? This profile will switch from its individual device #{1} to the shared output after you save it. Other saved profiles keep their existing device choices. Changing the output number may require rebinding controls in the game. Selecting a device does not grant permission to remove it.</sys:String>
-    <sys:String x:Key="Output_VJoyAdopted">vJoy #{0} is selected as the shared output. Save this profile to use it. Other profiles keep their current choices until you explicitly migrate them.</sys:String>
-    <sys:String x:Key="Output_VJoyNoUnusedNumbers">No confirmed unconfigured vJoy number is available. Choose a compatible existing device without changes; no configuration will be overwritten.</sys:String>
+    <sys:String x:Key="Output_VJoyAdopted">vJoy #{0} selected. Existing device settings are unchanged. Assign this device in the game if needed.</sys:String>
+    <sys:String x:Key="Output_VJoyNoUnusedNumbers">No suitable free device or confirmed unused vJoy number was found. Existing configurations were left unchanged.</sys:String>
     <sys:String x:Key="Output_VJoyCreate">Create dedicated hub device</sys:String>
-    <sys:String x:Key="Output_VJoyCreateConfirm">Create vJoy #{0} for vWheel Hub? Other existing or unverified numbers ({1}) remain unchanged. The new wheel will have 8 axes, 128 buttons, a discrete POV and FFB. A verified backup is saved before setup. Close games and feeder programs; device creation can restart the driver and may require administrator permission. Data Out and in-game bindings are separate. This profile will use the shared output after saving; other profiles keep their current choices.</sys:String>
+    <sys:String x:Key="Output_VJoyCreateConfirm">Create vJoy #{0} for the hub? Existing or unverified devices ({1}) will not be changed. The new device will have 8 axes, 128 buttons, POV and FFB. Close games and other controller tools before continuing. A backup is saved first. Windows may request administrator approval and a restart. Assign the new device in your game if needed.</sys:String>
     <sys:String x:Key="Output_VJoyReadyUnchanged">The shared vJoy device is ready. Its configuration was checked without changes. Use the shared-output option in profiles you explicitly want to migrate.</sys:String>
     <sys:String x:Key="ProfileSetting_UseHubVJoyDevice">Use shared hub vJoy output</sys:String>
     <sys:String x:Key="Output_VJoyPreview" xml:space="preserve">Preview vJoy configuration changes</sys:String>
@@ -711,7 +711,7 @@ Verified original backup: {3}
 
 Close games and other feeder programs. Administrator approval may be requested. The exact reviewed layout and an operation receipt will be saved together. If setup fails, only a matching hub result may be rolled back to this backup, including removal of a newly created configuration. External edits are preserved. The driver or Windows may need restarting before the layout is active. Data Out and in-game bindings are separate.</sys:String>
     <sys:String x:Key="Output_VJoyExistingOrigin" xml:space="preserve">This is an existing device. Changing its configuration does not make it hub-owned or authorize deleting it. Extra discrete POVs are retained; any continuous POV replacement is shown above. Other devices are unchanged.</sys:String>
-    <sys:String x:Key="Output_VJoyNewOrigin" xml:space="preserve">This number was verified as unconfigured. It will become the dedicated shared hub output. Existing device configurations are unchanged. Other saved profiles keep their previous choices until you explicitly migrate them.</sys:String>
+    <sys:String x:Key="Output_VJoyNewOrigin" xml:space="preserve">This unused number will become the hub’s shared output. Existing devices will keep their settings. You may need to assign the new device in your games.</sys:String>
     <sys:String x:Key="Output_VJoySavedRestart" xml:space="preserve">vJoy configuration was saved and verified. Restart the driver or Windows, then check the same device. The hub retains its number; no fallback output is selected. Save this profile if its output choice changed.</sys:String>
     <sys:String x:Key="Output_VJoySetupStopped" xml:space="preserve">vJoy setup stopped. Keep the backup and operation record; check the reported state before retrying.</sys:String>
     <sys:String x:Key="Output_VJoyElevationDeclined" xml:space="preserve">Administrator approval was declined. No unconfirmed change is rolled back or replaced.</sys:String>
@@ -853,4 +853,8 @@ Close games and feeders. Administrator rights and a driver or Windows restart ma
     <sys:String x:Key="Ui_a2d2ba9e4847" xml:space="preserve">Scale factor applied to the brake release curve as steering angle increases.</sys:String>
     <sys:String x:Key="Ui_a665858de703" xml:space="preserve">Release Rate / Decay Duration</sys:String>
     <sys:String x:Key="Ui_c701a8607d51" xml:space="preserve">Activation Threshold / Minimum Limit</sys:String>
+    <sys:String x:Key="Output_VJoyDownload">Download vJoy</sys:String>
+    <sys:String x:Key="Output_VJoyDownloadFailed">Could not open the vJoy download page.</sys:String>
+    <sys:String x:Key="Output_VJoyInspectFailed">Could not inspect the vJoy configuration. No device was changed. Details:</sys:String>
+    <sys:String x:Key="Output_VJoyUnavailableAdvice">The vJoy device is unavailable or in use. Close other controller tools, check that vJoy is enabled and check again. Windows may need restarting after driver installation or configuration.</sys:String>
 </ResourceDictionary>

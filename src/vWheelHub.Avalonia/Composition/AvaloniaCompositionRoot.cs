@@ -111,7 +111,7 @@ namespace SimRacingHub.Avalonia.Composition
             shellViewModel.Profiles = Profiles;
             ;
             ;
-            Output = output ?? shellViewModel.Output ?? new OutputViewModel(profileSession, diagnostics, platformCapabilities, localizationManager, uiDispatcher, dialogService, runtimeSession);
+            Output = output ?? shellViewModel.Output ?? new OutputViewModel(profileSession, diagnostics, platformCapabilities, localizationManager, uiDispatcher, dialogService, runtimeSession, ExternalLauncher);
             shellViewModel.Output = Output;
             KeyBindings = keyBindings ?? shellViewModel.KeyBindings ?? new KeyBindingsViewModel(profileSession, localizationManager);
             shellViewModel.KeyBindings = KeyBindings;
@@ -123,6 +123,11 @@ namespace SimRacingHub.Avalonia.Composition
             Dashboard.Readiness = new DeviceReadinessViewModel(profileSession, diagnostics, platformCapabilities, localizationManager, uiDispatcher, () => shellViewModel.OpenDeviceDiagnosticsCommand.Execute(null));
             Output.Readiness = Dashboard.Readiness;
             Dashboard.DeviceSetup = Output;
+            Output.OutputRecovered = () =>
+            {
+                shellViewModel.AcknowledgeOutputRecovery();
+                Dashboard.AcknowledgeOutputRecovery();
+            };
             Output.NavigateGameBindings = () => shellViewModel.NavigateTo(PageId.ControlAssignment);
             Supporters = new SupportersViewModel(supportersFeed ?? new SupportersFeed(storage, allowNetwork: !isPreviewMode), uiDispatcher);
             shellViewModel.Supporters = Supporters;

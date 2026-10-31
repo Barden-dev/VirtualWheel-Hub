@@ -72,6 +72,8 @@ internal sealed class VJoyInventoryService
                 devices.Add(new((int)id, VJoyWrapper.VJD_STAT_UNKN, null, [], 0, -1, -1, false, null, error.Message));
             }
         }
+        var failures = devices.Where(device => device.Error != null).Select(device => $"#{device.DeviceId}: {device.Error}").ToArray();
+        if (failures.Length > 0) AppLogger.Instance.LogWarning("vJoy inventory could not verify configuration: " + string.Join("; ", failures));
         try
         {
             var selected = _selection.Read();

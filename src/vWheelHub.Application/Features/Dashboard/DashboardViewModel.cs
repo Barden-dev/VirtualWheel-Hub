@@ -22,6 +22,17 @@ namespace SimRacingHub.Application.Features.Dashboard
         private readonly IOutputDiagnostics _outputDiagnostics;
         private readonly ILocalizationManager _localizationManager;
         private readonly IUiDispatcher? _uiDispatcher;
+        private string? _outputStartFailureMessage;
+        public void AcknowledgeOutputRecovery()
+        {
+            if (IsHubRunning || _runtimeSession.HasFault || _outputStartFailureMessage == null ||
+                FaultMessage != _outputStartFailureMessage) return;
+            _outputStartFailureMessage = null;
+            HasFault = false;
+            FaultMessage = null;
+            StatusMessage = _localizationManager.GetString("Status_Stopped", "Stopped");
+        }
+
         private bool _isDisposed;
         private bool _eventsSubscribed;
         [ObservableProperty]
@@ -228,6 +239,7 @@ namespace SimRacingHub.Application.Features.Dashboard
         {
             RunOnUi(() =>
             {
+                _outputStartFailureMessage = null;
                 HasFault = true;
                 FaultMessage = message;
                 StatusMessage = message;
@@ -298,6 +310,7 @@ namespace SimRacingHub.Application.Features.Dashboard
             {
                 RunOnUi(() =>
                 {
+                    _outputStartFailureMessage = _runtimeSession.LastStartFailureWasOutput ? ex.Message : null;
                     HasFault = true;
                     FaultMessage = ex.Message;
                     StatusMessage = ex.Message;

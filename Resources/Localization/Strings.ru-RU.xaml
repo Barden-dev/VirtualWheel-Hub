@@ -402,7 +402,7 @@
     <sys:String x:Key="Readiness_WindowsOutputAdvice" xml:space="preserve">Откройте диагностику здесь, чтобы проверить и исправить подключение виртуального руля.</sys:String>
     <sys:String x:Key="Readiness_LinuxOutputAdvice" xml:space="preserve">Проверьте /dev/uinput и право вашего пользователя на запись.</sys:String>
     <sys:String x:Key="Readiness_LinuxInputAdvice" xml:space="preserve">Проверьте доступ к мыши и клавиатуре через /dev/input/event*. После изменения групп пользователя войдите в систему заново.</sys:String>
-    <sys:String x:Key="Readiness_Fix" xml:space="preserve">Исправить…</sys:String>
+    <sys:String x:Key="Readiness_Fix" xml:space="preserve">Исправить</sys:String>
     <sys:String x:Key="Readiness_GuideDescription" xml:space="preserve">Первоначальная настройка, назначение управления в игре и ответы на вопросы.</sys:String>
     <sys:String x:Key="Supporters_Vip" xml:space="preserve">Особая благодарность · VIP-спонсоры</sys:String>
     <sys:String x:Key="Supporters_Project" xml:space="preserve">Поддержали проект</sys:String>
@@ -691,10 +691,10 @@
     <sys:String x:Key="Output_VJoyInventoryRow">№{0}: {1}; осей {2}, кнопок {3}, дискретных POV {4}, непрерывных POV {5}</sys:String>
     <sys:String x:Key="Output_VJoySelectCompatible">Выберите доступное существующее устройство с нужными возможностями. Занятое или неподходящее устройство не будет перенастроено.</sys:String>
     <sys:String x:Key="Output_VJoyAdoptConfirm">Использовать vJoy №{0} как общий выход хаба без изменения его конфигурации? После сохранения этот профиль перейдёт с индивидуального устройства №{1} на общий выход. Остальные сохранённые профили сохранят прежний выбор. Смена номера выхода может потребовать повторных назначений в игре. Выбор устройства не разрешает его удаление.</sys:String>
-    <sys:String x:Key="Output_VJoyAdopted">vJoy №{0} выбран общим выходом. Сохраните этот профиль для его использования. Остальные профили сохраняют прежний выбор до явной миграции.</sys:String>
-    <sys:String x:Key="Output_VJoyNoUnusedNumbers">Подтверждённых ненастроенных номеров vJoy нет. Выберите подходящее существующее устройство без изменений; конфигурации не перезаписываются.</sys:String>
+    <sys:String x:Key="Output_VJoyAdopted">Выбран vJoy №{0}. Настройки устройств не изменены. При необходимости назначьте этот руль в игре.</sys:String>
+    <sys:String x:Key="Output_VJoyNoUnusedNumbers">Не найдено подходящего свободного устройства или проверенного пустого номера vJoy. Существующие конфигурации сохранены.</sys:String>
     <sys:String x:Key="Output_VJoyCreate">Создать выделенное устройство хаба</sys:String>
-    <sys:String x:Key="Output_VJoyCreateConfirm">Создать vJoy №{0} для vWheel Hub? Остальные существующие или непроверенные номера ({1}) останутся без изменений. Новый руль получит 8 осей, 128 кнопок, дискретный POV и FFB. До настройки сохраняется проверенная резервная копия. Закройте игры и feeder-программы: создание может перезапустить драйвер и потребовать разрешения администратора. Data Out и назначения в игре настраиваются отдельно. После сохранения этот профиль использует общий выход; остальные профили сохранят прежний выбор.</sys:String>
+    <sys:String x:Key="Output_VJoyCreateConfirm">Создать vJoy №{0} для хаба? Существующие или непроверенные устройства ({1}) не изменятся. Новое устройство получит 8 осей, 128 кнопок, POV и FFB. Закройте игры и другие программы управления контроллерами. Сначала будет сохранена резервная копия. Windows может запросить права администратора и перезапуск. При необходимости назначьте новое устройство в игре.</sys:String>
     <sys:String x:Key="Output_VJoyReadyUnchanged">Общее устройство vJoy готово. Конфигурация проверена без изменений. Включите общий выход в тех профилях, которые хотите явно перенести на него.</sys:String>
     <sys:String x:Key="ProfileSetting_UseHubVJoyDevice">Использовать общий выход vJoy хаба</sys:String>
     <sys:String x:Key="Output_VJoyPreview" xml:space="preserve">Предварительный просмотр настройки vJoy</sys:String>
@@ -711,7 +711,7 @@
 
 Закройте игры и другие feeder-программы. Может потребоваться разрешение администратора. Точно показанная конфигурация и запись о выполненной операции сохраняются вместе. При сбое допускается восстановление только совпадающего результата хаба по этой копии, включая удаление только что созданной конфигурации. Внешние правки сохраняются. До применения конфигурации может потребоваться перезапуск драйвера или Windows. Data Out и назначения в игре настраиваются отдельно.</sys:String>
     <sys:String x:Key="Output_VJoyExistingOrigin" xml:space="preserve">Это существующее устройство. Изменение конфигурации не делает его собственностью хаба и не разрешает его удаление. Лишние дискретные POV сохраняются; возможная замена непрерывных POV показана выше. Другие устройства не изменяются.</sys:String>
-    <sys:String x:Key="Output_VJoyNewOrigin" xml:space="preserve">Этот номер проверен как ненастроенный. Он станет выделенным общим выходом хаба. Существующие конфигурации не меняются. Остальные сохранённые профили сохраняют прежний выбор до явной миграции.</sys:String>
+    <sys:String x:Key="Output_VJoyNewOrigin" xml:space="preserve">Этот пустой номер станет общим выходом хаба. Настройки существующих устройств сохранятся. Возможно, потребуется назначить новый руль в играх.</sys:String>
     <sys:String x:Key="Output_VJoySavedRestart" xml:space="preserve">Конфигурация vJoy сохранена и проверена. Перезапустите драйвер или Windows, затем проверьте то же устройство. Хаб сохраняет его номер и не выбирает другой выход. Если выбор выхода профиля изменился, сохраните профиль.</sys:String>
     <sys:String x:Key="Output_VJoySetupStopped" xml:space="preserve">Настройка vJoy остановлена. Сохраните резервную копию и журнал; перед повторением проверьте указанное состояние.</sys:String>
     <sys:String x:Key="Output_VJoyElevationDeclined" xml:space="preserve">Разрешение администратора отклонено. Неподтверждённые изменения не откатываются и не заменяются.</sys:String>
@@ -853,4 +853,8 @@
     <sys:String x:Key="Ui_a2d2ba9e4847" xml:space="preserve">Насколько сильно ослаблять тормоз при повороте руля.</sys:String>
     <sys:String x:Key="Ui_a665858de703" xml:space="preserve">Полное отпускание</sys:String>
     <sys:String x:Key="Ui_c701a8607d51" xml:space="preserve">Минимальное усилие</sys:String>
+    <sys:String x:Key="Output_VJoyDownload">Скачать vJoy</sys:String>
+    <sys:String x:Key="Output_VJoyDownloadFailed">Не удалось открыть страницу скачивания vJoy.</sys:String>
+    <sys:String x:Key="Output_VJoyInspectFailed">Не удалось проверить конфигурацию vJoy. Устройства не изменены. Подробности:</sys:String>
+    <sys:String x:Key="Output_VJoyUnavailableAdvice">Устройство vJoy недоступно или занято. Закройте другие программы управления контроллерами, убедитесь, что vJoy включён, и повторите проверку. После установки или настройки драйвера может потребоваться перезапуск Windows.</sys:String>
 </ResourceDictionary>

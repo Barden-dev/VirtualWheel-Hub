@@ -113,6 +113,7 @@ namespace SimRacingHub.Application.Runtime
         public string? FaultMessage => _faultMessage;
 
         private Exception? _startFailure;
+        public bool LastStartFailureWasOutput { get; private set; }
 
         internal int LatestSteer => Volatile.Read(ref _latestSteer);
 
@@ -333,6 +334,7 @@ namespace SimRacingHub.Application.Runtime
         {
             Stop();
             _startFailure = null;
+            LastStartFailureWasOutput = false;
             if (profile == null)
             {
                 AppLogger.Instance.LogError("Cannot start vWheel Hub: resolved profile is null");
@@ -363,11 +365,16 @@ namespace SimRacingHub.Application.Runtime
                     ;
                 }
 
-                if (!_output.PrepareForStart(profile.OutputMode, _output.ResolveVJoyDeviceId(profile)))
+                try
                 {
-                    _startFailure = _output.LastStartFailure;
-                    return false;
+                    if (!_output.PrepareForStart(profile.OutputMode, _output.ResolveVJoyDeviceId(profile)))
+                    {
+                        LastStartFailureWasOutput = true;
+                        _startFailure = _output.LastStartFailure;
+                        return false;
+                    }
                 }
+                catch { LastStartFailureWasOutput = true; throw; }
 
                 string? buttonError = VirtualButtonProcessor.Validate(profile.VirtualButtons,
                     _output.TestCapabilities.ButtonCount, profile.GetReservedVirtualButtonKeys());

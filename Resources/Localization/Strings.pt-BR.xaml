@@ -405,7 +405,7 @@
     <sys:String x:Key="Readiness_WindowsOutputAdvice" xml:space="preserve">Abra o diagnóstico do dispositivo aqui para verificar e reparar a roda virtual.</sys:String>
     <sys:String x:Key="Readiness_LinuxOutputAdvice" xml:space="preserve">Verifique /dev/uinput e as permissões de gravação do seu usuário.</sys:String>
     <sys:String x:Key="Readiness_LinuxInputAdvice" xml:space="preserve">Verifique o acesso ao /dev/input/event* para mouse e teclado. Faça login novamente após alterar a associação ao grupo.</sys:String>
-    <sys:String x:Key="Readiness_Fix" xml:space="preserve">Corrigir…</sys:String>
+    <sys:String x:Key="Readiness_Fix" xml:space="preserve">Corrigir</sys:String>
     <sys:String x:Key="Readiness_GuideDescription" xml:space="preserve">Primeira configuração, atribuições de controle do jogo e respostas a perguntas comuns.</sys:String>
     <sys:String x:Key="Supporters_Vip" xml:space="preserve">Agradecimentos especiais · Patrocinadores VIP</sys:String>
     <sys:String x:Key="Supporters_Project" xml:space="preserve">Apoiadores do projeto</sys:String>
@@ -686,10 +686,10 @@ Nenhum teclado legível detectado.</sys:String>
     <sys:String x:Key="Output_VJoyInventoryRow" xml:space="preserve">#{0}: {1}; eixos {2}, botões {3}, POV discreto {4}, POV contínuo {5}</sys:String>
     <sys:String x:Key="Output_VJoySelectCompatible" xml:space="preserve">Escolha um dispositivo existente acessível com os recursos necessários. Um dispositivo ocupado ou incompatível não será reconfigurado.</sys:String>
     <sys:String x:Key="Output_VJoyAdoptConfirm" xml:space="preserve">Usar vJoy #{0} como saída do hub compartilhado sem alterar sua configuração? Este perfil mudará de seu dispositivo individual #{1} para a saída compartilhada após salvá-lo. Outros perfis salvos mantêm as opções de dispositivos existentes. Alterar o número de saída pode exigir a religação dos controles do jogo. Selecionar um dispositivo não concede permissão para removê-lo.</sys:String>
-    <sys:String x:Key="Output_VJoyAdopted" xml:space="preserve">vJoy #{0} é selecionado como saída compartilhada. Salve este perfil para usá-lo. Outros perfis mantêm suas escolhas atuais até que você os migre explicitamente.</sys:String>
-    <sys:String x:Key="Output_VJoyNoUnusedNumbers" xml:space="preserve">Nenhum número vJoy não configurado confirmado está disponível. Escolha um dispositivo existente compatível sem alterações; nenhuma configuração será substituída.</sys:String>
+    <sys:String x:Key="Output_VJoyAdopted" xml:space="preserve">vJoy nº {0} selecionado. As configurações dos dispositivos não foram alteradas. Atribua este dispositivo no jogo, se necessário.</sys:String>
+    <sys:String x:Key="Output_VJoyNoUnusedNumbers" xml:space="preserve">Nenhum dispositivo livre compatível ou número vJoy não utilizado verificado foi encontrado. As configurações existentes não foram alteradas.</sys:String>
     <sys:String x:Key="Output_VJoyCreate" xml:space="preserve">Crie um dispositivo hub dedicado</sys:String>
-    <sys:String x:Key="Output_VJoyCreateConfirm" xml:space="preserve">Criar vJoy #{0} para vWheel Hub? Outros números existentes ou não verificados ({1}) permanecem inalterados. A nova roda terá 8 eixos, 128 botões, POV e FFB discretos. Um backup verificado é salvo antes da configuração. Fechar jogos e programas alimentadores; a criação do dispositivo pode reiniciar o driver e exigir permissão do administrador. As ligações de saída de dados e dentro do jogo são separadas. Este perfil usará a saída compartilhada após salvar; outros perfis mantêm suas escolhas atuais.</sys:String>
+    <sys:String x:Key="Output_VJoyCreateConfirm" xml:space="preserve">Criar vJoy nº {0} para o hub? Os dispositivos existentes ou não verificados ({1}) não serão alterados. O novo dispositivo terá 8 eixos, 128 botões, POV e FFB. Feche os jogos e outros programas de controle. Um backup será salvo primeiro. O Windows pode solicitar permissão de administrador e uma reinicialização. Atribua o novo dispositivo no jogo, se necessário.</sys:String>
     <sys:String x:Key="Output_VJoyReadyUnchanged" xml:space="preserve">O dispositivo vJoy compartilhado está pronto. Sua configuração foi verificada sem alterações. Use a opção de saída compartilhada nos perfis que você deseja migrar explicitamente.</sys:String>
     <sys:String x:Key="ProfileSetting_UseHubVJoyDevice" xml:space="preserve">Use a saída vJoy do hub compartilhado</sys:String>
     <sys:String x:Key="Output_VJoyPreview" xml:space="preserve">Visualizar alterações de configuração vJoy</sys:String>
@@ -706,7 +706,7 @@ Backup original verificado: {3}
 
 Feche jogos e outros programas alimentadores. A aprovação do administrador pode ser solicitada. O layout revisado exato e um recibo da operação serão salvos juntos. Se a configuração falhar, apenas um resultado de hub correspondente poderá ser revertido para esse backup, incluindo a remoção de uma configuração recém-criada. As edições externas são preservadas. O driver ou Windows pode precisar ser reiniciado antes que o layout esteja ativo. As ligações de saída de dados e dentro do jogo são separadas.</sys:String>
     <sys:String x:Key="Output_VJoyExistingOrigin" xml:space="preserve">Este é um dispositivo existente. Alterar sua configuração não o torna propriedade do hub nem autoriza sua exclusão. POVs extra discretos são mantidos; qualquer substituição contínua de POV é mostrada acima. Outros dispositivos permanecem inalterados.</sys:String>
-    <sys:String x:Key="Output_VJoyNewOrigin" xml:space="preserve">Este número foi verificado como não configurado. Ele se tornará a saída do hub compartilhado dedicado. As configurações de dispositivos existentes permanecem inalteradas. Outros perfis salvos mantêm suas escolhas anteriores até que você os migre explicitamente.</sys:String>
+    <sys:String x:Key="Output_VJoyNewOrigin" xml:space="preserve">Este número não utilizado será a saída compartilhada do hub. Os dispositivos existentes manterão suas configurações. Pode ser necessário atribuir o novo dispositivo nos jogos.</sys:String>
     <sys:String x:Key="Output_VJoySavedRestart" xml:space="preserve">A configuração vJoy foi salva e verificada. Reinicie o driver ou Windows e verifique o mesmo dispositivo. O hub mantém seu número; nenhuma saída de fallback é selecionada. Salve este perfil se sua escolha de saída for alterada.</sys:String>
     <sys:String x:Key="Output_VJoySetupStopped" xml:space="preserve">A configuração de vJoy foi interrompida. Manter o registro de backup e operação; verifique o estado relatado antes de tentar novamente.</sys:String>
     <sys:String x:Key="Output_VJoyElevationDeclined" xml:space="preserve">A aprovação do administrador foi recusada. Nenhuma alteração não confirmada é revertida ou substituída.</sys:String>
@@ -848,4 +848,8 @@ Feche jogos e alimentadores. Podem ser necessários direitos de administrador e 
     <sys:String x:Key="Ui_a2d2ba9e4847" xml:space="preserve">Fator de escala aplicado à curva de liberação do freio à medida que o ângulo de direção aumenta.</sys:String>
     <sys:String x:Key="Ui_a665858de703" xml:space="preserve">Tempo de liberação do freio</sys:String>
     <sys:String x:Key="Ui_c701a8607d51" xml:space="preserve">Força mínima de frenagem</sys:String>
+    <sys:String x:Key="Output_VJoyDownload">Baixar vJoy</sys:String>
+    <sys:String x:Key="Output_VJoyDownloadFailed">Não foi possível abrir a página de download do vJoy.</sys:String>
+    <sys:String x:Key="Output_VJoyInspectFailed">Não foi possível verificar a configuração do vJoy. Nenhum dispositivo foi alterado. Detalhes:</sys:String>
+    <sys:String x:Key="Output_VJoyUnavailableAdvice">O dispositivo vJoy está indisponível ou em uso. Feche outros programas de controle, verifique se o vJoy está ativado e verifique novamente. Pode ser necessário reiniciar o Windows após instalar ou configurar o driver.</sys:String>
 </ResourceDictionary>

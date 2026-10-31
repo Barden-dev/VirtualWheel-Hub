@@ -30,6 +30,9 @@ namespace SimRacingHub.Application.Runtime
         /// </summary>
         string? FaultMessage { get; }
 
+        /// <summary>Whether the last failed start was blocked by the output device, rather than input or processing.</summary>
+        bool LastStartFailureWasOutput => false;
+
         /// <summary>
         /// Starts the input processing loop and attaches virtual controller feeder.
         /// </summary>

@@ -21,49 +21,97 @@ public partial class OutputViewModel
         if (!ShowVJoySettings || IsBusy) return;
         if (_runtime?.IsRunning == true) { StatusMessage = _localizationManager.GetString("Output_WheelStopFirst"); return; }
         bool needsSetup = false;
-        bool needsRepair = false;
         bool needsRestore = false;
+        bool connected = false;
         try
         {
             SetBusy(true);
             using var setup = _runtime?.BeginOutputSetup();
             var inventory = await _outputDiagnostics.InspectVJoyAsync(ct);
             DisplayVJoyInventory(inventory);
-            if (inventory.SelectionError != null)
+            if (inventory.SelectionError != null) StatusMessage = VJoySelectionSummary;
+            if (inventory.PendingOperationId != null || inventory.SelectionError != null && inventory.SelectedDeviceId == null)
             {
                 StatusMessage = VJoySelectionSummary;
-                needsRestore = inventory.PendingOperationId == null && inventory.Devices.Any(device =>
-                    device.DeviceId == inventory.SelectedDeviceId && device.IsAbsent);
-                if (!needsRestore) return;
+                return;
             }
-            if (inventory.SelectedDeviceId != null && !needsRestore)
+            var selected = inventory.Devices.FirstOrDefault(device => device.DeviceId == inventory.SelectedDeviceId);
+            if (inventory.SelectedDeviceId != null)
             {
-                var selected = inventory.Devices.FirstOrDefault(device => device.DeviceId == inventory.SelectedDeviceId);
-                if (selected is { IsUsable: true } && !selected.MeetsRequirements(true))
+                if (selected is { IsUsable: true } && selected.MeetsRequirements(true))
                 {
-                    SelectedVJoyDevice = VJoyDevices.First(option => option.Device.DeviceId == selected.DeviceId);
-                    needsRepair = true;
+                    // Fix explicitly revalidates this same number after a reinstall or
+                    // external configuration change. This never writes to the driver.
+                    connected = await _outputDiagnostics.SelectVJoyAsync(selected, true, ct);
+                    DisplayVJoyInventory(await _outputDiagnostics.InspectVJoyAsync(ct));
+                    StatusMessage = connected ? VirtualDeviceStateText : VJoySelectionSummary;
+                    return;
                 }
-                else { StatusMessage = VirtualDeviceStateText; return; }
+                if (selected?.IsAbsent == true) needsRestore = true;
+                // A changed, incompatible configuration may belong to another
+                // simulator. Fix can choose a compatible output or create an
+                // absent one, but never reconfigure this existing device.
+                else if (selected is not { IsUsable: true, Status: 1 })
+                { StatusMessage = VJoySetupFailure(inventory); return; }
             }
-            var compatible = inventory.SelectedDeviceId != null ? null : inventory.Devices.Where(device => device.IsUsable && device.MeetsRequirements(true))
+            var compatible = needsRestore ? null : inventory.Devices.Where(device => device.IsUsable && device.MeetsRequirements(true))
                 .OrderByDescending(device => device.DeviceId == VJoyDeviceId).ThenBy(device => device.DeviceId).FirstOrDefault();
             if (compatible != null)
             {
                 if (!await _outputDiagnostics.SelectVJoyAsync(compatible, true, ct))
                 { StatusMessage = _localizationManager.GetString("Output_VJoySelectionIssue"); return; }
                 DisplayVJoyInventory(await _outputDiagnostics.InspectVJoyAsync(ct));
-                StatusMessage = VirtualDeviceStateText;
+                StatusMessage = string.Format(_localizationManager.GetString("Output_VJoyAdopted"), compatible.DeviceId);
+                connected = true;
             }
-            else if (!needsRepair && !needsRestore) needsSetup = true;
+            else if (!needsRestore)
+            {
+                if (inventory.SuggestedNewDeviceId != null) needsSetup = true;
+                else StatusMessage = VJoySetupFailure(inventory);
+            }
         }
         catch (OperationCanceledException) { throw; }
         catch (Exception error) { StatusMessage = _localizationManager.GetString("Output_VJoySelectionIssue") + " " + error.Message; }
-        finally { SetBusy(false); WheelSetupMessage = StatusMessage; }
+        finally
+        {
+            SetBusy(false);
+            if (connected) await RefreshWheelDiagnosticAsync(ct);
+            WheelSetupMessage = StatusMessage;
+        }
         if (needsRestore) await RestoreMissingVJoyAsync(ct);
-        else if (needsRepair) await ChangeSelectedVJoyAsync(ct);
         else if (needsSetup) await PrepareWheelAsync(ct);
+        if (needsRestore || needsSetup) await RefreshWheelDiagnosticAsync(ct);
         WheelSetupMessage = StatusMessage;
+    }
+
+    private string VJoySetupFailure(VJoyDeviceInventory inventory)
+    {
+        var relevant = inventory.SelectedDeviceId is { } id
+            ? inventory.Devices.Where(device => device.DeviceId == id) : inventory.Devices;
+        var errors = relevant.Where(device => device.Error != null).GroupBy(device => device.Error)
+            .Select(group => $"{string.Join(", ", group.Select(device => "#" + device.DeviceId))}: {group.Key}").ToArray();
+        if (errors.Length > 0)
+            return _localizationManager.GetString("Output_VJoyInspectFailed") + " " + string.Join(Environment.NewLine, errors);
+        if (inventory.SelectionError != null) return VJoySelectionSummary;
+        if (relevant.Any(device => device.ConfigurationExists == true && !device.IsUsable || device.Status is 2 or 4))
+            return _localizationManager.GetString("Output_VJoyUnavailableAdvice");
+        return _localizationManager.GetString("Output_VJoyNoUnusedNumbers");
+    }
+
+    private async Task RefreshWheelDiagnosticAsync(CancellationToken ct)
+    {
+        string? message = StatusMessage;
+        await CheckDiagnosticAsync(ct);
+        StatusMessage = message;
+    }
+
+    [RelayCommand]
+    public async Task DownloadVJoyAsync(CancellationToken ct = default)
+    {
+        if (!ShowVJoySettings || _externalLauncher == null) return;
+        if (!await _externalLauncher.OpenUriAsync(new Uri(
+            "https://github.com/jshafer817/vJoy/releases/tag/v2.1.9.1"), ct))
+            StatusMessage = _localizationManager.GetString("Output_VJoyDownloadFailed");
     }
 
     private VJoyDeviceInventory? _vJoyInventory;
@@ -307,16 +355,29 @@ public partial class OutputViewModel
             // Older/preview adapters implement the existing per-device action.
             if (inventory.Devices.Count == 0) return false;
             DisplayVJoyInventory(inventory);
-            if (inventory.SelectionError != null) { StatusMessage = VJoySelectionSummary; return true; }
-            if (inventory.SelectedDeviceId is { } existing)
+            var selected = inventory.Devices.FirstOrDefault(device => device.DeviceId == inventory.SelectedDeviceId);
+            if (inventory.PendingOperationId != null || inventory.SelectionError != null && !(inventory.PendingOperationId == null &&
+                selected is { IsUsable: true, Status: 1 } && !selected.MeetsRequirements(true)))
+            { StatusMessage = VJoySelectionSummary; return true; }
+            if (inventory.SelectedDeviceId != null)
             {
-                var device = inventory.Devices.Single(item => item.DeviceId == existing);
-                StatusMessage = device.IsUsable && device.MeetsRequirements(true)
-                    ? _localizationManager.GetString("Output_VJoyReadyUnchanged") : _localizationManager.GetString("Output_VJoySelectCompatible");
+                if (selected is { IsUsable: true } && selected.MeetsRequirements(true))
+                { StatusMessage = _localizationManager.GetString("Output_VJoyReadyUnchanged"); return true; }
+                if (selected is not { IsUsable: true, Status: 1 })
+                { StatusMessage = VJoySetupFailure(inventory); return true; }
+            }
+            var compatible = inventory.Devices.Where(device => device.IsUsable && device.MeetsRequirements(true))
+                .OrderByDescending(device => device.DeviceId == VJoyDeviceId).ThenBy(device => device.DeviceId).FirstOrDefault();
+            if (compatible != null)
+            {
+                if (!await _outputDiagnostics.SelectVJoyAsync(compatible, true, ct))
+                { StatusMessage = _localizationManager.GetString("Output_VJoySelectionIssue"); return true; }
+                DisplayVJoyInventory(await _outputDiagnostics.InspectVJoyAsync(ct));
+                StatusMessage = string.Format(_localizationManager.GetString("Output_VJoyAdopted"), compatible.DeviceId);
                 return true;
             }
             if (inventory.SuggestedNewDeviceId is not { } id)
-            { StatusMessage = _localizationManager.GetString("Output_VJoyNoUnusedNumbers"); return true; }
+            { StatusMessage = VJoySetupFailure(inventory); return true; }
             if (_dialogs == null || profile == null) return true;
             var candidate = inventory.Devices.Single(device => device.DeviceId == id);
             var preview = await _outputDiagnostics.PreviewVJoyAsync(candidate, changeExisting: false, ct);

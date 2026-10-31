@@ -29,7 +29,10 @@
                     </Grid>
                     <StackPanel IsVisible="{Binding ShowVJoySettings}" Spacing="8">
                         <StackPanel IsVisible="{Binding !Readiness.IsOutputReady}">
-                        <Button Name="PrepareWheelButton" Content="{DynamicResource Readiness_Fix}" Command="{Binding ConnectWheelCommand}" IsEnabled="{Binding !IsBusy}" IsVisible="{Binding Readiness.NeedsAttention, FallbackValue=False}"/>
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Button Name="PrepareWheelButton" Content="{DynamicResource Readiness_Fix}" Command="{Binding ConnectWheelCommand}" IsEnabled="{Binding !IsBusy}" IsVisible="{Binding Readiness.NeedsAttention, FallbackValue=False}"/>
+                            <Button Name="DownloadVJoyButton" Content="{DynamicResource Output_VJoyDownload}" Command="{Binding DownloadVJoyCommand}"/>
+                        </StackPanel>
                         </StackPanel>
                         <StackPanel IsVisible="{Binding HasPendingVJoySetup}" Spacing="8">
                             <Button Name="ResumePendingVJoyButton" Content="{DynamicResource Output_VJoyResume}" Command="{Binding ResumePendingVJoyCommand}" IsEnabled="{Binding !IsBusy}"/>

@@ -52,6 +52,13 @@ internal sealed class HubVJoyDeviceStore
                 return;
             }
             if (saved?.DeviceId != record.DeviceId) return; // Explicit advanced edit of another existing device.
+            // The explicit preview may describe a changed driver/configuration on
+            // the same saved number. Only an approved reconfiguration can accept
+            // that new baseline, and a changed device no longer proves ownership.
+            if (record.Purpose == "wheel-reconfigure" && record.ApprovedAt != null &&
+                saved.Fingerprint != record.BeforeHash && saved.Fingerprint == record.PreviousSelectionFingerprint &&
+                saved.PendingOperationId == null)
+                saved = saved with { Fingerprint = record.BeforeHash, CreatedByHub = false, CreationOperationId = null };
             if (record.ApprovedAt == null || saved.Fingerprint != record.BeforeHash || saved.PendingOperationId != null && saved.PendingOperationId != record.Id)
                 throw new IOException("The selected output changed before setup. Its selection was not overwritten.");
             VJoyRecoveryFiles.Write(_path, saved with { PendingOperationId = record.Id, PendingPurpose = record.Purpose }, replace: true);
@@ -63,10 +70,21 @@ internal sealed class HubVJoyDeviceStore
         Directory.CreateDirectory(Path.GetDirectoryName(_path)!);
         using var guard = new FileStream(_path + ".lock", FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
         var previous = Read();
+        if (previous == null && record.PreviousSelection != null)
+            throw new IOException("The shared output selection changed after preview. Nothing was reserved.");
         if (previous != null)
         {
             if (previous.PendingOperationId != null && previous.PendingOperationId != record.Id)
                 throw new IOException("Another saved operation still owns this output reservation.");
+            if (record.Purpose == "wheel-create" && previous.PendingOperationId == null &&
+                previous == record.PreviousSelection && previous.Fingerprint == record.PreviousSelectionFingerprint)
+            {
+                // An explicitly approved new device leaves the old configuration
+                // intact. Keep its selection in the journal for cancellation.
+                VJoyRecoveryFiles.Write(_path, new HubVJoySelection((int)record.DeviceId, record.Expected.Fingerprint(),
+                    RequiresRestart: true, PendingOperationId: record.Id, PendingPurpose: record.Purpose), replace: true);
+                return;
+            }
             if (previous.DeviceId != record.DeviceId || previous.PendingOperationId != record.Id &&
                 previous.Fingerprint != record.Expected.Fingerprint() && previous.Fingerprint != record.PreviousSelectionFingerprint)
                 throw new IOException("The shared output selection changed. No replacement number will be selected.");
@@ -90,7 +108,14 @@ internal sealed class HubVJoyDeviceStore
         if (current.PendingPurpose == "wheel-remove" && (record?.Id != operationId || record.Purpose != "wheel-remove" ||
             record.DeviceId != (current.PendingDeviceId ?? current.DeviceId)))
             throw new IOException("The approved cleanup record is required to release its reservation.");
-        if (current.PendingPurpose == "wheel-recreate")
+        if (current.PendingPurpose == "wheel-create" && record?.PreviousSelection is { } prior)
+        {
+            if (record.Id != operationId || record.Purpose != "wheel-create" || record.DeviceId != current.DeviceId ||
+                prior.Fingerprint != record.PreviousSelectionFingerprint || prior.PendingOperationId != null)
+                throw new IOException("The previous selection does not match this creation reservation.");
+            VJoyRecoveryFiles.Write(_path, prior, replace: true);
+        }
+        else if (current.PendingPurpose == "wheel-recreate")
         {
             if (record?.Id != operationId || record.PreviousSelection is not { } previous || previous.DeviceId != current.DeviceId ||
                 previous.Fingerprint != record.PreviousSelectionFingerprint) throw new IOException("Keep the reserved output until its previous selection can be verified.");
