@@ -1,34 +1,42 @@
 # 🏎️ VirtualWheel Hub
 
 ---
-[![Version](https://img.shields.io/badge/version-v2.0-blue.svg)](https://github.com/Barden-dev/vWheel-Hub)
+[![Version](https://img.shields.io/badge/version-v2.0-blue.svg)](https://github.com/Barden-dev/VirtualWheel-Hub)
 [![License](https://img.shields.io/badge/license-All_Rights_Reserved-red.svg)](LICENSE)
 [![Boosty](https://img.shields.io/badge/Support-Boosty-orange.svg?style=flat&logo=boosty)](https://boosty.to/barden_dev)
 [![Discord](https://img.shields.io/badge/Community-Discord-5865F2.svg?style=flat&logo=discord)](https://discord.gg/YQn5eh2vfc)
-[![Wiki](https://img.shields.io/badge/Documentation-Wiki-blueviolet.svg)](https://github.com/Barden-dev/vWheel-Hub/wiki)
+[![Wiki](https://img.shields.io/badge/Documentation-Wiki-blueviolet.svg)](https://github.com/Barden-dev/VirtualWheel-Hub/wiki)
 
-**vWheel Hub** is a high-performance Windows desktop application designed for **Mouse Steering & Keyboard Control** in PC Sim Racing titles via the **vJoy** virtual joystick driver.
+**vWheel Hub** is a desktop application for Windows and Linux (preview) designed for **Mouse Steering & Keyboard Control** in PC Sim Racing titles using **vJoy** on Windows and **uinput** on Linux.
 
 It translates real-time mouse movement into ultra-smooth virtual wheel angles and maps keyboard keypresses to dynamic gas and brake axes with physical curve customization (attack, decay, gamma correction).
 
 ---
 
+### 🖥️ Interface
+
+<img src="https://raw.githubusercontent.com/Barden-dev/VirtualWheel-Hub/main/docs/images/interface-preview.gif" width="900" alt="vWheel Hub 2.0: profiles, steering, pedals, key bindings, audio and settings" />
+
+---
+
 ### 🎮 Game Compatibility & Telemetry Support
 
-> 💡 **Universal Compatibility:** You can play **ANY racing game** (Assetto Corsa, Automobilista 2, iRacing, BeamNG, Forza, EA Sports WRC, Dirt Rally, etc.) using base mouse steering and keyboard pedal controls without needing telemetry.
+> 💡 **Universal Compatibility:** Mouse steering and keyboard pedals work in racing games that accept a virtual controller, without needing telemetry.
 >
-> 🏎️ **Telemetry & Auto-Detection:** Telemetry features (ABS/TC Helpers, Speed-Sensitive Steering, Trail Braking, Audio Slip Cues, In-Menu Control Suspension) and automatic game detection are supported for:
+> 🏎️ **Telemetry & Auto-Detection:** PRO telemetry features (ABS/TC Helpers, Speed-Sensitive Steering, Audio Slip Cues, In-Menu Control Suspension) and automatic game detection are supported for:
 > * **Assetto Corsa** — Full Support (Telemetry & Auto-Detect)
 > * **Assetto Corsa Competizione** — Full Support (Native Shared Memory Telemetry & Auto-Detect)
 > * **Assetto Corsa EVO** — Full Support (Native Shared Memory Telemetry & Auto-Detect)
 > * **Le Mans Ultimate** — Full Support (Shared Memory Plugin & Auto-Detect, supports 1000 Hz with DirectInput Fix)
 > * **BeamNG.drive** — Full Support (Telemetry Mod & Auto-Detect)
 > * **Automobilista 2** — Full Support (Telemetry & Auto-Detect)
-> * **rFactor 2** — Experimental Support (Shared Memory Plugin & Auto-Detect)
+> * **Forza Motorsport** — Experimental Telemetry Support (Data Out & Auto-Detect)
+> * **WRC Generations** — UDP Telemetry & Auto-Detect
 > * **iRacing** — Experimental Support (Auto-Detect Only)
 > * **Dirt Rally 2.0** — Experimental Support (Auto-Detect Only)
 > * **EA Sports WRC** — Experimental Support (Auto-Detect Only)
 > * **Richard Burns Rally** — Experimental Support (Auto-Detect Only)
+> * **Forza Horizon 4 / 5** — Auto-Detect Only
 >
 > *Once detected and plugin status is clear, you can customize sensitivity, curves, and keybindings to your exact liking.*
 
@@ -42,18 +50,18 @@ It translates real-time mouse movement into ultra-smooth virtual wheel angles an
 * **Smart In-Menu Controls & Cursor Locking:** In-menu control suspension, auto-unlocking cursor in menus, hold-to-unlock hotkey, and automatic game-exit cursor release.
 * **Hierarchical Profile System:** Multi-tiered context profile inheritance (`Game` ➔ `Car Class` ➔ `Car Model`) with real-time undo/redo support (`Ctrl+Z` / `Ctrl+Y`).
 * **Self-Learning Grip Engine (Pro):** Adaptive grip learning continuously learns dry and wet tire grip limits per vehicle.
-* **1-Click vJoy Auto-Configuration & LMU Fix:** Automatically configures vJoy Device #1 via CLI and patches LMU DirectInput Fallback in one click.
+* **Device Setup & Diagnostics:** Check your virtual wheel from Dashboard and follow the available setup steps. LMU also includes an input compatibility fix.
 
 ---
 
-### 📊 Free (Open Source) vs Pro Feature Comparison
+### 📊 Free (GitHub) vs Pro Feature Comparison
 
-| Feature / Capability | Free (Open Source) | Pro Version (Boosty) |
+| Feature / Capability | Free (GitHub) | Pro Version (Boosty) |
 | :--- | :---: | :---: |
 | **Mouse Steering & Custom Curves (up to 1000 Hz)** | ✅ | ✅ |
 | **Keyboard Steering Mode (Ramp-up/down, snap, center key)** | ✅ | ✅ |
 | **Schema V2 dt-Based Gas & Brake Dynamics (Attack, Decay, Gamma, Turbo)** | ✅ | ✅ |
-| **Hierarchical Profiles (Universal / Game / Class / Car)** | ✅ | ✅ |
+| **Universal Profile & Game / Class / Car Profiles** | ✅ | ✅ |
 | **Real-Time Undo & Redo History** | ✅ | ✅ |
 | **Custom Hotkeys, Dual Keybindings & Conflict Alerts** | ✅ | ✅ |
 | **Profile Sharing (.vwh files & Share Codes)** | ✅ | ✅ |
@@ -64,7 +72,7 @@ It translates real-time mouse movement into ultra-smooth virtual wheel angles an
 | **Smart Traction Control (TC Helper with Reactive Rates)** | ❌ *(Unlock on Boosty)* | ✅ |
 | **Adaptive Grip Learning Cache & UI Tools** | ❌ *(Unlock on Boosty)* | ✅ |
 | **Speed-Sensitive Steering (Dynamic Telemetry Scaling)** | ❌ *(Unlock on Boosty)* | ✅ |
-| **Synthetic Trail Braking Engine** | ❌ *(Unlock on Boosty)* | ✅ |
+| **Synthetic Trail Braking Engine** | ✅ | ✅ |
 | **Slip Audio Feedback (Understeer / Oversteer Beeps)** | ❌ *(Unlock on Boosty)* | ✅ |
 | **TC Audio Feedback (Wheelspin Beeps)** | ❌ *(Unlock on Boosty)* | ✅ |
 | **In-Menu Control Suspension** | ❌ *(Unlock on Boosty)* | ✅ |
@@ -78,19 +86,22 @@ It translates real-time mouse movement into ultra-smooth virtual wheel angles an
 
 | Requirement | Details |
 | :--- | :--- |
-| **OS** | Windows 10 (version 1809 or newer) or Windows 11, **64-bit** |
-| **Driver** | [vJoy Driver](https://github.com/jshafer817/vJoy/releases) with Device #1 configured (X, Y, Z axes and at least 2 buttons — the built-in **Auto-Configure vJoy** button does this for you) |
+| **OS** | Windows 10/11 x64; Linux x64 builds are experimental |
+| **Output** | Windows: [vJoy](https://github.com/jshafer817/vJoy/releases). Linux: uinput |
+| **Runtime** | .NET is included in the downloads |
 | **Privileges** | Standard user is enough to run the hub. Configuring vJoy requires a one-time Windows UAC confirmation |
 
 ---
 
 ### 🚀 Quick Start Guide
 
-1. **Install vJoy:** Download and install the [vJoy Driver](https://github.com/jshafer817/vJoy/releases).
-2. **Download the binary file from [Releases](https://github.com/Barden-dev/VirtualWheel-Hub/releases). Then launch vWheel Hub.**
-3. **Configure vJoy:** Click **Auto-Configure vJoy** in the diagnostic section to set up Device #1 automatically if needed.
-4. **Set Up Controls & Launch Game:** Launch your sim racing game — Auto-Detect will identify the game process automatically (or select your context manually). Once detected and plugin status is clear, fine-tune sensitivity, response curves, and keybindings to your liking.
-5. **Activate Hub:** Toggle **Is Active** or press your assigned hotkey.
+1. **Download and extract** the archive for your OS from [Releases](https://github.com/Barden-dev/VirtualWheel-Hub/releases).
+2. **Launch the hub:** `vWheelHub.exe` on Windows, or `./vWheelHub` on Linux. Keep the `app` folder beside the launcher.
+3. **Set up the virtual wheel:** on Windows, install [vJoy](https://github.com/jshafer817/vJoy/releases), then open device diagnostics on **Dashboard**.
+4. **Configure your controls:** choose a profile, adjust steering and pedals, and assign your keys. Use Universal for games without a dedicated profile.
+5. **Start the hub and assign controls in the game:** bind steering, throttle, brake and gears to the virtual device.
+
+For Linux setup and game-specific instructions, see the [wiki](https://github.com/Barden-dev/VirtualWheel-Hub/wiki/Getting-Started).
 
 ---
 
@@ -98,7 +109,7 @@ It translates real-time mouse movement into ultra-smooth virtual wheel angles an
 
 * 🧡 **Boosty (Pro Build & Support):** [https://boosty.to/barden_dev](https://boosty.to/barden_dev)
 * 💬 **Discord Community:** [https://discord.gg/YQn5eh2vfc](https://discord.gg/YQn5eh2vfc)
-* 📖 **Wiki & Guides:** [https://github.com/Barden-dev/vWheel-Hub/wiki](https://github.com/Barden-dev/vWheel-Hub/wiki)
+* 📖 **Wiki & Guides:** [https://github.com/Barden-dev/VirtualWheel-Hub/wiki](https://github.com/Barden-dev/VirtualWheel-Hub/wiki)
 
 ---
 
