@@ -1,8 +1,7 @@
-
 # 🏎️ VirtualWheel Hub
 
 ---
-[![Version](https://img.shields.io/badge/version-v1.1-blue.svg)](https://github.com/Barden-dev/vWheel-Hub)
+[![Version](https://img.shields.io/badge/version-v2.0-blue.svg)](https://github.com/Barden-dev/vWheel-Hub)
 [![License](https://img.shields.io/badge/license-All_Rights_Reserved-red.svg)](LICENSE)
 [![Boosty](https://img.shields.io/badge/Support-Boosty-orange.svg?style=flat&logo=boosty)](https://boosty.to/barden_dev)
 [![Discord](https://img.shields.io/badge/Community-Discord-5865F2.svg?style=flat&logo=discord)](https://discord.gg/YQn5eh2vfc)
@@ -19,13 +18,14 @@ It translates real-time mouse movement into ultra-smooth virtual wheel angles an
 > 💡 **Universal Compatibility:** You can play **ANY racing game** (Assetto Corsa, Automobilista 2, iRacing, BeamNG, Forza, EA Sports WRC, Dirt Rally, etc.) using base mouse steering and keyboard pedal controls without needing telemetry.
 >
 > 🏎️ **Telemetry & Auto-Detection:** Telemetry features (ABS/TC Helpers, Speed-Sensitive Steering, Trail Braking, Audio Slip Cues, In-Menu Control Suspension) and automatic game detection are supported for:
+> * **Assetto Corsa** — Full Support (Telemetry & Auto-Detect)
 > * **Assetto Corsa Competizione (ACC)** — Full Support (Native Shared Memory Telemetry & Auto-Detect)
 > * **Assetto Corsa EVO (AC EVO)** — Full Support (Native Shared Memory Telemetry & Auto-Detect)
 > * **Le Mans Ultimate (LMU)** — Full Support (Shared Memory Plugin & Auto-Detect, supports 1000 Hz with DirectInput Fix)
 > * **BeamNG.drive** — Full Support (Telemetry Mod & Auto-Detect)
+> * **Automobilista 2 (AMS2)** — Full Support (Telemetry & Auto-Detect)
 > * **rFactor 2** — Experimental Support (Shared Memory Plugin & Auto-Detect)
 > * **iRacing** — Experimental Support (Auto-Detect Only)
-> * **Assetto Corsa** — Experimental Support (Auto-Detect Only)
 > * **Dirt Rally 2.0** — Experimental Support (Auto-Detect Only)
 > * **EA Sports WRC** — Experimental Support (Auto-Detect Only)
 > * **Richard Burns Rally** — Experimental Support (Auto-Detect Only)
@@ -79,23 +79,19 @@ It translates real-time mouse movement into ultra-smooth virtual wheel angles an
 | Requirement | Details |
 | :--- | :--- |
 | **OS** | Windows 10 (version 1809 or newer) or Windows 11, **64-bit** |
-| **Runtime** | [.NET 10 Desktop Runtime (x64)](https://dotnet.microsoft.com/download/dotnet/10.0) — **required**, the app is published framework-dependent and will not start without it |
 | **Driver** | [vJoy Driver](https://github.com/jshafer817/vJoy/releases) with Device #1 configured (X, Y, Z axes and at least 2 buttons — the built-in **Auto-Configure vJoy** button does this for you) |
 | **Privileges** | Standard user is enough to run the hub. Configuring vJoy requires a one-time Windows UAC confirmation |
-
-> ⚠️ If Windows shows *"To run this application, you must install .NET"* on launch, install the **Desktop Runtime (x64)** (not the ASP.NET Core Runtime and not the SDK-only package) from the link above and start vWheel Hub again.
 
 ---
 
 ### 🚀 Quick Start Guide
 
-1. **Install the .NET 10 Desktop Runtime:** Download it from [dotnet.microsoft.com](https://dotnet.microsoft.com/download/dotnet/10.0) (**Desktop Runtime, x64**). Skip this step only if it is already installed.
-2. **Install vJoy:** Download and install the [vJoy Driver](https://github.com/jshafer817/vJoy/releases).
-3. **Download the binary file from [Releases](https://github.com/Barden-dev/VirtualWheel-Hub/releases). Then launch vWheel Hub.**
-4. **Configure vJoy:** Click **Auto-Configure vJoy** in the diagnostic section to set up Device #1 automatically if needed.
-5. **Set Up LMU Compatibility Fix (if playing Le Mans Ultimate):** Click **Apply LMU Input Compatibility Fix** on the dashboard to enable 1000 Hz DirectInput Fallback.
-6. **Set Up Controls & Launch Game:** Launch your sim racing game — Auto-Detect will identify the game process automatically (or select your context manually). Once detected and plugin status is clear, fine-tune sensitivity, response curves, and keybindings to your liking.
-7. **Activate Hub:** Toggle **Is Active** or press your assigned hotkey.
+1. **Install vJoy:** Download and install the [vJoy Driver](https://github.com/jshafer817/vJoy/releases).
+2. **Download the binary file from [Releases](https://github.com/Barden-dev/VirtualWheel-Hub/releases). Then launch vWheel Hub.**
+3. **Configure vJoy:** Click **Auto-Configure vJoy** in the diagnostic section to set up Device #1 automatically if needed.
+4. **Set Up LMU Compatibility Fix (if playing Le Mans Ultimate):** Click **Apply LMU Input Compatibility Fix** on the dashboard to enable 1000 Hz DirectInput Fallback.
+5. **Set Up Controls & Launch Game:** Launch your sim racing game — Auto-Detect will identify the game process automatically (or select your context manually). Once detected and plugin status is clear, fine-tune sensitivity, response curves, and keybindings to your liking.
+6. **Activate Hub:** Toggle **Is Active** or press your assigned hotkey.
 
 ---
 
