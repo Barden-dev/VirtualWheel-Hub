@@ -54,26 +54,3 @@ the window stays on the taskbar and the close button exits normally. On Linux,
 tray hiding requires a StatusNotifier host and the `dbus-send` utility; otherwise
 the taskbar fallback is used. These options do not register application startup
 with Windows or Linux.
-
-## Build from source
-
-Use the .NET 10 SDK:
-
-```sh
-dotnet build src/vWheelHub.Avalonia/vWheelHub.Avalonia.csproj -c Release
-dotnet run --project src/vWheelHub.Avalonia/vWheelHub.Avalonia.csproj -- --preview --smoke
-```
-
-Publish for your platform:
-
-```sh
-dotnet publish src/vWheelHub.Avalonia/vWheelHub.Avalonia.csproj -c Release -r win-x64 --self-contained true
-dotnet publish src/vWheelHub.Avalonia/vWheelHub.Avalonia.csproj -c Release -r linux-x64 --self-contained true
-```
-
-User profiles are stored separately from the application. An existing saved
-profile is never shipped as part of this source distribution.
-
-For the distribution layout with one launcher beside an `app/` folder, follow
-[src/Launcher/BUILD.md](src/Launcher/BUILD.md). Building the Windows launcher
-requires Zig 0.16.0; the Linux launcher uses `/bin/sh`.
