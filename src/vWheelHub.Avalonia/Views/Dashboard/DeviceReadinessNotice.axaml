@@ -9,9 +9,11 @@
    <StackPanel Grid.Column="1" Spacing="3" Margin="0,0,12,0">
     <TextBlock Name="ReadinessProblemTitle" Text="{Binding ProblemTitle}" FontWeight="SemiBold" TextWrapping="Wrap"/>
     <TextBlock Text="{Binding ProblemAdvice}" Classes="hub-secondary" TextWrapping="Wrap" FontSize="12"/>
+    <TextBlock Name="ReadinessAdministratorNotice" Text="{DynamicResource Output_VJoyFixConsentHint}"
+               IsVisible="{Binding ShowAdministratorNotice}" Classes="hub-secondary" TextWrapping="Wrap" FontSize="12"/>
    </StackPanel>
    <Button Name="FixDeviceReadiness" Grid.Column="2" Content="{DynamicResource Readiness_Fix}"
-           Command="{Binding OpenSettingsCommand}" VerticalAlignment="Center"/>
+           Command="{Binding FixCommand}" VerticalAlignment="Center"/>
   </Grid>
  </Border>
 </UserControl>

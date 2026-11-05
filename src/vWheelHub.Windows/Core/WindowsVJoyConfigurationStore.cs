@@ -15,8 +15,12 @@ internal sealed class WindowsVJoyConfigurationStore : IVJoyConfigurationStore
     private readonly string _parametersPath;
     private readonly Func<VJoyDriverIdentity> _driver;
     private readonly Func<uint, int> _status;
+    private readonly bool _liveRefresh;
 
-    internal WindowsVJoyConfigurationStore() : this(ReadDriver, VJoyWrapper.GetDeviceStatus, RegistryHive.LocalMachine, ParametersPath) { }
+    internal WindowsVJoyConfigurationStore() : this(ReadDriver, VJoyWrapper.GetDeviceStatus, RegistryHive.LocalMachine, ParametersPath) { _liveRefresh = true; }
+
+    public VJoyActivationResult Refresh(VJoyConfigurationSnapshot desired, bool restoring = false) =>
+        _liveRefresh ? VJoyLiveRefresh.Run(this, desired, restoring) : new(true);
 
     // Internal seam for integration tests against a unique HKCU fixture. The
     // application's recovery command never accepts registry paths or hives.
@@ -180,10 +184,15 @@ internal sealed class WindowsVJoyConfigurationStore : IVJoyConfigurationStore
 
     private static RegistryKey? Open(RegistryKey parent, string name, SafeFileHandle? tx, int access)
     {
+        // RegistryKey.Handle reopens predefined roots using their writable flag.
+        // HKLM base keys therefore request write rights even for a read-only probe.
+        // OpenSubKey uses the existing root internally and requests only our rights.
+        using var readableRoot = tx == null && !parent.Name.Contains('\\')
+            ? parent.OpenSubKey("", writable: false) ?? throw new IOException("Cannot open registry root for reading.") : null;
         // OPEN_LINK prevents a configured child key from redirecting recovery
         // outside the two captured device trees.
         int error = tx == null
-            ? RegOpenKeyEx(parent.Handle, name, 8, access, out var handle)
+            ? RegOpenKeyEx((readableRoot ?? parent).Handle, name, 8, access, out var handle)
             : RegOpenKeyTransacted(parent.Handle, name, 8, access, out handle, tx, IntPtr.Zero);
         if (error == 2) { handle?.Dispose(); return null; }
         if (error != 0) { handle?.Dispose(); Check(error); }

@@ -206,9 +206,6 @@ namespace SimRacingHub.Core
                 result.ActionableAdvice = L("DiagPlatform_VJoyDiagnosticService_112");
             }
 
-            if (!result.IsValid)
-                result.ActionableAdvice = L("Output_VJoyExistingProtected", requirements.DeviceId);
-
             return result;
         }
 

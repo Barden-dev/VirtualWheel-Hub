@@ -70,7 +70,7 @@ public sealed class DesktopWindowController : IDisposable
                 var shell = _host.ShellViewModel;
                 await _host.RuntimeSession.StartAsync(new RuntimeStartOptions(shell.ResolvedProfile.OutputMode,
                     RetainOutputConnection: true, LockCursorOnStart: false)
-                { Profile = shell.ResolvedProfile, Context = shell.CurrentGameContext }, _lifetime.Token);
+                { Profile = shell.ResolvedProfile, Context = shell.CurrentGameContext, AllowOutputSetup = false }, _lifetime.Token);
                 if (!_host.RuntimeSession.IsRunning || _host.RuntimeSession.HasFault)
                     throw new InvalidOperationException(_host.RuntimeSession.FaultMessage ?? "Hub runtime did not start.");
             }

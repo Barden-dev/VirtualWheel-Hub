@@ -12,7 +12,7 @@ public sealed record VJoyDeviceInfo(int DeviceId, int Status, bool? Configuratio
 }
 
 public sealed record VJoyDeviceInventory(IReadOnlyList<VJoyDeviceInfo> Devices, int? SelectedDeviceId, string? SelectionError = null,
-    string? PendingOperationId = null)
+    string? PendingOperationId = null, bool RequiresRestart = false)
 {
     public int? SuggestedNewDeviceId => Devices.Where(device => device.DeviceId is >= 1 and <= 16 && device.IsAbsent).OrderBy(device => device.DeviceId)
         .Select(device => (int?)device.DeviceId).FirstOrDefault();

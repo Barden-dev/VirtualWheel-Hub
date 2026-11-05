@@ -208,14 +208,17 @@ internal sealed class HubVJoyDeviceStore
         try
         {
             var selected = Read();
-            if (selected?.DeviceId != id) return null;
+            if (selected == null)
+                return "Virtual wheel output is not prepared. Click Fix to select or create it automatically.";
+            if (selected.DeviceId != id)
+                return $"Diagnostics inspected vJoy #{id}, but the hub output is vJoy #{selected.DeviceId}. Check again or click Fix.";
             if (selected.PendingOperationId != null)
                 return "An approved vJoy operation has not completed. Resume or cancel it before using the shared output; no replacement number will be used.";
             var current = devices.Read((uint)id);
             if (current.Fingerprint() != selected.Fingerprint)
-                return "The shared vJoy device configuration or driver has changed. Check it and explicitly re-select it; no replacement device will be used.";
+                return "The shared vJoy device configuration or driver has changed. Stop controls and run Fix to recheck the output automatically.";
             if (selected.RequiresRestart && !VJoyInventoryService.NativeCapabilities((uint)id).MeetsRequirements(true))
-                return "vJoy configuration was saved. Restart the driver or Windows, then check the same device; no replacement device will be used.";
+                return "vJoy configuration is saved but not active. Stop other vJoy applications and run Fix to activate the same device.";
             return null;
         }
         catch (Exception error) { return "Cannot verify the selected shared vJoy device: " + error.Message; }

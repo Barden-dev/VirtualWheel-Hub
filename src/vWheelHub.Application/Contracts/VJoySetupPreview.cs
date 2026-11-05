@@ -1,5 +1,13 @@
 namespace SimRacingHub.Application.Contracts;
 
+/// <summary>A candidate's HID reports overlap another configured device; no write was attempted.</summary>
+public sealed class VJoyLayoutConflictException(int deviceId, int conflictingDeviceId)
+    : InvalidOperationException($"The proposed vJoy #{deviceId} HID reports conflict with existing device #{conflictingDeviceId}. No configuration changed.")
+{
+    public int DeviceId { get; } = deviceId;
+    public int ConflictingDeviceId { get; } = conflictingDeviceId;
+}
+
 public sealed record VJoySetupPreview(string? OperationId, VJoyDeviceInfo Before, VJoyDeviceInfo Target,
     bool NeedsChange, bool ChangesExistingDevice, string? BackupPath, string ExpectedFingerprint);
 

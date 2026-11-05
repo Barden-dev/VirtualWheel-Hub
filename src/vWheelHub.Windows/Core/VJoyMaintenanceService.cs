@@ -98,29 +98,44 @@ internal sealed class VJoyMaintenanceService
             throw new IOException("Pending setup changed or cannot be resolved safely. Inspect it again; its number is retained.");
         try
         {
+            var pendingRecord = _journal.Read(current.OperationId);
+            var pendingLive = _capabilities(pendingRecord.DeviceId);
+            bool alreadyActive = pendingRecord.Purpose == "wheel-remove" ? pendingLive.Status == VJoyWrapper.VJD_STAT_MISS
+                : pendingLive.Status is 0 or 1 && pendingLive.MeetsRequirements(true);
+            if (resume && current.NeedsRegistryRestore && alreadyActive)
+            {
+                // InspectPending verified a durable committed result. Acknowledge
+                // it in-process; no second elevation or registry write is needed.
+                var committed = _journal.ApplyPrepared(current.OperationId, _devices);
+                if (committed.Status != VJoyChangeStatus.Applied || !committed.ConfirmedWrite)
+                    return new(false, false, committed.Id, "Output_VJoySetupStopped", committed.Detail);
+                _selection.AcceptApplied(committed, _journal, _devices);
+                return VJoySetupService.Completion(committed, pendingLive);
+            }
             if (!resume && !current.NeedsRegistryRestore)
             {
                 var closed = _journal.CloseAtOriginal(current.OperationId, _devices);
                 _selection.CancelReservation(current.OperationId, closed);
-                return new(true, closed.ConfirmedWrite, current.OperationId);
+                return new(true, closed.ActivationRequiresRestart, current.OperationId);
             }
             int code = await _helper(current.OperationId, resume ? "--apply-vjoy" : "--restore-vjoy", ct).ConfigureAwait(false);
             var record = _journal.Read(current.OperationId);
             if (resume && code == 0 && record.Status == VJoyChangeStatus.Applied)
             {
                 _selection.AcceptApplied(record, _journal, _devices);
-                if (record.Purpose == "wheel-remove") return new(true, true, record.Id);
-                return new(true, !_capabilities(record.DeviceId).MeetsRequirements(true), record.Id);
+                return VJoySetupService.Completion(record, _capabilities(record.DeviceId));
             }
             if (!resume && code == 0 && record.Status is VJoyChangeStatus.Restored or VJoyChangeStatus.NoChange &&
                 _devices.Read(record.DeviceId).Fingerprint() == record.BeforeHash)
             {
                 _selection.CancelReservation(record.Id, record);
-                return new(true, record.ConfirmedWrite, record.Id);
+                return record.ActivationError != null && !record.ActivationRequiresRestart
+                    ? new(false, false, record.Id, "Output_VJoyActivationPending", record.ActivationError)
+                    : new(true, record.ActivationRequiresRestart, record.Id);
             }
-            return new(false, false, record.Id, "Output_VJoySetupStopped", record.Detail);
+            return new(false, false, record.Id, "Output_VJoySetupStopped", $"Helper exit {code}. {record.HelperError} {record.Detail}");
         }
         catch (Win32Exception error) when (error.NativeErrorCode == 1223)
-        { return new(false, false, current.OperationId, "Output_VJoyElevationDeclined"); }
+        { return new(false, false, current.OperationId, VJoySetupService.ElevationErrorKey(error), error.Message); }
     }
 }

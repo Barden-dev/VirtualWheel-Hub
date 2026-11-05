@@ -13,6 +13,8 @@ namespace SimRacingHub.Application.Contracts
         /// Probes availability and diagnostic health of the specified output device mode.
         /// </summary>
         Task<DeviceDiagnosticSnapshot> CheckAsync(OutputDeviceMode mode, CancellationToken ct = default);
+        bool SupportsAutomaticSetup => false;
+        Task<DeviceDiagnosticSnapshot> EnsureOutputReadyAsync(OutputDeviceMode mode, CancellationToken ct = default) => CheckAsync(mode, ct);
 
         /// <summary>
         /// Attempts explicit repair or file sync for the virtual output device when actionable.
@@ -37,6 +39,8 @@ namespace SimRacingHub.Application.Contracts
             Task.FromResult<VJoySetupPreview?>(null);
         Task<VJoySetupResult> ApplyVJoyAsync(VJoySetupPreview preview, CancellationToken ct = default) =>
             Task.FromResult(new VJoySetupResult(false, false));
+        Task<VJoySetupResult> RefreshVJoyAsync(CancellationToken ct = default) =>
+            Task.FromResult(new VJoySetupResult(false, false, ErrorKey: "Output_VJoyActivationPending"));
         Task<VJoySetupPreview?> PreviewVJoyRemovalAsync(CancellationToken ct = default) => Task.FromResult<VJoySetupPreview?>(null);
         Task<VJoySetupPreview?> PreviewVJoyRemovalAsync(VJoyDeviceInfo inspectedDevice, CancellationToken ct = default) => Task.FromResult<VJoySetupPreview?>(null);
         Task<VJoySetupPreview?> PreviewMissingVJoyRestoreAsync(CancellationToken ct = default) => Task.FromResult<VJoySetupPreview?>(null);

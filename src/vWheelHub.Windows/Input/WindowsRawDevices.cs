@@ -12,6 +12,10 @@ internal readonly record struct WindowsRawPacket(string Path, InputDeviceKind Ki
 
 internal static class WindowsRawDevices
 {
+    // Windows supplies Precision Touchpad mouse packets with hDevice == 0.
+    // Keep that logical channel separate from every physical mouse.
+    internal const string PrecisionTouchpadPath = "windows:precision-touchpad";
+
     public static WindowsRawDevice[] Discover()
     {
         uint count = 0;
@@ -23,15 +27,30 @@ internal static class WindowsRawDevices
             var list = new Device[count];
             uint read = GetRawInputDeviceList(list, ref count, size);
             if (read == uint.MaxValue) continue;
-            return list.Take((int)read).Where(d => d.Type <= 1).Select(d =>
+            return list.Take((int)read).Select(d =>
             {
+                if (d.Type == 2)
+                {
+                    uint infoSize = (uint)Marshal.SizeOf<DeviceInfo>();
+                    var info = new DeviceInfo { Size = infoSize };
+                    if (GetRawInputDeviceInfo(d.Handle, 0x2000000B, ref info, ref infoSize) == uint.MaxValue)
+                        return (WindowsRawDevice?)null;
+                    return DescribeHid(d.Handle, info.Type, (ushort)info.Usage, (ushort)(info.Usage >> 16));
+                }
+                if (d.Type > 1) return null;
                 string path = Path(d.Handle);
                 var kind = d.Type == 0 ? InputDeviceKind.Mouse : InputDeviceKind.Keyboard;
                 return new WindowsRawDevice(d.Handle, kind, new(path, Name(path, kind), path));
-            }).Where(d => d.Option.Path.Length > 0).ToArray();
+            }).Where(d => d.HasValue && d.Value.Option.Path.Length > 0).Select(d => d!.Value).ToArray();
         }
         throw new Win32Exception(Marshal.GetLastWin32Error(), "Could not enumerate input devices.");
     }
+
+    internal static WindowsRawDevice? DescribeHid(IntPtr handle, uint type, ushort usagePage, ushort usage)
+        => type == 2 && usagePage == 0x0D && usage == 0x05
+            ? new(handle, InputDeviceKind.Mouse,
+                new(PrecisionTouchpadPath, "Windows Precision Touchpad", PrecisionTouchpadPath))
+            : null;
 
     public static string Path(IntPtr device)
     {
@@ -61,10 +80,19 @@ internal static class WindowsRawDevices
 
     [StructLayout(LayoutKind.Sequential)]
     private struct Device { public IntPtr Handle; public uint Type; }
+    // RID_DEVICE_INFO has an 8-byte header and a 24-byte union. For HID,
+    // vendor/product/version precede the two USHORT usage fields.
+    [StructLayout(LayoutKind.Sequential)]
+    private struct DeviceInfo
+    {
+        public uint Size, Type, Vendor, Product, Version, Usage, Reserved1, Reserved2;
+    }
     [DllImport("user32.dll", SetLastError = true)]
     private static extern uint GetRawInputDeviceList([Out] Device[]? list, ref uint count, uint size);
     [DllImport("user32.dll", EntryPoint = "GetRawInputDeviceInfoW", CharSet = CharSet.Unicode, SetLastError = true)]
     private static extern uint GetRawInputDeviceInfo(IntPtr device, uint command, StringBuilder? data, ref uint size);
+    [DllImport("user32.dll", EntryPoint = "GetRawInputDeviceInfoW", SetLastError = true)]
+    private static extern uint GetRawInputDeviceInfo(IntPtr device, uint command, ref DeviceInfo data, ref uint size);
 }
 
 /// <summary>One registration per process: extra readers must not steal WM_INPUT from the runtime.</summary>

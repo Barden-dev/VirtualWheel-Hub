@@ -50,6 +50,7 @@ internal sealed record VJoyConfigurationSnapshot(
 
 internal interface IVJoyConfigurationStore
 {
+    VJoyActivationResult Refresh(VJoyConfigurationSnapshot desired, bool restoring = false) => new(true);
     void ValidateProposed(VJoyConfigurationSnapshot proposed) { }
     VJoyConfigurationSnapshot Read(uint deviceId);
     int GetStatus(uint deviceId);

@@ -8,10 +8,12 @@ namespace SimRacingHub.Application.Updates;
 public sealed class UpdateCheckService : IUpdateCheckService
 {
     private readonly Func<HttpClient> _createClient;
+    private readonly bool _pro;
 
-    public UpdateCheckService(Func<HttpClient>? createClient = null)
+    public UpdateCheckService(Func<HttpClient>? createClient = null, bool pro = false)
     {
         _createClient = createClient ?? (() => new HttpClient { Timeout = TimeSpan.FromSeconds(5) });
+        _pro = pro;
     }
 
     public async Task<UpdateCheckResult?> CheckAsync(string currentVersion, string updateUrl, CancellationToken ct = default)
@@ -23,12 +25,13 @@ public sealed class UpdateCheckService : IUpdateCheckService
         {
             try
             {
-                using var response = await httpClient.GetAsync($"https://raw.githubusercontent.com/Barden-dev/vWheel-Hub/{branch}/version.json", ct);
+                using var response = await httpClient.GetAsync($"https://raw.githubusercontent.com/Barden-dev/VirtualWheel-Hub/{branch}/version.json", ct);
                 if (!response.IsSuccessStatusCode) continue;
                 string json = await response.Content.ReadAsStringAsync(ct);
                 var manifest = JsonConvert.DeserializeObject<VersionManifestDto>(json);
-                if (manifest == null || !Version.TryParse(manifest.Version?.Trim(), out _)) continue;
-                string remoteVersion = manifest.Version.Trim();
+                string? remote = _pro ? manifest?.VersionPro : manifest?.Version;
+                if (!Version.TryParse(remote?.Trim(), out _)) continue;
+                string remoteVersion = remote!.Trim();
                 return new UpdateCheckResult(CompareVersions(remoteVersion, currentVersion),
                     remoteVersion, currentVersion, updateUrl);
             }
@@ -44,6 +47,8 @@ public sealed class UpdateCheckService : IUpdateCheckService
     {
         [JsonProperty("version")]
         public string Version { get; set; } = string.Empty;
+        [JsonProperty("version_pro")]
+        public string? VersionPro { get; set; }
     }
 
     private static bool CompareVersions(string remote, string current)

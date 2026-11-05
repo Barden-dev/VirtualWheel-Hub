@@ -39,6 +39,8 @@ internal sealed class VJoyOfflineRecoveryStore : IVJoyConfigurationStore
         return _native.Read(id);
     }
     public int GetStatus(uint id)=>id==_record.DeviceId?_native.GetStatus(id):VJoyWrapper.VJD_STAT_UNKN;
+    public VJoyActivationResult Refresh(VJoyConfigurationSnapshot desired, bool restoring = false) =>
+        new(false, Error: "Offline registry recovery is complete. Check the vJoy driver before live activation.");
     public bool TryReplace(VJoyConfigurationSnapshot before,VJoyConfigurationSnapshot after)=>false;
     public bool TryReplace(VJoyConfigurationSnapshot before,VJoyConfigurationSnapshot after,string id,bool restoring=false)
     {

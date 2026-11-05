@@ -33,6 +33,7 @@
                             <Button Name="PrepareWheelButton" Content="{DynamicResource Readiness_Fix}" Command="{Binding ConnectWheelCommand}" IsEnabled="{Binding !IsBusy}" IsVisible="{Binding Readiness.NeedsAttention, FallbackValue=False}"/>
                             <Button Name="DownloadVJoyButton" Content="{DynamicResource Output_VJoyDownload}" Command="{Binding DownloadVJoyCommand}"/>
                         </StackPanel>
+                        <TextBlock Name="VJoyAdministratorNotice" Text="{DynamicResource Output_VJoyFixConsentHint}" Classes="hub-secondary" TextWrapping="Wrap" FontSize="12" Margin="0,6,0,0"/>
                         </StackPanel>
                         <StackPanel IsVisible="{Binding HasPendingVJoySetup}" Spacing="8">
                             <Button Name="ResumePendingVJoyButton" Content="{DynamicResource Output_VJoyResume}" Command="{Binding ResumePendingVJoyCommand}" IsEnabled="{Binding !IsBusy}"/>

@@ -402,7 +402,7 @@
     <sys:String x:Key="Readiness_OutputUnavailable" xml:space="preserve">El controlador virtual no está disponible</sys:String>
     <sys:String x:Key="Readiness_InputUnavailable" xml:space="preserve">La entrada del mouse o del teclado no está disponible</sys:String>
     <sys:String x:Key="Readiness_RetryAdvice" xml:space="preserve">Abra los diagnósticos del dispositivo e inténtelo de nuevo.</sys:String>
-    <sys:String x:Key="Readiness_WindowsOutputAdvice" xml:space="preserve">Abra el diagnóstico del dispositivo aquí para verificar y reparar la rueda virtual.</sys:String>
+    <sys:String x:Key="Readiness_WindowsOutputAdvice" xml:space="preserve">Pulse Corregir para comprobar y preparar el volante virtual.</sys:String>
     <sys:String x:Key="Readiness_LinuxOutputAdvice" xml:space="preserve">Verifique /dev/uinput y los permisos de escritura de su usuario.</sys:String>
     <sys:String x:Key="Readiness_LinuxInputAdvice" xml:space="preserve">Verifique el acceso a /dev/input/event* para su mouse y teclado. Inicie sesión nuevamente después de cambiar la membresía del grupo.</sys:String>
     <sys:String x:Key="Readiness_Fix" xml:space="preserve">Arreglar</sys:String>
@@ -667,7 +667,7 @@ No se detectó ningún teclado legible.</sys:String>
     <sys:String x:Key="Output_WheelStopFirst" xml:space="preserve">Detenga los controles del cubo antes de preparar la rueda.</sys:String>
     <sys:String x:Key="Output_WheelReady" xml:space="preserve">Configuración de ruedas verificada. Guarde el perfil, inicie los controles del centro y luego seleccione su configuración de volante personalizada en el juego.</sys:String>
     <sys:String x:Key="Output_WheelFailed" xml:space="preserve">Falló la preparación de la rueda. Verifique el controlador y si otro alimentador está usando el dispositivo seleccionado.</sys:String>
-    <sys:String x:Key="Output_VJoyExistingProtected" xml:space="preserve">El dispositivo vJoy {0} ya existe. FREE sólo significa que no está en uso actualmente. El hub conservará su configuración. Utilice un dispositivo existente compatible sin cambios o seleccione un número no configurado. El reemplazo automático no está disponible hasta que se implementen la copia de seguridad y la restauración.</sys:String>
+    <sys:String x:Key="Output_VJoyExistingProtected" xml:space="preserve">El dispositivo vJoy {0} ya existe. Se conservará su configuración. El hub utiliza automáticamente un dispositivo compatible disponible o configura otro número libre. Windows puede solicitar permisos de administrador.</sys:String>
     <sys:String x:Key="Output_VJoyConfigurationUnknown" xml:space="preserve">No se puede verificar de forma segura la configuración guardada del dispositivo vJoy {0}. Verifique que el controlador esté disponible e intente verificar el dispositivo nuevamente.</sys:String>
     <sys:String x:Key="Output_VJoyBackup" xml:space="preserve">Copia de seguridad de la configuración vJoy</sys:String>
     <sys:String x:Key="Output_VJoyBackupSaved" xml:space="preserve">Copia de seguridad verificada y registro de operación guardado: {0}</sys:String>
@@ -687,7 +687,7 @@ No se detectó ningún teclado legible.</sys:String>
     <sys:String x:Key="Output_VJoySelectCompatible" xml:space="preserve">Elija un dispositivo existente accesible con las capacidades requeridas. Un dispositivo ocupado o incompatible no será reconfigurado.</sys:String>
     <sys:String x:Key="Output_VJoyAdoptConfirm" xml:space="preserve">¿Utilizar vJoy #{0} como salida del concentrador compartido sin cambiar su configuración? Este perfil cambiará de su dispositivo individual #{1} a la salida compartida después de guardarlo. Otros perfiles guardados mantienen sus opciones de dispositivo existentes. Cambiar el número de salida puede requerir volver a vincular los controles en el juego. Seleccionar un dispositivo no otorga permiso para eliminarlo.</sys:String>
     <sys:String x:Key="Output_VJoyAdopted" xml:space="preserve">vJoy n.º {0} seleccionado. La configuración de los dispositivos no ha cambiado. Asigna este dispositivo en el juego si es necesario.</sys:String>
-    <sys:String x:Key="Output_VJoyNoUnusedNumbers" xml:space="preserve">No se encontró ningún dispositivo libre compatible ni ningún número vJoy sin usar verificado. La configuración existente no se ha modificado.</sys:String>
+    <sys:String x:Key="Output_VJoyNoUnusedNumbers" xml:space="preserve">No hay ningún número de dispositivo vJoy sin configurar confirmado. Se han conservado las configuraciones existentes. Consulte el diagnóstico de dispositivos.</sys:String>
     <sys:String x:Key="Output_VJoyCreate" xml:space="preserve">Crear un dispositivo concentrador dedicado</sys:String>
     <sys:String x:Key="Output_VJoyCreateConfirm" xml:space="preserve">¿Crear vJoy n.º {0} para el hub? Los dispositivos existentes o sin verificar ({1}) no se modificarán. El nuevo dispositivo tendrá 8 ejes, 128 botones, POV y FFB. Cierra los juegos y otros programas de controladores. Primero se guardará una copia de seguridad. Windows puede solicitar permisos de administrador y un reinicio. Asigna el nuevo dispositivo en el juego si es necesario.</sys:String>
     <sys:String x:Key="Output_VJoyReadyUnchanged" xml:space="preserve">El dispositivo compartido vJoy está listo. Su configuración fue comprobada sin cambios. Utilice la opción de salida compartida en los perfiles que desee migrar explícitamente.</sys:String>
@@ -709,7 +709,8 @@ Cierra juegos y otros programas de alimentación. Se puede solicitar la aprobaci
     <sys:String x:Key="Output_VJoyNewOrigin" xml:space="preserve">Este número sin usar será la salida compartida del hub. Los dispositivos existentes conservarán su configuración. Puede que tengas que asignar el nuevo dispositivo en tus juegos.</sys:String>
     <sys:String x:Key="Output_VJoySavedRestart" xml:space="preserve">La configuración vJoy se guardó y verificó. Reinicie el controlador o Windows, luego verifique el mismo dispositivo. El centro conserva su número; no se selecciona ninguna salida alternativa. Guarde este perfil si su elección de salida cambió.</sys:String>
     <sys:String x:Key="Output_VJoySetupStopped" xml:space="preserve">La configuración de vJoy se detuvo. Mantener el registro de respaldo y operación; verifique el estado informado antes de volver a intentarlo.</sys:String>
-    <sys:String x:Key="Output_VJoyElevationDeclined" xml:space="preserve">Se rechazó la aprobación del administrador. Ningún cambio no confirmado se revierte ni se reemplaza.</sys:String>
+    <sys:String x:Key="Output_VJoyElevationDeclined" xml:space="preserve">Windows no autorizó el inicio del asistente de configuración (error 1223). Pulse Corregir y acepte la solicitud de permisos de administrador. Si no aparece ninguna solicitud, envíe el registro del hub.</sys:String>
+    <sys:String x:Key="Output_VJoyDownloadedHelperBlocked">Windows no inició el asistente de configuración. El archivo está marcado como descargado de Internet. Si confías en esta versión, abre vWheelHub.exe → Propiedades → Desbloquear, aplica el cambio y vuelve a pulsar Fix.</sys:String>
     <sys:String x:Key="Output_VJoyUseSetupCard" xml:space="preserve">Abra el panel y el diagnóstico del dispositivo para configurar la rueda virtual.</sys:String>
     <sys:String x:Key="Output_VJoyApplyChanges" xml:space="preserve">Aplicar cambios</sys:String>
     <sys:String x:Key="Output_VJoyResume" xml:space="preserve">Reanudar configuración pendiente</sys:String>
@@ -852,4 +853,10 @@ Cerrar juegos y comederos. Es posible que se necesiten derechos de administrador
     <sys:String x:Key="Output_VJoyDownloadFailed">No se pudo abrir la página de descarga de vJoy.</sys:String>
     <sys:String x:Key="Output_VJoyInspectFailed">No se pudo comprobar la configuración de vJoy. No se modificó ningún dispositivo. Detalles:</sys:String>
     <sys:String x:Key="Output_VJoyUnavailableAdvice">El dispositivo vJoy no está disponible o está en uso. Cierra otros programas de controladores, comprueba que vJoy esté activado y vuelve a comprobarlo. Puede ser necesario reiniciar Windows después de instalar o configurar el controlador.</sys:String>
+  <sys:String x:Key="Output_VJoyActivationPending">La configuración de vJoy está guardada, pero aún no está activa. Cierra otras aplicaciones que usen vJoy y pulsa Fix de nuevo. Si falla la activación, consulta los detalles.</sys:String>
+    <sys:String x:Key="Output_VJoyFixRunning">Preparando el volante virtual. Windows puede solicitar permisos de administrador.</sys:String>
+    <sys:String x:Key="Output_VJoyFixFailed">No se pudo preparar el volante virtual</sys:String>
+    <sys:String x:Key="Output_VJoyFixConsentHint">Al preparar el volante virtual, Windows puede solicitar permisos de administrador.</sys:String>
+    <sys:String x:Key="Output_VJoyPermissionNotice">La configuración de vJoy puede requerir permisos de administrador. Tras pulsar Continuar, Windows puede pedirle que autorice el cambio o introduzca una contraseña de administrador.</sys:String>
+    <sys:String x:Key="Output_VJoyContinue">Continuar</sys:String>
 </ResourceDictionary>

@@ -22,18 +22,31 @@ namespace SimRacingHub.Windows
         private readonly Func<VJoyDiagnosticResult> _vjoyDiagnosticFunc;
         private readonly Func<VJoyRequirements> _vjoyRequirements;
         private readonly Func<uint, string?> _selectionAdvice;
+        private readonly SimRacingHub.Application.Features.Output.AutomaticVJoySetup _automaticSetup;
+        public bool SupportsAutomaticSetup => true;
+
+        public async Task<DeviceDiagnosticSnapshot> EnsureOutputReadyAsync(OutputDeviceMode mode, CancellationToken ct = default)
+        {
+            if (mode is not (OutputDeviceMode.VJoy or OutputDeviceMode.Xbox360)) return await CheckAsync(mode, ct).ConfigureAwait(false);
+            var diagnostic = await Task.Run(_vjoyDiagnosticFunc, ct).ConfigureAwait(false);
+            if (diagnostic.IsDriverMissing) return await CheckAsync(mode, ct).ConfigureAwait(false);
+            var result = await _automaticSetup.EnsureAsync(ct).ConfigureAwait(false);
+            RequiresRestart = _automaticSetup.RequiresRestart;
+            return result;
+        }
 
         public WindowsOutputDiagnostics(
             VJoyDiagnosticService? vjoyDiagnosticService = null,
             Func<VJoyDiagnosticResult>? vjoyDiagnosticFunc = null, SimRacingHub.Application.Localization.ILocalizationManager? localization = null,
-            Func<VJoyRequirements>? vjoyRequirements = null)
+            Func<VJoyRequirements>? vjoyRequirements = null, Func<uint, string?>? selectionAdvice = null)
         {
             _localization = localization ?? new SimRacingHub.Application.Localization.LocalizationManager();
+            _automaticSetup = new(this, _localization);
             var service = vjoyDiagnosticService ?? new VJoyDiagnosticService(_localization);
-            _vjoyRequirements = vjoyRequirements ?? (() => new VJoyRequirements());
+            _vjoyRequirements = vjoyRequirements ?? (() => VJoyRequirements.ForProfile(1, true));
             _vjoyDiagnosticFunc = vjoyDiagnosticFunc ?? (() => service.PerformDiagnostic(_vjoyRequirements()));
-            _selectionAdvice = vjoyDiagnosticFunc != null ? _ => null
-                : id => new HubVJoyDeviceStore().ValidateForAcquire((int)id, new WindowsVJoyConfigurationStore());
+            _selectionAdvice = selectionAdvice ?? (vjoyDiagnosticFunc != null ? _ => null
+                : id => new HubVJoyDeviceStore().ValidateForAcquire((int)id, new WindowsVJoyConfigurationStore()));
         }
 
         public Task<DeviceDiagnosticSnapshot> CheckAsync(OutputDeviceMode mode, CancellationToken ct = default)
@@ -69,7 +82,7 @@ namespace SimRacingHub.Windows
                             actions.Add(result.ActionableAdvice);
                         }
 
-                        string errorDetails = L("DiagPlatform_WindowsOutputDiagnostics_132", result.DeviceStatusText, result.TargetDeviceId);
+                        string errorDetails = result.SummaryMessage + Environment.NewLine + L("DiagPlatform_WindowsOutputDiagnostics_132", result.DeviceStatusText, result.TargetDeviceId);
                         if (result.MissingAxes.Count > 0)
                         {
                             errorDetails += L("DiagPlatform_WindowsOutputDiagnostics_133", string.Join(", ", result.MissingAxes));
@@ -155,6 +168,13 @@ namespace SimRacingHub.Windows
         public async Task<VJoySetupResult> ApplyVJoyAsync(VJoySetupPreview preview, CancellationToken ct = default)
         {
             var result = await new VJoySetupService().ApplyAsync(preview, ct).ConfigureAwait(false);
+            RequiresRestart = result.RequiresRestart;
+            return result;
+        }
+
+        public async Task<VJoySetupResult> RefreshVJoyAsync(CancellationToken ct = default)
+        {
+            var result = await new VJoySetupService().RefreshSelectedAsync(ct).ConfigureAwait(false);
             RequiresRestart = result.RequiresRestart;
             return result;
         }

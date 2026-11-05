@@ -120,7 +120,13 @@ namespace SimRacingHub.Avalonia.Composition
                 : OperatingSystem.IsWindows() ? new WindowsInputCompatibilityService() : null;
             AppSettings = appSettings ?? shellViewModel.AppSettings ?? new AppSettingsViewModel(storage, appMetadata, localizationManager, ExternalLauncher, dialogService, platformCapabilities, uiDispatcher, inputCompatibility);
             shellViewModel.AppSettings = AppSettings;
-            Dashboard.Readiness = new DeviceReadinessViewModel(profileSession, diagnostics, platformCapabilities, localizationManager, uiDispatcher, () => shellViewModel.OpenDeviceDiagnosticsCommand.Execute(null));
+            Dashboard.Readiness = new DeviceReadinessViewModel(profileSession, diagnostics, platformCapabilities, localizationManager, uiDispatcher,
+                () => shellViewModel.OpenDeviceDiagnosticsCommand.Execute(null), async () =>
+                {
+                    shellViewModel.NavigateTo(PageId.Dashboard);
+                    Dashboard.IsDeviceSetupOpen = true;
+                    await Output.ConnectWheelAsync();
+                });
             Output.Readiness = Dashboard.Readiness;
             Dashboard.DeviceSetup = Output;
             Output.OutputRecovered = () =>

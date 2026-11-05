@@ -21,6 +21,7 @@ public partial class DeviceReadinessViewModel : ViewModelBase, IDisposable
     private readonly ILocalizationManager _localization;
     private readonly IUiDispatcher _dispatcher;
     private readonly Action _openSettings;
+    private readonly Func<Task>? _fixOutput;
     private readonly CancellationTokenSource _lifetime = new();
     private OutputDeviceMode _lastMode;
     private int _lastDeviceId;
@@ -39,6 +40,7 @@ public partial class DeviceReadinessViewModel : ViewModelBase, IDisposable
     public bool HasChecked => _output != null || _failed;
     public bool IsOutputReady => _output?.IsAvailable == true && !IsChecking;
     public bool IsInputReady => _input?.IsAvailable == true && !IsChecking;
+    public bool ShowAdministratorNotice => _platform.SupportsVJoy && _output?.IsAvailable != true;
     public bool NeedsAttention => !IsChecking && HasChecked &&
         (_failed || !IsOutputReady || _input?.IsAvailable == false);
     public string ProblemTitle => Text(_failed ? "Readiness_CheckFailed" :
@@ -49,10 +51,11 @@ public partial class DeviceReadinessViewModel : ViewModelBase, IDisposable
 
     public DeviceReadinessViewModel(ProfileSession profiles, IOutputDiagnostics diagnostics,
         IPlatformCapabilities platform, ILocalizationManager localization, IUiDispatcher dispatcher,
-        Action openSettings)
+        Action openSettings, Func<Task>? fixOutput = null)
     {
         _profiles = profiles; _diagnostics = diagnostics; _platform = platform;
         _localization = localization; _dispatcher = dispatcher; _openSettings = openSettings;
+        _fixOutput = fixOutput;
         _lastMode = profiles.ResolvedProfile.OutputMode;
         _lastDeviceId = profiles.ResolvedProfile.VJoyDeviceId;
         _lastWheelCompatibility = profiles.ResolvedProfile.VJoyWheelCompatibility;
@@ -65,7 +68,7 @@ public partial class DeviceReadinessViewModel : ViewModelBase, IDisposable
     private void NotifyStatus()
     {
         foreach (string name in new[] { nameof(OutputSnapshot), nameof(InputSnapshot), nameof(HasChecked), nameof(IsOutputReady),
-            nameof(IsInputReady), nameof(NeedsAttention), nameof(ProblemTitle), nameof(ProblemAdvice) })
+            nameof(IsInputReady), nameof(NeedsAttention), nameof(ProblemTitle), nameof(ProblemAdvice), nameof(ShowAdministratorNotice) })
             OnPropertyChanged(name);
     }
     private void LanguageChanged(string _) => _dispatcher.Post(() => { if (!_disposed) NotifyStatus(); });
@@ -151,6 +154,15 @@ public partial class DeviceReadinessViewModel : ViewModelBase, IDisposable
     }
 
     [RelayCommand] private void OpenSettings() => _openSettings();
+
+    [RelayCommand]
+    private async Task FixAsync()
+    {
+        if (_disposed || IsChecking) return;
+        if (_platform.SupportsVJoy && !IsOutputReady && _fixOutput != null)
+            await _fixOutput();
+        else _openSettings();
+    }
 
     public void Dispose()
     {

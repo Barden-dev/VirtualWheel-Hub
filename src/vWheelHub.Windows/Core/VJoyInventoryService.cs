@@ -16,7 +16,14 @@ internal sealed class VJoyInventoryService
         if (inventory.SelectionError != null) throw new InvalidOperationException(inventory.SelectionError);
         var candidate = inventory.Devices.Where(device => device.IsUsable && device.MeetsRequirements(true))
             .OrderByDescending(device => device.DeviceId == profile.VJoyDeviceId).ThenBy(device => device.DeviceId).FirstOrDefault();
-        if (candidate == null) return null;
+        if (candidate == null)
+        {
+            var failures = inventory.Devices.Where(device => device.Error != null).GroupBy(device => device.Error)
+                .Select(group => $"{string.Join(", ", group.Select(device => "#" + device.DeviceId))}: {group.Key}").ToArray();
+            if (failures.Length > 0)
+                throw new InvalidOperationException("Cannot verify the vJoy output configuration. " + string.Join(Environment.NewLine, failures));
+            return null;
+        }
         Select(candidate, true, automatic: true);
         return _selection.Read()!.DeviceId;
     }
@@ -81,12 +88,14 @@ internal sealed class VJoyInventoryService
             {
                 _ when selected.PendingOperationId != null => $"A vJoy operation for device #{selected.PendingDeviceId ?? selected.DeviceId} has not completed. Resume or cancel the saved operation; the hub will not choose another number.",
                 { Fingerprint: var fingerprint } when fingerprint != selected.Fingerprint => "The selected shared vJoy device configuration or driver has changed.",
-                { Status: VJoyWrapper.VJD_STAT_MISS } when selected.RequiresRestart => "vJoy configuration is saved. Restart the driver or Windows, then check the same device.",
-                { Status: VJoyWrapper.VJD_STAT_MISS } => "The selected shared vJoy device is missing. Explicit recovery or setup is required.",
-                { Status: VJoyWrapper.VJD_STAT_BUSY } => "The selected shared vJoy device is in use by another feeder. Release it; the hub will not switch device numbers.",
+                { Status: VJoyWrapper.VJD_STAT_MISS } when selected.RequiresRestart => "vJoy configuration is saved but not active. Stop other vJoy applications and run Fix to activate it.",
+                { Status: VJoyWrapper.VJD_STAT_MISS } => "The selected shared vJoy device is missing. Run automatic preparation; saved operations must finish first.",
+                { Status: VJoyWrapper.VJD_STAT_BUSY } => "The selected shared vJoy device is in use by another feeder. Stop controls and run automatic preparation to find an available output.",
                 _ => null
             };
-            return new(devices, selected?.DeviceId, error, selected?.PendingOperationId);
+            bool awaitingActivation = selected?.RequiresRestart == true &&
+                devices.Single(device => device.DeviceId == selected.DeviceId).Fingerprint == selected.Fingerprint;
+            return new(devices, selected?.DeviceId, error, selected?.PendingOperationId, awaitingActivation);
         }
         catch (Exception error) { return new(devices, null, error.Message); }
     }

@@ -78,6 +78,8 @@ namespace SimRacingHub.Avalonia
                 if (DataContext is AppShellViewModel vm)
                 {
                     await vm.InitializeAsync().ConfigureAwait(true);
+                    SimRacingHub.Core.AppLogger.Instance.LogInfo("Application window opened", showInStatusBar: false);
+                    SimRacingHub.Core.AppLogger.Instance.Flush();
                     if (App.Services is { IsPreviewMode: false, DesktopSession: { } catalogSession } catalogServices &&
                         global::Avalonia.Application.Current?.ApplicationLifetime is global::Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime)
                         catalogSession.ForzaDetected = () =>

@@ -9,6 +9,59 @@ public sealed record VJoyDeviceOption(VJoyDeviceInfo Device, string Summary);
 
 public partial class OutputViewModel
 {
+    public async Task<bool> EnsureAutomaticOutputAsync(CancellationToken ct = default)
+    {
+        if (!_outputDiagnostics.SupportsAutomaticSetup || !ShowVJoySettings || _runtime?.IsRunning == true) return true;
+        if (IsBusy || _dialogs == null) return false;
+        try
+        {
+            SetBusy(true);
+            bool confirmed = await _dialogs.ShowConfirmAsync(
+                _localizationManager.GetString("Output_WheelPrepare"),
+                _localizationManager.GetString("Output_VJoyPermissionNotice"),
+                _localizationManager.GetString("Output_VJoyContinue"),
+                _localizationManager.GetString("Common_Cancel"), DialogSeverity.Info, ct);
+            if (!confirmed || _isDisposed || !ShowVJoySettings || _runtime?.IsRunning == true) return false;
+            IsCheckingDiagnostic = true;
+            DeviceDiagnosticSnapshot = null;
+            _diagnosticCompletedAt = null;
+            StatusMessage = _localizationManager.GetString("Output_VJoyFixRunning");
+            SetBusy(true, StatusMessage);
+            SimRacingHub.Core.AppLogger.Instance.LogInfo("Explicit virtual wheel preparation started", showInStatusBar: false);
+            SimRacingHub.Core.AppLogger.Instance.Flush();
+            using var setup = _runtime?.BeginOutputSetup();
+            var result = await _outputDiagnostics.EnsureOutputReadyAsync(SelectedOutputMode, ct);
+            RunOnUi(() =>
+            {
+                DeviceDiagnosticSnapshot = result;
+                _diagnosticCompletedAt = DateTimeOffset.Now;
+                _diagnosticSucceeded = result.IsAvailable;
+                WheelSetupMessage = result.IsAvailable ? null : result.ErrorDetails ?? result.StatusText;
+                StatusMessage = result.IsAvailable ? CompletedDiagnosticText : _localizationManager.GetString("Output_VJoyFixFailed");
+                if (result.IsAvailable) OutputRecovered?.Invoke();
+            });
+            SimRacingHub.Core.AppLogger.Instance.LogInfo($"Explicit virtual wheel preparation completed: ready={result.IsAvailable}; {result.ErrorDetails ?? result.StatusText}", showInStatusBar: false);
+            SimRacingHub.Core.AppLogger.Instance.Flush();
+            return result.IsAvailable;
+        }
+        catch (Exception error) when (error is not OperationCanceledException)
+        {
+            SimRacingHub.Core.AppLogger.Instance.LogError("Explicit virtual wheel preparation failed", error);
+            SimRacingHub.Core.AppLogger.Instance.Flush();
+            RunOnUi(() =>
+            {
+                var title = _localizationManager.GetString("Output_VJoyFixFailed");
+                DeviceDiagnosticSnapshot = DeviceDiagnosticSnapshot.Unavailable(SelectedOutputMode, title, error.Message);
+                _diagnosticCompletedAt = DateTimeOffset.Now;
+                _diagnosticSucceeded = false;
+                StatusMessage = title;
+                WheelSetupMessage = error.Message;
+            });
+            return false;
+        }
+        finally { RunOnUi(() => { IsCheckingDiagnostic = false; SetBusy(false); }); }
+    }
+
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasWheelSetupMessage))]
     private string? _wheelSetupMessage;
@@ -20,6 +73,15 @@ public partial class OutputViewModel
     {
         if (!ShowVJoySettings || IsBusy) return;
         if (_runtime?.IsRunning == true) { StatusMessage = _localizationManager.GetString("Output_WheelStopFirst"); return; }
+        if (_outputDiagnostics.SupportsAutomaticSetup)
+        {
+            bool ready = await EnsureAutomaticOutputAsync(ct);
+            // Refresh shared readiness, but keep the actual failure in the visible
+            // diagnostic card. A read-only probe must not erase a failed Fix result.
+            if (ready) await CheckDiagnosticAsync(ct);
+            else if (Readiness != null) await Readiness.CheckReadinessAsync();
+            return;
+        }
         bool needsSetup = false;
         bool needsRestore = false;
         bool connected = false;

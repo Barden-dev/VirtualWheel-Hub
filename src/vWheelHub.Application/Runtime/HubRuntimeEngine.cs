@@ -501,7 +501,9 @@ namespace SimRacingHub.Application.Runtime
             }
         }
 
-        public Task StartAsync(RuntimeStartOptions options, CancellationToken ct = default)
+        public Func<OutputDeviceMode, CancellationToken, Task<SimRacingHub.Application.Contracts.DeviceDiagnosticSnapshot>>? PrepareOutputAsync { get; set; }
+
+        public async Task StartAsync(RuntimeStartOptions options, CancellationToken ct = default)
         {
             ArgumentNullException.ThrowIfNull(options);
             ct.ThrowIfCancellationRequested();
@@ -531,13 +533,27 @@ namespace SimRacingHub.Application.Runtime
             }
 
             profile.OutputMode = options.OutputMode;
+            if (!IsRunning && options.AllowOutputSetup && PrepareOutputAsync != null)
+            {
+                try
+                {
+                    using var setup = BeginOutputSetup();
+                    var ready = await PrepareOutputAsync(options.OutputMode, ct).ConfigureAwait(false);
+                    if (!ready.IsAvailable) throw new InvalidOperationException(ready.ErrorDetails ?? ready.StatusText);
+                }
+                catch (Exception error) when (error is not OperationCanceledException)
+                {
+                    LastStartFailureWasOutput = true;
+                    _startFailure = error;
+                    throw;
+                }
+            }
             bool started = Start(profile, options.LockCursorOnStart, context, null, options.SuppressDrivingOnStart);
             if (!started)
             {
                 throw new InvalidOperationException(_startFailure?.Message ?? "Failed to start hub runtime.", _startFailure);
             }
 
-            return Task.CompletedTask;
         }
 
         public Task StopAsync(CancellationToken ct = default)

@@ -19,7 +19,8 @@ public sealed class WindowsInputDeviceSelectionService : IInputDeviceSelectionSe
         var devices = _discover();
         var settings = AppSettings.Load(_settingsPath);
         if (WindowsDevicePathResolver.Restore(settings, devices)) settings.Save(_settingsPath);
-        return new(devices.Where(d => d.Kind == InputDeviceKind.Mouse).Select(d => d.Option).ToArray(),
+        return new(devices.Where(d => d.Kind == InputDeviceKind.Mouse).Select(d => d.Option)
+                .DistinctBy(d => d.Path, StringComparer.OrdinalIgnoreCase).ToArray(),
             devices.Where(d => d.Kind == InputDeviceKind.Keyboard).Select(d => d.Option).ToArray(),
             settings.WindowsSelectedMousePath, settings.WindowsSelectedKeyboardPath);
     }

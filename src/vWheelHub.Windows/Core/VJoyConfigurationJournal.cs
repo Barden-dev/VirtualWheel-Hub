@@ -11,7 +11,8 @@ internal sealed record VJoyChangeRecord(
     VJoyChangeStatus Status, VJoyConfigurationSnapshot? Expected = null,
     VJoyConfigurationSnapshot? Observed = null, string? Detail = null, bool ConfirmedWrite = false, bool RecoveryClosed = false,
     string? Purpose = null, DateTimeOffset? ApprovedAt = null, bool AllowCreatedRollback = false, int? BeforeDeviceStatus = null,
-    string? PreviousSelectionFingerprint = null, HubVJoySelection? PreviousSelection = null);
+    string? PreviousSelectionFingerprint = null, HubVJoySelection? PreviousSelection = null,
+    bool ActivationRequiresRestart = false, string? ActivationError = null, string? HelperError = null);
 
 /// <summary>
 /// Per-operation, verified write-ahead records. A snapshot observed after an
@@ -161,7 +162,7 @@ internal sealed class VJoyConfigurationJournal
                 return Mark(id, VJoyChangeStatus.Conflict, "Device occupancy or presence changed after preview. Preview again.");
             if (!store.TryReplace(original, record.Expected!, id))
                 return Mark(id, VJoyChangeStatus.Conflict, "Device changed or is occupied. No setup performed.");
-            record = Mark(id, VJoyChangeStatus.Applied, "Previewed preset committed atomically. Driver/OS restart required.", confirmedWrite: true);
+            record = Mark(id, VJoyChangeStatus.Applied, "Previewed preset committed atomically; live activation has not yet been checked.", confirmedWrite: true);
             var actual = store.Read(record.DeviceId);
             return actual.Fingerprint() == record.Expected!.Fingerprint() ? record
                 : Mark(id, VJoyChangeStatus.Conflict, "Device changed after setup. No further changes performed.");
@@ -175,6 +176,15 @@ internal sealed class VJoyConfigurationJournal
 
     internal VJoyChangeRecord RecordInterrupted(string id, string detail) =>
         Mark(id, VJoyChangeStatus.Unverified, detail);
+
+    internal void RecordHelperError(string id, string detail)
+    {
+        // An invalid/missing request must not create even a journal directory.
+        _ = Read(id);
+        using var guard = Lock(id);
+        var record = Read(id);
+        Save(record with { HelperError = detail.Length > 16000 ? detail[..16000] : detail });
+    }
 
     internal VJoyChangeRecord Observe(string id, VJoyConfigurationSnapshot actual, string? detail = null)
     {
@@ -216,6 +226,28 @@ internal sealed class VJoyConfigurationJournal
             if (recovered.Status == VJoyChangeStatus.Restored) return recovered;
             return Mark(record.Id, recovered.Status, error.Message + " " + recovered.Detail);
         }
+    }
+
+    internal VJoyChangeRecord Activate(string id, IVJoyConfigurationStore store, bool restoring = false)
+    {
+        using var writes = new FileStream(Path.Combine(DirectoryPath, "write.lock"), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
+        var record = Read(id);
+        var desired = restoring ? Original(id) : record.Expected;
+        if (record.ApprovedAt == null || record.Expected == null || desired == null || !record.ConfirmedWrite ||
+            (!restoring && (record.RecoveryClosed || record.Status != VJoyChangeStatus.Applied || !MatchesPlan(record, store))) ||
+            (restoring && record.Status is not (VJoyChangeStatus.Restored or VJoyChangeStatus.NoChange)) ||
+            !store.HasWriteReceipt(id, restoring ? record.Expected.Fingerprint() : record.BeforeHash,
+                restoring ? record.BeforeHash : record.Expected.Fingerprint(), restoring) ||
+            store.Read(record.DeviceId).Fingerprint() != desired.Fingerprint())
+            throw new IOException("No unchanged, verified commit is available for live activation.");
+        // Activation failure must never roll back a valid durable commit.
+        VJoyActivationResult activation;
+        try { activation = store.Refresh(desired, restoring); }
+        catch (Exception error) { activation = new(false, Error: error.Message); }
+        record = record with { ActivationRequiresRestart = activation.RequiresRestart,
+            ActivationError = activation.Ready ? null : activation.Error ?? "The saved vJoy layout is awaiting live activation." };
+        Save(record);
+        return record;
     }
 
     private VJoyChangeRecord Mark(string id, VJoyChangeStatus status, string detail, bool confirmedWrite = false)

@@ -399,7 +399,7 @@
     <sys:String x:Key="Readiness_OutputUnavailable" xml:space="preserve">Virtual controller is unavailable</sys:String>
     <sys:String x:Key="Readiness_InputUnavailable" xml:space="preserve">Mouse or keyboard input is unavailable</sys:String>
     <sys:String x:Key="Readiness_RetryAdvice" xml:space="preserve">Open device diagnostics and try again.</sys:String>
-    <sys:String x:Key="Readiness_WindowsOutputAdvice" xml:space="preserve">Open device diagnostics here to check and repair the virtual wheel.</sys:String>
+    <sys:String x:Key="Readiness_WindowsOutputAdvice" xml:space="preserve">Click Fix to check and prepare the virtual wheel.</sys:String>
     <sys:String x:Key="Readiness_LinuxOutputAdvice" xml:space="preserve">Check /dev/uinput and your user’s write permissions.</sys:String>
     <sys:String x:Key="Readiness_LinuxInputAdvice" xml:space="preserve">Check access to /dev/input/event* for your mouse and keyboard. Sign in again after changing group membership.</sys:String>
     <sys:String x:Key="Readiness_Fix" xml:space="preserve">Fix</sys:String>
@@ -672,7 +672,7 @@ No readable keyboard detected.</sys:String>
     <sys:String x:Key="Output_WheelStopFirst">Stop hub controls before preparing the wheel.</sys:String>
     <sys:String x:Key="Output_WheelReady">Wheel configuration verified. Save the profile, start hub controls, then select your custom wheel configuration in the game.</sys:String>
     <sys:String x:Key="Output_WheelFailed">Wheel preparation failed. Check the driver and whether another feeder is using the selected device.</sys:String>
-    <sys:String x:Key="Output_VJoyExistingProtected">vJoy device {0} already exists. FREE only means it is not currently in use. The hub will preserve its configuration. Use a compatible existing device without changes, or select an unconfigured number. Automatic replacement is unavailable until backup and restore are implemented.</sys:String>
+    <sys:String x:Key="Output_VJoyExistingProtected">vJoy device {0} already exists. Its configuration will be preserved. The hub automatically uses a compatible available device or configures a separate unused number. Windows may request administrator permission.</sys:String>
     <sys:String x:Key="Output_VJoyConfigurationUnknown">Cannot safely verify the saved configuration of vJoy device {0}. Check that the driver is available and try checking the device again.</sys:String>
     <sys:String x:Key="Output_VJoyBackup">Back up vJoy configuration</sys:String>
     <sys:String x:Key="Output_VJoyBackupSaved">Verified backup and operation record saved: {0}</sys:String>
@@ -692,7 +692,7 @@ No readable keyboard detected.</sys:String>
     <sys:String x:Key="Output_VJoySelectCompatible">Choose an accessible existing device with the required capabilities. An occupied or incompatible device will not be reconfigured.</sys:String>
     <sys:String x:Key="Output_VJoyAdoptConfirm">Use vJoy #{0} as the shared hub output without changing its configuration? This profile will switch from its individual device #{1} to the shared output after you save it. Other saved profiles keep their existing device choices. Changing the output number may require rebinding controls in the game. Selecting a device does not grant permission to remove it.</sys:String>
     <sys:String x:Key="Output_VJoyAdopted">vJoy #{0} selected. Existing device settings are unchanged. Assign this device in the game if needed.</sys:String>
-    <sys:String x:Key="Output_VJoyNoUnusedNumbers">No suitable free device or confirmed unused vJoy number was found. Existing configurations were left unchanged.</sys:String>
+    <sys:String x:Key="Output_VJoyNoUnusedNumbers">No verified unconfigured vJoy device number is available. Existing configurations were preserved. Check device diagnostics.</sys:String>
     <sys:String x:Key="Output_VJoyCreate">Create dedicated hub device</sys:String>
     <sys:String x:Key="Output_VJoyCreateConfirm">Create vJoy #{0} for the hub? Existing or unverified devices ({1}) will not be changed. The new device will have 8 axes, 128 buttons, POV and FFB. Close games and other controller tools before continuing. A backup is saved first. Windows may request administrator approval and a restart. Assign the new device in your game if needed.</sys:String>
     <sys:String x:Key="Output_VJoyReadyUnchanged">The shared vJoy device is ready. Its configuration was checked without changes. Use the shared-output option in profiles you explicitly want to migrate.</sys:String>
@@ -714,7 +714,8 @@ Close games and other feeder programs. Administrator approval may be requested. 
     <sys:String x:Key="Output_VJoyNewOrigin" xml:space="preserve">This unused number will become the hub’s shared output. Existing devices will keep their settings. You may need to assign the new device in your games.</sys:String>
     <sys:String x:Key="Output_VJoySavedRestart" xml:space="preserve">vJoy configuration was saved and verified. Restart the driver or Windows, then check the same device. The hub retains its number; no fallback output is selected. Save this profile if its output choice changed.</sys:String>
     <sys:String x:Key="Output_VJoySetupStopped" xml:space="preserve">vJoy setup stopped. Keep the backup and operation record; check the reported state before retrying.</sys:String>
-    <sys:String x:Key="Output_VJoyElevationDeclined" xml:space="preserve">Administrator approval was declined. No unconfirmed change is rolled back or replaced.</sys:String>
+    <sys:String x:Key="Output_VJoyElevationDeclined" xml:space="preserve">Windows did not authorize the setup helper (error 1223). Click Fix again and approve the administrator request. If no request appears, send the hub log.</sys:String>
+    <sys:String x:Key="Output_VJoyDownloadedHelperBlocked">Windows did not start the setup helper. Its file is marked as downloaded from the Internet. If you trust this release, open vWheelHub.exe → Properties → Unblock, apply the change, then retry Fix.</sys:String>
     <sys:String x:Key="Output_VJoyUseSetupCard" xml:space="preserve">Open Dashboard and device diagnostics to set up the virtual wheel.</sys:String>
     <sys:String x:Key="Output_VJoyApplyChanges">Apply changes</sys:String>
     <x:String x:Key="Output_VJoyResume">Resume pending setup</x:String>
@@ -857,4 +858,10 @@ Close games and feeders. Administrator rights and a driver or Windows restart ma
     <sys:String x:Key="Output_VJoyDownloadFailed">Could not open the vJoy download page.</sys:String>
     <sys:String x:Key="Output_VJoyInspectFailed">Could not inspect the vJoy configuration. No device was changed. Details:</sys:String>
     <sys:String x:Key="Output_VJoyUnavailableAdvice">The vJoy device is unavailable or in use. Close other controller tools, check that vJoy is enabled and check again. Windows may need restarting after driver installation or configuration.</sys:String>
+  <sys:String x:Key="Output_VJoyActivationPending">The vJoy configuration is saved but not active. Close other applications using vJoy, then run Fix again. Check the details if activation fails.</sys:String>
+    <sys:String x:Key="Output_VJoyFixRunning">Preparing the virtual wheel. Windows may ask for administrator permission.</sys:String>
+    <sys:String x:Key="Output_VJoyFixFailed">Virtual wheel setup failed</sys:String>
+    <sys:String x:Key="Output_VJoyFixConsentHint">Preparing the virtual wheel may open a Windows administrator permission request.</sys:String>
+    <sys:String x:Key="Output_VJoyPermissionNotice">Setting up vJoy may require administrator permission. After you click Continue, Windows may ask you to approve the change or enter an administrator password.</sys:String>
+    <sys:String x:Key="Output_VJoyContinue">Continue</sys:String>
 </ResourceDictionary>

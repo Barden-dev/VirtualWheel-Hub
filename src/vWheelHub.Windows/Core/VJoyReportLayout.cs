@@ -40,7 +40,7 @@ internal static class VJoyReportLayout
         {
             var other=Descriptor(neighbour);
             if(other!=null && wanted.Overlaps(Reports(other)))
-                throw new InvalidOperationException($"The proposed vJoy #{proposed.DeviceId} HID reports conflict with existing device #{neighbour.DeviceId}. No configuration changed. Choose another unconfigured number or use an existing compatible device without changes.");
+                throw new SimRacingHub.Application.Contracts.VJoyLayoutConflictException((int)proposed.DeviceId, (int)neighbour.DeviceId);
         }
     }
 }

@@ -402,7 +402,7 @@
     <sys:String x:Key="Readiness_OutputUnavailable" xml:space="preserve">Der virtuelle Controller ist nicht verfügbar</sys:String>
     <sys:String x:Key="Readiness_InputUnavailable" xml:space="preserve">Die Maus- oder Tastatureingabe ist nicht verfügbar</sys:String>
     <sys:String x:Key="Readiness_RetryAdvice" xml:space="preserve">Öffnen Sie die Gerätediagnose und versuchen Sie es erneut.</sys:String>
-    <sys:String x:Key="Readiness_WindowsOutputAdvice" xml:space="preserve">Öffnen Sie hier die Gerätediagnose, um das virtuelle Rad zu überprüfen und zu reparieren.</sys:String>
+    <sys:String x:Key="Readiness_WindowsOutputAdvice" xml:space="preserve">Klicken Sie auf Beheben, um das virtuelle Lenkrad zu prüfen und vorzubereiten.</sys:String>
     <sys:String x:Key="Readiness_LinuxOutputAdvice" xml:space="preserve">Überprüfen Sie /dev/uinput und die Schreibberechtigungen Ihres Benutzers.</sys:String>
     <sys:String x:Key="Readiness_LinuxInputAdvice" xml:space="preserve">Überprüfen Sie den Zugriff auf /dev/input/event* für Ihre Maus und Tastatur. Melden Sie sich erneut an, nachdem Sie die Gruppenmitgliedschaft geändert haben.</sys:String>
     <sys:String x:Key="Readiness_Fix" xml:space="preserve">Beheben</sys:String>
@@ -667,7 +667,7 @@ Keine lesbare Tastatur erkannt.</sys:String>
     <sys:String x:Key="Output_WheelStopFirst" xml:space="preserve">Stoppen Sie die Nabensteuerung, bevor Sie das Rad vorbereiten.</sys:String>
     <sys:String x:Key="Output_WheelReady" xml:space="preserve">Radkonfiguration überprüft. Speichern Sie das Profil, starten Sie die Hub-Steuerung und wählen Sie dann Ihre individuelle Radkonfiguration im Spiel aus.</sys:String>
     <sys:String x:Key="Output_WheelFailed" xml:space="preserve">Radvorbereitung fehlgeschlagen. Überprüfen Sie den Treiber und ob ein anderer Feeder das ausgewählte Gerät verwendet.</sys:String>
-    <sys:String x:Key="Output_VJoyExistingProtected" xml:space="preserve">vJoy-Gerät {0} existiert bereits. FREE bedeutet nur, dass es derzeit nicht verwendet wird. Der Hub behält seine Konfiguration bei. Verwenden Sie ein kompatibles vorhandenes Gerät ohne Änderungen oder wählen Sie eine nicht konfigurierte Nummer. Die automatische Ersetzung ist erst verfügbar, wenn Sicherung und Wiederherstellung implementiert sind.</sys:String>
+    <sys:String x:Key="Output_VJoyExistingProtected" xml:space="preserve">vJoy-Gerät {0} ist bereits vorhanden. Seine Konfiguration bleibt erhalten. Der Hub verwendet automatisch ein geeignetes freies Gerät oder richtet eine unbenutzte Gerätenummer ein. Windows kann Administratorrechte anfordern.</sys:String>
     <sys:String x:Key="Output_VJoyConfigurationUnknown" xml:space="preserve">Die gespeicherte Konfiguration des vJoy-Geräts {0} kann nicht sicher überprüft werden. Überprüfen Sie, ob der Treiber verfügbar ist, und versuchen Sie erneut, das Gerät zu überprüfen.</sys:String>
     <sys:String x:Key="Output_VJoyBackup" xml:space="preserve">Sichern Sie die vJoy-Konfiguration</sys:String>
     <sys:String x:Key="Output_VJoyBackupSaved" xml:space="preserve">Verifizierter Sicherungs- und Vorgangsdatensatz gespeichert: {0}</sys:String>
@@ -687,7 +687,7 @@ Keine lesbare Tastatur erkannt.</sys:String>
     <sys:String x:Key="Output_VJoySelectCompatible" xml:space="preserve">Wählen Sie ein barrierefreies vorhandenes Gerät mit den erforderlichen Funktionen. Ein belegtes oder inkompatibles Gerät wird nicht neu konfiguriert.</sys:String>
     <sys:String x:Key="Output_VJoyAdoptConfirm" xml:space="preserve">vJoy #{0} als Shared Hub-Ausgabe verwenden, ohne die Konfiguration zu ändern? Dieses Profil wechselt von seinem individuellen Gerät #{1} zur freigegebenen Ausgabe, nachdem Sie es gespeichert haben. Andere gespeicherte Profile behalten ihre bestehende Geräteauswahl. Das Ändern der Ausgabenummer erfordert möglicherweise eine Neuzuordnung der Steuerelemente im Spiel. Durch die Auswahl eines Geräts wird keine Berechtigung zum Entfernen erteilt.</sys:String>
     <sys:String x:Key="Output_VJoyAdopted" xml:space="preserve">vJoy #{0} ausgewählt. Vorhandene Geräteeinstellungen bleiben unverändert. Weise das Gerät bei Bedarf im Spiel zu.</sys:String>
-    <sys:String x:Key="Output_VJoyNoUnusedNumbers" xml:space="preserve">Kein geeignetes freies Gerät und keine bestätigt unbenutzte vJoy-Nummer gefunden. Vorhandene Konfigurationen bleiben unverändert.</sys:String>
+    <sys:String x:Key="Output_VJoyNoUnusedNumbers" xml:space="preserve">Keine nachweislich unkonfigurierte vJoy-Gerätenummer verfügbar. Vorhandene Konfigurationen bleiben erhalten. Prüfen Sie die Gerätediagnose.</sys:String>
     <sys:String x:Key="Output_VJoyCreate" xml:space="preserve">Erstellen Sie ein dediziertes Hub-Gerät</sys:String>
     <sys:String x:Key="Output_VJoyCreateConfirm" xml:space="preserve">vJoy #{0} für den Hub erstellen? Vorhandene oder ungeprüfte Geräte ({1}) werden nicht geändert. Das neue Gerät erhält 8 Achsen, 128 Tasten, POV und FFB. Schließe Spiele und andere Controllerprogramme. Zuerst wird eine Sicherung erstellt. Windows kann Administratorrechte und einen Neustart verlangen. Weise das neue Gerät bei Bedarf im Spiel zu.</sys:String>
     <sys:String x:Key="Output_VJoyReadyUnchanged" xml:space="preserve">Das freigegebene vJoy-Gerät ist bereit. Seine Konfiguration wurde ohne Änderungen überprüft. Verwenden Sie die Shared-Output-Option in Profilen, die Sie explizit migrieren möchten.</sys:String>
@@ -709,7 +709,8 @@ Schließen Sie Spiele und andere Feeder-Programme. Möglicherweise ist eine Gene
     <sys:String x:Key="Output_VJoyNewOrigin" xml:space="preserve">Diese unbenutzte Nummer wird zum gemeinsamen Ausgang des Hubs. Vorhandene Geräte behalten ihre Einstellungen. Das neue Gerät muss möglicherweise in deinen Spielen zugewiesen werden.</sys:String>
     <sys:String x:Key="Output_VJoySavedRestart" xml:space="preserve">Die vJoy-Konfiguration wurde gespeichert und überprüft. Starten Sie den Treiber oder Windows neu und überprüfen Sie dann dasselbe Gerät. Der Hub behält seine Nummer; Es ist kein Fallback-Ausgang ausgewählt. Speichern Sie dieses Profil, wenn sich seine Ausgabeauswahl geändert hat.</sys:String>
     <sys:String x:Key="Output_VJoySetupStopped" xml:space="preserve">vJoy-Setup gestoppt. Bewahren Sie die Sicherungs- und Betriebsaufzeichnungen auf. Überprüfen Sie den gemeldeten Status, bevor Sie es erneut versuchen.</sys:String>
-    <sys:String x:Key="Output_VJoyElevationDeclined" xml:space="preserve">Die Genehmigung des Administrators wurde abgelehnt. Keine unbestätigte Änderung wird rückgängig gemacht oder ersetzt.</sys:String>
+    <sys:String x:Key="Output_VJoyElevationDeclined" xml:space="preserve">Windows hat den Start des Einrichtungshelfers nicht genehmigt (Fehler 1223). Klicken Sie erneut auf Beheben und bestätigen Sie die Administratorabfrage. Falls keine Abfrage erscheint, senden Sie das Hub-Protokoll.</sys:String>
+    <sys:String x:Key="Output_VJoyDownloadedHelperBlocked">Windows hat den Einrichtungshelfer nicht gestartet. Die Datei ist als Internetdownload markiert. Wenn Sie dieser Version vertrauen, öffnen Sie vWheelHub.exe → Eigenschaften → Zulassen, übernehmen Sie die Änderung und versuchen Sie Fix erneut.</sys:String>
     <sys:String x:Key="Output_VJoyUseSetupCard" xml:space="preserve">Öffnen Sie das Dashboard und die Gerätediagnose, um das virtuelle Rad einzurichten.</sys:String>
     <sys:String x:Key="Output_VJoyApplyChanges" xml:space="preserve">Änderungen übernehmen</sys:String>
     <sys:String x:Key="Output_VJoyResume" xml:space="preserve">Ausstehende Einrichtung fortsetzen</sys:String>
@@ -852,4 +853,10 @@ Enge Spiele und Feeder. Möglicherweise sind Administratorrechte und ein Treiber
     <sys:String x:Key="Output_VJoyDownloadFailed">Die vJoy-Downloadseite konnte nicht geöffnet werden.</sys:String>
     <sys:String x:Key="Output_VJoyInspectFailed">Die vJoy-Konfiguration konnte nicht geprüft werden. Kein Gerät wurde geändert. Details:</sys:String>
     <sys:String x:Key="Output_VJoyUnavailableAdvice">Das vJoy-Gerät ist nicht verfügbar oder belegt. Schließen Sie andere Controllerprogramme, prüfen Sie, ob vJoy aktiviert ist, und prüfen Sie erneut. Nach der Treiberinstallation oder Konfiguration muss Windows möglicherweise neu gestartet werden.</sys:String>
+  <sys:String x:Key="Output_VJoyActivationPending">Die vJoy-Konfiguration ist gespeichert, aber noch nicht aktiv. Schließen Sie andere Programme, die vJoy verwenden, und führen Sie Fix erneut aus. Prüfen Sie bei einem Fehler die Details.</sys:String>
+    <sys:String x:Key="Output_VJoyFixRunning">Das virtuelle Lenkrad wird vorbereitet. Windows fragt möglicherweise nach Administratorrechten.</sys:String>
+    <sys:String x:Key="Output_VJoyFixFailed">Einrichtung des virtuellen Lenkrads fehlgeschlagen</sys:String>
+    <sys:String x:Key="Output_VJoyFixConsentHint">Beim Vorbereiten des virtuellen Lenkrads fragt Windows möglicherweise nach Administratorrechten.</sys:String>
+    <sys:String x:Key="Output_VJoyPermissionNotice">Zum Einrichten von vJoy sind möglicherweise Administratorrechte erforderlich. Nach Weiter fragt Windows eventuell nach Ihrer Zustimmung oder einem Administratorpasswort.</sys:String>
+    <sys:String x:Key="Output_VJoyContinue">Weiter</sys:String>
 </ResourceDictionary>

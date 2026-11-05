@@ -399,7 +399,7 @@
     <sys:String x:Key="Readiness_OutputUnavailable" xml:space="preserve">Виртуальный контроллер недоступен</sys:String>
     <sys:String x:Key="Readiness_InputUnavailable" xml:space="preserve">Нет доступа к мыши или клавиатуре</sys:String>
     <sys:String x:Key="Readiness_RetryAdvice" xml:space="preserve">Откройте диагностику устройства и повторите проверку.</sys:String>
-    <sys:String x:Key="Readiness_WindowsOutputAdvice" xml:space="preserve">Откройте диагностику здесь, чтобы проверить и исправить подключение виртуального руля.</sys:String>
+    <sys:String x:Key="Readiness_WindowsOutputAdvice" xml:space="preserve">Нажмите «Исправить», чтобы проверить и подготовить виртуальный руль.</sys:String>
     <sys:String x:Key="Readiness_LinuxOutputAdvice" xml:space="preserve">Проверьте /dev/uinput и право вашего пользователя на запись.</sys:String>
     <sys:String x:Key="Readiness_LinuxInputAdvice" xml:space="preserve">Проверьте доступ к мыши и клавиатуре через /dev/input/event*. После изменения групп пользователя войдите в систему заново.</sys:String>
     <sys:String x:Key="Readiness_Fix" xml:space="preserve">Исправить</sys:String>
@@ -672,7 +672,7 @@
     <sys:String x:Key="Output_WheelStopFirst">Перед подготовкой руля остановите управление хаба.</sys:String>
     <sys:String x:Key="Output_WheelReady">Конфигурация руля проверена. Сохраните профиль, включите управление хаба и выберите пользовательскую конфигурацию руля в игре.</sys:String>
     <sys:String x:Key="Output_WheelFailed">Не удалось подготовить руль. Проверьте драйвер и не занято ли выбранное устройство другим feeder.</sys:String>
-    <sys:String x:Key="Output_VJoyExistingProtected">Устройство vJoy {0} уже существует. FREE означает лишь, что оно сейчас не используется. Хаб сохранит его конфигурацию. Используйте подходящее существующее устройство без изменений или выберите ещё не настроенный номер. Автоматическая замена недоступна до реализации резервного копирования и восстановления.</sys:String>
+    <sys:String x:Key="Output_VJoyExistingProtected">Устройство vJoy {0} уже существует. Его конфигурация будет сохранена. Хаб автоматически использует подходящее свободное устройство или настроит отдельный свободный номер. Windows может запросить права администратора.</sys:String>
     <sys:String x:Key="Output_VJoyConfigurationUnknown">Не удалось безопасно проверить сохранённую конфигурацию устройства vJoy {0}. Проверьте доступность драйвера и повторите проверку устройства.</sys:String>
     <sys:String x:Key="Output_VJoyBackup">Сохранить резервную копию vJoy</sys:String>
     <sys:String x:Key="Output_VJoyBackupSaved">Проверенная резервная копия и запись операции сохранены: {0}</sys:String>
@@ -692,7 +692,7 @@
     <sys:String x:Key="Output_VJoySelectCompatible">Выберите доступное существующее устройство с нужными возможностями. Занятое или неподходящее устройство не будет перенастроено.</sys:String>
     <sys:String x:Key="Output_VJoyAdoptConfirm">Использовать vJoy №{0} как общий выход хаба без изменения его конфигурации? После сохранения этот профиль перейдёт с индивидуального устройства №{1} на общий выход. Остальные сохранённые профили сохранят прежний выбор. Смена номера выхода может потребовать повторных назначений в игре. Выбор устройства не разрешает его удаление.</sys:String>
     <sys:String x:Key="Output_VJoyAdopted">Выбран vJoy №{0}. Настройки устройств не изменены. При необходимости назначьте этот руль в игре.</sys:String>
-    <sys:String x:Key="Output_VJoyNoUnusedNumbers">Не найдено подходящего свободного устройства или проверенного пустого номера vJoy. Существующие конфигурации сохранены.</sys:String>
+    <sys:String x:Key="Output_VJoyNoUnusedNumbers">Нет подтверждённого свободного номера для создания устройства vJoy. Существующие конфигурации сохранены. Откройте диагностику устройств.</sys:String>
     <sys:String x:Key="Output_VJoyCreate">Создать выделенное устройство хаба</sys:String>
     <sys:String x:Key="Output_VJoyCreateConfirm">Создать vJoy №{0} для хаба? Существующие или непроверенные устройства ({1}) не изменятся. Новое устройство получит 8 осей, 128 кнопок, POV и FFB. Закройте игры и другие программы управления контроллерами. Сначала будет сохранена резервная копия. Windows может запросить права администратора и перезапуск. При необходимости назначьте новое устройство в игре.</sys:String>
     <sys:String x:Key="Output_VJoyReadyUnchanged">Общее устройство vJoy готово. Конфигурация проверена без изменений. Включите общий выход в тех профилях, которые хотите явно перенести на него.</sys:String>
@@ -714,7 +714,8 @@
     <sys:String x:Key="Output_VJoyNewOrigin" xml:space="preserve">Этот пустой номер станет общим выходом хаба. Настройки существующих устройств сохранятся. Возможно, потребуется назначить новый руль в играх.</sys:String>
     <sys:String x:Key="Output_VJoySavedRestart" xml:space="preserve">Конфигурация vJoy сохранена и проверена. Перезапустите драйвер или Windows, затем проверьте то же устройство. Хаб сохраняет его номер и не выбирает другой выход. Если выбор выхода профиля изменился, сохраните профиль.</sys:String>
     <sys:String x:Key="Output_VJoySetupStopped" xml:space="preserve">Настройка vJoy остановлена. Сохраните резервную копию и журнал; перед повторением проверьте указанное состояние.</sys:String>
-    <sys:String x:Key="Output_VJoyElevationDeclined" xml:space="preserve">Разрешение администратора отклонено. Неподтверждённые изменения не откатываются и не заменяются.</sys:String>
+    <sys:String x:Key="Output_VJoyElevationDeclined" xml:space="preserve">Windows не разрешила запуск помощника настройки (ошибка 1223). Нажмите «Исправить» и подтвердите запрос прав администратора. Если запроса нет, отправьте лог хаба.</sys:String>
+    <sys:String x:Key="Output_VJoyDownloadedHelperBlocked">Windows не запустила помощник настройки. Его файл помечен как скачанный из Интернета. Если вы доверяете этому выпуску, откройте vWheelHub.exe → Свойства → Разблокировать, примените изменение и повторите Fix.</sys:String>
     <sys:String x:Key="Output_VJoyUseSetupCard" xml:space="preserve">Откройте Dashboard и диагностику устройств для настройки виртуального руля.</sys:String>
     <sys:String x:Key="Output_VJoyApplyChanges">Применить изменения</sys:String>
     <x:String x:Key="Output_VJoyResume">Продолжить незавершённую настройку</x:String>
@@ -857,4 +858,10 @@
     <sys:String x:Key="Output_VJoyDownloadFailed">Не удалось открыть страницу скачивания vJoy.</sys:String>
     <sys:String x:Key="Output_VJoyInspectFailed">Не удалось проверить конфигурацию vJoy. Устройства не изменены. Подробности:</sys:String>
     <sys:String x:Key="Output_VJoyUnavailableAdvice">Устройство vJoy недоступно или занято. Закройте другие программы управления контроллерами, убедитесь, что vJoy включён, и повторите проверку. После установки или настройки драйвера может потребоваться перезапуск Windows.</sys:String>
+  <sys:String x:Key="Output_VJoyActivationPending">Конфигурация vJoy сохранена, но устройство ещё не активно. Закройте другие программы, использующие vJoy, и нажмите Fix ещё раз. Если активация не удалась, проверьте подробности.</sys:String>
+    <sys:String x:Key="Output_VJoyFixRunning">Подготовка виртуального руля. Windows может запросить права администратора.</sys:String>
+    <sys:String x:Key="Output_VJoyFixFailed">Не удалось подготовить виртуальный руль</sys:String>
+    <sys:String x:Key="Output_VJoyFixConsentHint">Для подготовки виртуального руля Windows может запросить разрешение администратора.</sys:String>
+    <sys:String x:Key="Output_VJoyPermissionNotice">Для настройки vJoy могут понадобиться права администратора. После нажатия «Продолжить» Windows может открыть системный запрос: подтвердите его или введите пароль администратора.</sys:String>
+    <sys:String x:Key="Output_VJoyContinue">Продолжить</sys:String>
 </ResourceDictionary>

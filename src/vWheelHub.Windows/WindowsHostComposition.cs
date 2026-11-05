@@ -14,6 +14,7 @@ public sealed class WindowsHostCompositionOptions
     public IInputSource? HotkeyInputSource { get; init; }
     public string? SettingsPath { get; init; }
     public IOutputFeederFactory? FeederFactory { get; init; }
+    public IOutputDiagnostics? OutputDiagnostics { get; init; }
     public ICursorLockService? CursorLockService { get; init; }
     public IPrecisionTimer? PrecisionTimer { get; init; }
     public GameIntegrationRegistry? IntegrationRegistry { get; init; }
@@ -32,7 +33,7 @@ public sealed class WindowsHostServices : IDisposable, IAsyncDisposable
 
     internal WindowsHostServices(WindowsHostCompositionOptions options)
     {
-        Diagnostics = new WindowsOutputDiagnostics(localization: options.Localization,
+        Diagnostics = options.OutputDiagnostics ?? new WindowsOutputDiagnostics(localization: options.Localization,
             vjoyRequirements: () => VJoyRequirements.ForProfile(new VJoyInventoryService().TryResolveAutomatic(options.ProfileSession.ResolvedProfile)
                 ?? options.ProfileSession.ResolvedProfile.VJoyDeviceId, true));
         InputSource = options.InputSource ?? new WindowsInputSource(options.SettingsPath);
@@ -42,6 +43,7 @@ public sealed class WindowsHostServices : IDisposable, IAsyncDisposable
         ;
         IntegrationRegistry = options.IntegrationRegistry ?? new GameIntegrationRegistry();
         RuntimeEngine = new HubRuntimeEngine(InputSource, options.FeederFactory ?? new WindowsOutputFeederFactory(), CursorLockService, options.PrecisionTimer ?? new WindowsPrecisionTimer(), options.ProfileSession, IntegrationRegistry);
+        RuntimeEngine.PrepareOutputAsync = Diagnostics.EnsureOutputReadyAsync;
         AppDomain.CurrentDomain.ProcessExit += EmergencyCleanup;
         AppDomain.CurrentDomain.UnhandledException += EmergencyCleanup;
     }

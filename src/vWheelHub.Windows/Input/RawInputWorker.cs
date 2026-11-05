@@ -32,6 +32,24 @@ namespace SimRacingHub.Input
             return path;
         }
 
+        internal void UpdateDevices(WindowsRawDevice[] devices, IntPtr? removed = null)
+        {
+            string? removedPath = null;
+            if (removed.HasValue) _paths.TryGetValue(removed.Value, out removedPath);
+            bool hadTouchpad = _paths.ContainsValue(WindowsRawDevices.PrecisionTouchpadPath);
+            _paths.Clear();
+            foreach (var device in devices) _paths[device.Handle] = device.Option.Path;
+            if (removed.HasValue) _absolute.Remove(removed.Value);
+            bool lostTouchpad = hadTouchpad && !_paths.ContainsValue(WindowsRawDevices.PrecisionTouchpadPath);
+            if (lostTouchpad)
+            {
+                _absolute.Remove(IntPtr.Zero);
+                Packet?.Invoke(new(WindowsRawDevices.PrecisionTouchpadPath, InputDeviceKind.Mouse, Removed: true));
+            }
+            if (!string.IsNullOrEmpty(removedPath) && removedPath != WindowsRawDevices.PrecisionTouchpadPath)
+                Packet?.Invoke(new(removedPath, InputDeviceKind.Mouse, Removed: true));
+        }
+
         // Raw Input is a producer for the real-time steering loop.  Do not run
         // steering math (or take a lock) on this message-pump thread: a burst of
         // WM_INPUT messages must be reduced to one cheap atomic operation.
@@ -144,7 +162,7 @@ namespace SimRacingHub.Input
 
                 _absolute.Clear();
                 _paths.Clear();
-                foreach (var device in WindowsRawDevices.Discover()) _paths[device.Handle] = device.Option.Path;
+                UpdateDevices(WindowsRawDevices.Discover());
                 Interlocked.Exchange(ref _pendingDeltaX, 0);
                 _startupSucceeded = true;
                 _startupComplete.Set();
@@ -187,14 +205,7 @@ namespace SimRacingHub.Input
 
                 if (msg.message == 0x00FE) // WM_INPUT_DEVICE_CHANGE
                 {
-                    if (msg.wParam == (IntPtr)2) // GIDC_REMOVAL
-                    {
-                        string path = DevicePath(msg.lParam);
-                        _absolute.Remove(msg.lParam);
-                        _paths.Remove(msg.lParam);
-                        Packet?.Invoke(new(path, InputDeviceKind.Mouse, Removed: true));
-                    }
-                    else _paths[msg.lParam] = WindowsRawDevices.Path(msg.lParam);
+                    UpdateDevices(WindowsRawDevices.Discover(), msg.wParam == (IntPtr)2 ? msg.lParam : null);
                 }
                 if (msg.message == WM_INPUT)
                 {
@@ -232,6 +243,8 @@ namespace SimRacingHub.Input
                 byte* data = buffer + Marshal.SizeOf<RAWINPUTHEADER>();
                 if (header.dwType == RIM_TYPEMOUSE && packet.Length >= Marshal.SizeOf<RAWINPUTHEADER>() + sizeof(RAWMOUSE))
                 {
+                    if (header.hDevice == IntPtr.Zero && path.Length == 0)
+                        path = WindowsRawDevices.PrecisionTouchpadPath;
                     var mouse = *(RAWMOUSE*)data;
                     int x = mouse.lLastX, y = mouse.lLastY;
                     if ((mouse.usFlags & MOUSE_MOVE_ABSOLUTE) != 0)

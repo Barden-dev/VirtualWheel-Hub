@@ -11,12 +11,26 @@ namespace SimRacingHub.Avalonia
         [STAThread]
         public static int Main(string[] args)
         {
+            if (args.Length == 6 && args[0].ToLowerInvariant() is "--apply-vjoy" or "--refresh-vjoy" or "--restore-vjoy")
+            {
+                if (!OperatingSystem.IsWindows() || !Guid.TryParseExact(args[1], "N", out _) ||
+                    args[2] != "--requester-pid" || !int.TryParse(args[3], out int requester) || requester <= 0 || args[4] != "--data-directory")
+                { Console.Error.WriteLine("Invalid vJoy requester context."); return 1; }
+                return SimRacingHub.Core.VJoyRecoveryCommand.Execute(args[0].ToLowerInvariant(), args[1], requester, args[5], Console.Out);
+            }
             int applyIndex = Array.FindIndex(args, a => a.Equals("--apply-vjoy", StringComparison.OrdinalIgnoreCase));
             if (applyIndex >= 0)
             {
                 if (args.Length != 2 || applyIndex != 0 || !Guid.TryParseExact(args[1], "N", out _) || !OperatingSystem.IsWindows())
                 { Console.Error.WriteLine("--apply-vjoy requires Windows and one approved operation ID."); return 1; }
                 return SimRacingHub.Core.VJoyRecoveryCommand.Apply(args[1], Console.Out);
+            }
+            int refreshIndex = Array.FindIndex(args, a => a.Equals("--refresh-vjoy", StringComparison.OrdinalIgnoreCase));
+            if (refreshIndex >= 0)
+            {
+                if (args.Length != 2 || refreshIndex != 0 || !Guid.TryParseExact(args[1], "N", out _) || !OperatingSystem.IsWindows())
+                { Console.Error.WriteLine("--refresh-vjoy requires Windows and one verified operation ID."); return 1; }
+                return SimRacingHub.Core.VJoyRecoveryCommand.Refresh(args[1], Console.Out);
             }
             int recoveryIndex = Array.FindIndex(args, a => a.Equals("--restore-vjoy", StringComparison.OrdinalIgnoreCase));
             if (recoveryIndex >= 0)
