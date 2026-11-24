@@ -1,0 +1,16 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:SimRacingHub.Avalonia.Controls"
+             x:Class="SimRacingHub.Avalonia.Views.Pedals.ThrottleExtraPanel">
+    <controls:FeaturePreview Name="ThrottleOffer" Heading="{DynamicResource Offer_Tc}" Summary="{DynamicResource Offer_TcInfo}">
+        <controls:FeaturePreview.Sample>
+            <StackPanel Spacing="10">
+                <ToggleSwitch Content="{DynamicResource Offer_Enable}" IsChecked="False"/>
+                <Grid ColumnDefinitions="*,150" ColumnSpacing="12"><TextBlock Text="{DynamicResource Offer_Slip}" VerticalAlignment="Center" TextWrapping="Wrap"/><NumericUpDown Grid.Column="1" Value="0.05" Minimum="0" Maximum="1000"/></Grid>
+                <Grid ColumnDefinitions="*,150" ColumnSpacing="12"><TextBlock Text="{DynamicResource Offer_Drop}" VerticalAlignment="Center" TextWrapping="Wrap"/><NumericUpDown Grid.Column="1" Value="15" Minimum="0" Maximum="1000"/></Grid>
+                <Grid ColumnDefinitions="*,150" ColumnSpacing="12"><TextBlock Text="{DynamicResource Offer_Recover}" VerticalAlignment="Center" TextWrapping="Wrap"/><NumericUpDown Grid.Column="1" Value="4" Minimum="0" Maximum="1000"/></Grid>
+                <Grid ColumnDefinitions="*,150" ColumnSpacing="12"><TextBlock Text="{DynamicResource Offer_Minimum}" VerticalAlignment="Center" TextWrapping="Wrap"/><NumericUpDown Grid.Column="1" Value="5" Minimum="0" Maximum="1000"/></Grid>
+            </StackPanel>
+        </controls:FeaturePreview.Sample>
+    </controls:FeaturePreview>
+</UserControl>

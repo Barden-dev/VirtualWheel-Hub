@@ -8,6 +8,7 @@ namespace SimRacingHub.Core
     {
         public bool AutoStartHub { get; set; }
         public bool MouseLockSoundsEnabled { get; set; } = true;
+        public bool AutomaticInputEnabled { get; set; } = true;
         public bool StartMinimized { get; set; }
         public bool MinimizeToTray { get; set; }
         public bool CloseToTray { get; set; }

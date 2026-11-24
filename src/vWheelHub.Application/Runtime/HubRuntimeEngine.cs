@@ -22,13 +22,16 @@ namespace SimRacingHub.Application.Runtime
 
         private const int ErrorLogIntervalMs = 5000;
 
-        private const int SnapshotIntervalMs = 30;
+        private const int SnapshotIntervalMs = 30; // ~33 Hz UI coalescing
 
         private readonly GameIntegrationRegistry _registry;
 
         private readonly CursorLockController _cursorLockService;
 
         private readonly IInputSource _inputSource;
+
+        // The desktop shortcut reader is managed by the host, independently of driving input.
+        private readonly IInputSource _cursorShortcutInputSource;
 
         private readonly bool _ownsInputSource;
 
@@ -46,8 +49,6 @@ namespace SimRacingHub.Application.Runtime
 
         private ProfileContext? _currentContext;
 
-
-
         private Action<int, int, int>? _outputCallback;
 
         private readonly object _stateLock = new();
@@ -63,6 +64,8 @@ namespace SimRacingHub.Application.Runtime
         private int _latestGas = -32768;
 
         private int _latestBrake = -32768;
+
+        private int _latestClutch;
 
         private readonly VirtualButtonProcessor _userButtons = new();
         private readonly DrivingFocusGate _focusGate = new();
@@ -106,7 +109,15 @@ namespace SimRacingHub.Application.Runtime
 
         public bool IsRunning => _cts != null && !_cts.IsCancellationRequested && !_faultStop;
 
-        public bool IsLocked => IsRunning && _cursorLockService.IsCursorLocked;
+        public bool IsLocked
+        {
+            get
+            {
+                bool isLocked = IsRunning && _cursorLockService.IsCursorLocked;
+                ResolveIsLocked(ref isLocked);
+                return isLocked;
+            }
+        }
 
         public bool HasFault => _faultStop;
 
@@ -121,51 +132,81 @@ namespace SimRacingHub.Application.Runtime
 
         internal int LatestBrake => Volatile.Read(ref _latestBrake);
 
+        internal int LatestClutch => Volatile.Read(ref _latestClutch);
+
         internal bool NeutralizeRequested => _neutralizeRequested;
 
         internal bool LockMouseState => _cursorLockService.Requested;
 
-        internal bool WasGameRunning => _activeIntegration?.Detector.IsRunning ?? false;
+        internal bool WasGameRunning
+        {
+            get
+            {
+                bool wasRunning = _activeIntegration?.Detector.IsRunning ?? false;
+                ResolveWasGameRunning(ref wasRunning);
+                return wasRunning;
+            }
+        }
 
         internal AxisState AxisState => _axisState;
 
-        public HubRuntimeEngine(IInputSource inputSource, IOutputFeederFactory feederFactory, ICursorLockService cursorLockService, IPrecisionTimer precisionTimer, ProfileSession? profileSession = null, GameIntegrationRegistry? registry = null, bool ownsInputSource = false)
+        public HubRuntimeEngine(
+            IInputSource inputSource,
+            IOutputFeederFactory feederFactory,
+            ICursorLockService cursorLockService,
+            IPrecisionTimer precisionTimer,
+            ProfileSession? profileSession = null,
+            GameIntegrationRegistry? registry = null,
+            bool ownsInputSource = false,
+            IInputSource? cursorShortcutInputSource = null)
         {
             _inputSource = inputSource ?? new HeadlessInputSource();
+            _cursorShortcutInputSource = cursorShortcutInputSource ?? _inputSource;
             _output = new OutputConnection(feederFactory ?? new HeadlessOutputFeederFactory(), _stateLock);
             _cursorLockService = new CursorLockController(cursorLockService ?? new HeadlessCursorLockService());
             _precisionTimer = precisionTimer ?? new HeadlessPrecisionTimer();
-            ;
             _profileSession = profileSession;
             _registry = registry ?? new GameIntegrationRegistry(registerDefaults: false);
             _ownsInputSource = ownsInputSource;
             _outputTest = new OutputTestSession(_stateLock, _output, _inputSource,
                 () => IsRunning, () => _currentProfile, UpdateMouseLock, Neutralize, () => _mathEngine?.Neutralize(), RaiseFault);
-            ;
-            ;
-            ;
-            ;
-            ;
-            ;
-            ;
-            ;
-            ;
-            ;
-            ;
-            ;
+            InitializeRuntimeExtensions();
         }
 
-        public HubRuntimeEngine(IInputSource inputSource, IOutputFeeder outputFeeder, ICursorLockService cursorLockService, IPrecisionTimer precisionTimer, ProfileSession? profileSession = null, GameIntegrationRegistry? registry = null) : this(inputSource, new SingleFeederFactory(outputFeeder), cursorLockService, precisionTimer, profileSession, registry)
+        public HubRuntimeEngine(
+            IInputSource inputSource,
+            IOutputFeeder outputFeeder,
+            ICursorLockService cursorLockService,
+            IPrecisionTimer precisionTimer,
+            ProfileSession? profileSession = null,
+            GameIntegrationRegistry? registry = null)
+            : this(inputSource, new SingleFeederFactory(outputFeeder), cursorLockService, precisionTimer, profileSession, registry)
         {
         }
 
-        public HubRuntimeEngine(GameIntegrationRegistry registry, ICursorLockService cursorLockService, IInputSource? inputSource = null, IPrecisionTimer? precisionTimer = null, IOutputFeederFactory? feederFactory = null, ProfileSession? profileSession = null, bool ownsInputSource = false) : this(inputSource ?? new HeadlessInputSource(), feederFactory ?? new HeadlessOutputFeederFactory(), cursorLockService, precisionTimer ?? new HeadlessPrecisionTimer(), profileSession, registry, ownsInputSource)
+        public HubRuntimeEngine(
+            GameIntegrationRegistry registry,
+            ICursorLockService cursorLockService,
+            IInputSource? inputSource = null,
+            IPrecisionTimer? precisionTimer = null,
+            IOutputFeederFactory? feederFactory = null,
+            ProfileSession? profileSession = null,
+            bool ownsInputSource = false)
+            : this(
+                inputSource ?? new HeadlessInputSource(),
+                feederFactory ?? new HeadlessOutputFeederFactory(),
+                cursorLockService,
+                precisionTimer ?? new HeadlessPrecisionTimer(),
+                profileSession,
+                registry,
+                ownsInputSource)
         {
         }
 
         public void UpdateRuntimeProfile(ResolvedProfile profile, ProfileContext? context)
         {
             bool wasRunning = _cts != null && !_cts.IsCancellationRequested;
+
             if (wasRunning)
             {
                 StopPollingTask("profile update");
@@ -186,17 +227,16 @@ namespace SimRacingHub.Application.Runtime
                 _currentProfile = profile;
                 _currentContext = context;
                 _mathEngine = new MathEngine(profile, _axisState);
+
                 IGameIntegration? nextIntegration = _registry.GetIntegration(context?.Game);
-                ;
-                ;
                 _activeIntegration = nextIntegration;
                 _cursorLockService.FocusSuspended = profile.ReleaseCursorOnFocusLoss && _activeIntegration?.Detector?.IsForeground == false;
-                ;
-                ;
-                ;
-                ;
+                OnUpdateRuntimeProfileLocked(profile, nextIntegration);
             }
 
+            // Synchronize feeder state even when hub is not running:
+            // For Xbox360 mode, the virtual controller must remain connected
+            // so games detect the gamepad.
             bool synchronized;
             lock (_outputSetupGate)
                 synchronized = _outputSetupLeases > 0 || _output.SynchronizeProfile(profile.OutputMode, prevMode, wasRunning, _output.ResolveVJoyDeviceId(profile));
@@ -213,7 +253,7 @@ namespace SimRacingHub.Application.Runtime
                 CancellationToken token = _cts.Token;
                 _pollingTask = StartRuntimeTask(() => PollingLoop(token), token);
                 _vJoyTask = StartRuntimeTask(() => VJoyLoop(token), token);
-                ;
+                StartRuntimeExtensions(token);
             }
 
             PublishSnapshot();
@@ -222,17 +262,11 @@ namespace SimRacingHub.Application.Runtime
         private void StopPollingTask(string reason)
         {
             var task = _pollingTask;
-            ;
             var vJoyTask = _vJoyTask;
             var cts = _cts;
-            try
-            {
-                cts?.Cancel();
-            }
-            catch (Exception ex)
-            {
-                AppLogger.Instance.LogError($"Could not cancel the polling loop ({reason})", ex);
-            }
+
+            try { cts?.Cancel(); }
+            catch (Exception ex) { AppLogger.Instance.LogError($"Could not cancel the polling loop ({reason})", ex); }
 
             if (task != null)
             {
@@ -243,42 +277,29 @@ namespace SimRacingHub.Application.Runtime
                         AppLogger.Instance.LogWarning($"Polling loop did not stop within {PollingTaskStopTimeoutMs} ms ({reason})");
                     }
                 }
-                catch (AggregateException ex)when (ex.InnerException is OperationCanceledException)
-                {
-                }
+                catch (AggregateException ex) when (ex.InnerException is OperationCanceledException) { }
                 catch (Exception ex)
                 {
                     AppLogger.Instance.LogError($"Polling loop error during {reason}", ex);
                 }
             }
 
-            foreach (var backgroundTask in new[]
-            {
-                vJoyTask
-            }
+            StopRuntimeExtensions(reason);
 
-            )
+            if (vJoyTask != null)
             {
-                if (backgroundTask == null)
-                    continue;
                 try
                 {
-                    if (!backgroundTask.Wait(PollingTaskStopTimeoutMs))
+                    if (!vJoyTask.Wait(PollingTaskStopTimeoutMs))
                     {
                         AppLogger.Instance.LogWarning($"Runtime task did not stop within {PollingTaskStopTimeoutMs} ms ({reason})");
                     }
                 }
-                catch (AggregateException ex)when (ex.InnerException is OperationCanceledException)
-                {
-                }
-                catch (Exception ex)
-                {
-                    AppLogger.Instance.LogError($"Runtime task error during {reason}", ex);
-                }
+                catch (AggregateException ex) when (ex.InnerException is OperationCanceledException) { }
+                catch (Exception ex) { AppLogger.Instance.LogError($"Runtime task error during {reason}", ex); }
             }
 
             _pollingTask = null;
-            ;
             _vJoyTask = null;
             cts?.Dispose();
             _cts = null;
@@ -311,7 +332,15 @@ namespace SimRacingHub.Application.Runtime
             lock (_outputSetupGate)
             {
                 if (--_outputSetupLeases == 0 && !_disposed && _currentProfile is { } profile)
-                    _output.SynchronizeProfile(profile.OutputMode, profile.OutputMode, false, _output.ResolveVJoyDeviceId(profile));
+                {
+                    try { _output.SynchronizeProfile(profile.OutputMode, profile.OutputMode, false, _output.ResolveVJoyDeviceId(profile)); }
+                    catch (Exception error)
+                    {
+                        // A missing output is a valid setup outcome (e.g. cancelled UAC).
+                        // Do not replace that failure with a lease-disposal exception.
+                        AppLogger.Instance.LogWarning("Output remains unavailable after setup: " + error.Message);
+                    }
+                }
             }
         }
 
@@ -335,6 +364,7 @@ namespace SimRacingHub.Application.Runtime
             Stop();
             _startFailure = null;
             LastStartFailureWasOutput = false;
+
             if (profile == null)
             {
                 AppLogger.Instance.LogError("Cannot start vWheel Hub: resolved profile is null");
@@ -346,23 +376,20 @@ namespace SimRacingHub.Application.Runtime
                 lock (_stateLock)
                 {
                     _userButtons.Reset();
-                _tickState.VirtualButtons.Reset();
-                _lastUserButtonTicks = 0;
-                _focusGate.Reset();
-                _tickState.FocusGate.Reset();
-                _validVirtualButtons = VirtualButtonProcessor.Validate(profile.VirtualButtons, 128, profile.GetReservedVirtualButtonKeys()) == null;
-                if (_output.HasFeeder) _output.UpdateReport(new(16384, 0, 0, default));
-                _currentProfile = profile;
+                    _tickState.VirtualButtons.Reset();
+                    _lastUserButtonTicks = 0;
+                    _focusGate.Reset();
+                    _tickState.FocusGate.Reset();
+                    _validVirtualButtons = VirtualButtonProcessor.Validate(profile.VirtualButtons, 128, profile.GetReservedVirtualButtonKeys()) == null;
+                    if (_output.HasFeeder) _output.UpdateReport(new(16384, 0, 0, default));
+                    _currentProfile = profile;
                     _currentContext = context;
                     _cursorLockService.Requested = lockMouse;
                     _outputCallback = outputCallback;
                     _mathEngine = new MathEngine(profile, _axisState);
                     _activeIntegration = _registry.GetIntegration(context?.Game);
                     _cursorLockService.FocusSuspended = profile.ReleaseCursorOnFocusLoss && _activeIntegration?.Detector?.IsForeground == false;
-                    ;
-                    ;
-                    ;
-                    ;
+                    OnStartLocked(profile, _activeIntegration);
                 }
 
                 try
@@ -388,10 +415,12 @@ namespace SimRacingHub.Application.Runtime
                 Volatile.Write(ref _latestSteer, 16384);
                 Volatile.Write(ref _latestGas, 0);
                 Volatile.Write(ref _latestBrake, 0);
+                Volatile.Write(ref _latestClutch, 0);
                 Volatile.Write(ref _latestShiftDown, 0);
                 Volatile.Write(ref _latestShiftUp, 0);
                 _neutralizeRequested = false;
                 _outputTest.PrepareForStart(suppressDrivingOnStart);
+
                 try
                 {
                     _inputSource.Start();
@@ -408,14 +437,7 @@ namespace SimRacingHub.Application.Runtime
                 {
                     _startFailure = ex;
                     AppLogger.Instance.LogError("Mouse capture could not be initialised, vWheel Hub was not started", ex);
-                    try
-                    {
-                        _inputSource.Stop();
-                    }
-                    catch
-                    {
-                    }
-
+                    try { _inputSource.Stop(); } catch { }
                     _output.ReleaseAndDispose();
                     return false;
                 }
@@ -432,7 +454,8 @@ namespace SimRacingHub.Application.Runtime
                 CancellationToken token = _cts.Token;
                 _pollingTask = StartRuntimeTask(() => PollingLoop(token), token);
                 _vJoyTask = StartRuntimeTask(() => VJoyLoop(token), token);
-                ;
+                StartRuntimeExtensions(token);
+
                 AppLogger.Instance.LogInfo("vWheel Hub started successfully");
                 IsRunningChanged?.Invoke(true);
                 PublishSnapshot();
@@ -442,15 +465,8 @@ namespace SimRacingHub.Application.Runtime
             {
                 _startFailure = ex;
                 AppLogger.Instance.LogError("Failed to start vWheel Hub", ex);
-                try
-                {
-                    Stop();
-                }
-                catch (Exception cleanupEx)
-                {
-                    AppLogger.Instance.LogError("Failed to clean up an incomplete hub start", cleanupEx);
-                }
-
+                try { Stop(); }
+                catch (Exception cleanupEx) { AppLogger.Instance.LogError("Failed to clean up an incomplete hub start", cleanupEx); }
                 return false;
             }
         }
@@ -461,28 +477,28 @@ namespace SimRacingHub.Application.Runtime
             StopPollingTask("stop");
             CancelOutputTestForLifecycle();
             _precisionTimer.EndPeriod(1);
+
             _inputSource.Stop();
-            ;
-            _cursorLockService.UnlockCursor();
-            _cursorLockService.Requested = false;
-            ;
-            _cursorLockService.HoldUnlocked = false;
+            OnStopBeforeUnlock();
+
+            _cursorLockService.Reset();
+
             lock (_stateLock)
             {
-                ;
-                ;
+                OnStopLocked();
             }
 
             _output.Stop(_retainOutputConnection);
 
             _outputCallback?.Invoke(16384, 0, 0);
             AxisUpdated?.Invoke(16384, 0, 0);
-            ;
+
+            OnStopAfterOutput();
+
             if (wasRunning)
             {
                 IsRunningChanged?.Invoke(false);
             }
-
             PublishSnapshot();
         }
 
@@ -507,9 +523,12 @@ namespace SimRacingHub.Application.Runtime
         {
             ArgumentNullException.ThrowIfNull(options);
             ct.ThrowIfCancellationRequested();
+
             _retainOutputConnection = options.RetainOutputConnection;
+
             ResolvedProfile? profile = null;
             ProfileContext? context = null;
+
             lock (_stateLock)
             {
                 profile = options.Profile ?? _currentProfile;
@@ -533,6 +552,7 @@ namespace SimRacingHub.Application.Runtime
             }
 
             profile.OutputMode = options.OutputMode;
+
             if (!IsRunning && options.AllowOutputSetup && PrepareOutputAsync != null)
             {
                 try
@@ -548,12 +568,12 @@ namespace SimRacingHub.Application.Runtime
                     throw;
                 }
             }
+
             bool started = Start(profile, options.LockCursorOnStart, context, null, options.SuppressDrivingOnStart);
             if (!started)
             {
                 throw new InvalidOperationException(_startFailure?.Message ?? "Failed to start hub runtime.", _startFailure);
             }
-
         }
 
         public Task StopAsync(CancellationToken ct = default)
@@ -583,9 +603,18 @@ namespace SimRacingHub.Application.Runtime
             return BuildSnapshot();
         }
 
+        /// <summary>
+        /// Executes a single tick through the unified TickProcessor using the current engine state.
+        /// </summary>
         public TickOutput ProcessTick(double dtSeconds = 0)
         {
             if (SuppressDrivingForOutputTest()) return new TickOutput(16384, 0, 0, false, false, true);
+
+            bool handled = false;
+            TickOutput extendedOutput = default;
+            ProcessTickExtended(dtSeconds, ref handled, ref extendedOutput);
+            if (handled) return extendedOutput;
+
             TickOutput output;
             lock (_stateLock)
             {
@@ -596,11 +625,14 @@ namespace SimRacingHub.Application.Runtime
                 _tickState.LockMouse = _cursorLockService.Requested;
                 _tickState.BypassInternalLockToggle = true;
                 output = TickProcessor.ProcessTick(_currentProfile, monitored, present,
-                    _inputSource, _cursorLockService, _mathEngine, _tickState, dtSeconds, isGameFocused: _activeIntegration?.Detector?.IsForeground);
+                    _inputSource, _cursorLockService, _mathEngine, _tickState, dtSeconds,
+                    isGameFocused: _activeIntegration?.Detector?.IsForeground,
+                    cursorShortcutInputSource: _cursorShortcutInputSource);
                 _cursorLockService.HoldUnlocked = _tickState.HoldMouseUnlocked;
                 Volatile.Write(ref _latestSteer, output.Steer);
                 Volatile.Write(ref _latestGas, output.Gas);
                 Volatile.Write(ref _latestBrake, output.Brake);
+                Volatile.Write(ref _latestClutch, output.Clutch);
                 Volatile.Write(ref _latestShiftDown, output.ShiftDown ? 1 : 0);
                 Volatile.Write(ref _latestShiftUp, output.ShiftUp ? 1 : 0);
             }
@@ -616,26 +648,76 @@ namespace SimRacingHub.Application.Runtime
             int steer = Volatile.Read(ref _latestSteer);
             int gas = Volatile.Read(ref _latestGas);
             int brake = Volatile.Read(ref _latestBrake);
-            ;
+            int clutch = Volatile.Read(ref _latestClutch);
+
             double wheelNorm = Math.Clamp((steer - 16384.0) / 16384.0, -1.0, 1.0);
             double gasNorm = Math.Clamp(gas / 32768.0, 0.0, 1.0);
             double brakeNorm = Math.Clamp(brake / 32768.0, 0.0, 1.0);
-            ;
-            ;
-            ;
+            double clutchNorm = Math.Clamp(clutch / 32768.0, 0.0, 1.0);
+
+            RuntimeSnapshot? customSnapshot = null;
+            BuildCustomSnapshot(isRunning, isLocked, wheelNorm, gasNorm, brakeNorm, clutchNorm, ref customSnapshot);
+            if (customSnapshot != null) return customSnapshot;
+
             string? gameTitle;
+            RuntimeControlState controlState;
             RuntimeInputSnapshot inputs;
             lock (_stateLock)
             {
+                bool hasGameMonitor = _activeIntegration?.Detector != null;
+                bool isGameActive = !hasGameMonitor || _activeIntegration!.Detector.IsRunning;
                 gameTitle = _activeIntegration?.Detector.IsRunning == true ? _activeIntegration.GameId : null;
-                inputs = new RuntimeInputSnapshot(isRunning ? Math.Clamp(_axisState.Steering / 32768.0, -1, 1) : 0, isRunning ? Math.Clamp((_axisState.GasVal + 32768.0) / 65536.0, 0, 1) : 0, isRunning ? Math.Clamp((_axisState.BrakeVal + 32768.0) / 65536.0, 0, 1) : 0);
+                bool isFocusSuspended = _focusGate.IsSuspended || _tickState.FocusGate.IsSuspended;
+                bool isHoldUnlock = _cursorLockService.HoldUnlocked || _tickState.HoldMouseUnlocked ||
+                    (_currentProfile != null && ControlTickRules.EitherDown(_cursorShortcutInputSource, _currentProfile.KeyUnlockCursor1, _currentProfile.KeyUnlockCursor2));
+                controlState = ComputeControlState(isRunning, isGameActive, isFocusSuspended, isHoldUnlock, _cursorLockService.Requested, _currentProfile);
+                inputs = new RuntimeInputSnapshot(
+                    isRunning ? Math.Clamp(_axisState.Steering / 32768.0, -1, 1) : 0,
+                    isRunning ? Math.Clamp((_axisState.GasVal + 32768.0) / 65536.0, 0, 1) : 0,
+                    isRunning ? Math.Clamp((_axisState.BrakeVal + 32768.0) / 65536.0, 0, 1) : 0,
+                    isRunning ? Math.Clamp((_axisState.ClutchVal + 32768.0) / 65536.0, 0, 1) : 0);
             }
 
-            string statusMsg = _faultStop ? (_faultMessage ?? "Fault") : (isRunning ? "Running" : "Stopped");
-            return new RuntimeSnapshot(IsRunning: isRunning, IsLocked: isLocked, WheelAxis: isRunning ? wheelNorm : 0.0, GasAxis: isRunning ? gasNorm : 0.0, BrakeAxis: isRunning ? brakeNorm : 0.0, GameTitle: gameTitle, StatusMessage: statusMsg, HasFault: _faultStop, FaultMessage: _faultMessage)
+            string statusMsg = _faultStop
+                ? (_faultMessage ?? "Fault")
+                : (isRunning ? "Running" : "Stopped");
+
+            return new RuntimeSnapshot(
+                IsRunning: isRunning,
+                IsLocked: isLocked,
+                WheelAxis: isRunning ? wheelNorm : 0.0,
+                GasAxis: isRunning ? gasNorm : 0.0,
+                BrakeAxis: isRunning ? brakeNorm : 0.0,
+                GameTitle: gameTitle,
+                StatusMessage: statusMsg,
+                HasFault: _faultStop,
+                FaultMessage: _faultMessage,
+                ClutchAxis: isRunning ? clutchNorm : 0.0)
             {
-                Inputs = inputs
+                Inputs = inputs,
+                ControlState = controlState
             };
+        }
+
+        private static RuntimeControlState ComputeControlState(
+            bool isRunning,
+            bool isGameActive,
+            bool isFocusSuspended,
+            bool isHoldUnlock,
+            bool isCursorRequested,
+            ResolvedProfile? profile)
+        {
+            if (!isRunning) return RuntimeControlState.Stopped;
+            if (!isGameActive) return RuntimeControlState.WaitingForGame;
+            if (isFocusSuspended) return RuntimeControlState.WindowUnfocused;
+            if (isHoldUnlock) return RuntimeControlState.CursorUnlockHeld;
+            if (!isCursorRequested)
+            {
+                int unlockedMode = profile?.CursorUnlockedMode ?? 0;
+                if (unlockedMode == 2) return RuntimeControlState.CursorUnlockedPaused;
+                if (unlockedMode == 1) return RuntimeControlState.SteeringPausedCursorUnlocked;
+            }
+            return RuntimeControlState.Active;
         }
 
         private void PublishSnapshot()
@@ -664,15 +746,20 @@ namespace SimRacingHub.Application.Runtime
             long previousIterationTicks = 0;
             _consecutiveErrors = 0;
             long idleTargetTicks = (long)(Stopwatch.Frequency * (IdleSleepMs / 1000.0));
+
             AppLogger.Instance.LogInfo("Polling loop started", showInStatusBar: false);
+
             try
             {
                 while (!token.IsCancellationRequested && !_faultStop)
                 {
                     long iterationTicks = Stopwatch.GetTimestamp();
-                    double actualDtSeconds = previousIterationTicks == 0 ? 0.0 : (iterationTicks - previousIterationTicks) / (double)Stopwatch.Frequency;
+                    double actualDtSeconds = previousIterationTicks == 0
+                        ? 0.0
+                        : (iterationTicks - previousIterationTicks) / (double)Stopwatch.Frequency;
                     previousIterationTicks = iterationTicks;
                     long targetTicks = idleTargetTicks;
+
                     try
                     {
                         targetTicks = RunBackgroundIteration(actualDtSeconds);
@@ -686,7 +773,9 @@ namespace SimRacingHub.Application.Runtime
                     {
                         _consecutiveErrors++;
                         LogIterationErrorThrottled(ex);
+
                         Neutralize();
+
                         if (_consecutiveErrors > MaxConsecutiveErrors)
                         {
                             RaiseFault($"Runtime error, hub stopped: {ex.Message}");
@@ -711,11 +800,16 @@ namespace SimRacingHub.Application.Runtime
 
         private long RunBackgroundIteration(double actualDtSeconds)
         {
+            bool handled = false;
+            long customTargetTicks = 0;
+            RunCustomBackgroundIteration(actualDtSeconds, ref handled, ref customTargetTicks);
+            if (handled) return customTargetTicks;
+
             lock (_stateLock)
             {
                 if (SuppressDrivingForOutputTest())
                 {
-                    // Free computes input in this loop; the output writer never consumes mouse delta.
+                    // Base runtime computes input in this loop; the output writer never consumes mouse delta.
                     _inputSource.ConsumeDeltaX();
                     return Math.Max(1, Stopwatch.Frequency / 100);
                 }
@@ -743,6 +837,10 @@ namespace SimRacingHub.Application.Runtime
 
         private void VJoyLoop(CancellationToken token)
         {
+            bool handled = false;
+            RunCustomOutputLoop(token, ref handled);
+            if (handled) return;
+
             long deadline = 0;
             using var waiter = _precisionTimer.CreateWaiter();
             try
@@ -757,12 +855,14 @@ namespace SimRacingHub.Application.Runtime
                     if (_neutralizeRequested)
                     {
                         _neutralizeRequested = false;
-                        WriteToVJoy(16384, 0, 0, false, false, forceNeutral: true);
+                        WriteOutputAxes(16384, 0, 0, 0, false, false, forceNeutral: true);
                     }
                     else
-                        WriteToVJoy(Volatile.Read(ref _latestSteer), Volatile.Read(ref _latestGas),
-                            Volatile.Read(ref _latestBrake), Volatile.Read(ref _latestShiftDown) != 0,
-                            Volatile.Read(ref _latestShiftUp) != 0);
+                    {
+                        WriteOutputAxes(Volatile.Read(ref _latestSteer), Volatile.Read(ref _latestGas),
+                            Volatile.Read(ref _latestBrake), Volatile.Read(ref _latestClutch),
+                            Volatile.Read(ref _latestShiftDown) != 0, Volatile.Read(ref _latestShiftUp) != 0);
+                    }
                     int rate = Math.Clamp(_currentProfile?.PollingRate > 0 ? _currentProfile.PollingRate : 1000, 50, 1000);
                     PaceIteration(ref deadline, Math.Max(1, Stopwatch.Frequency / rate), waiter);
                 }
@@ -774,56 +874,68 @@ namespace SimRacingHub.Application.Runtime
             }
         }
 
-        private bool WriteToVJoy(int steer, int gas, int brake, bool shiftDown, bool shiftUp, bool forceNeutral = false)
-                {
-                    lock (_stateLock)
-                    {
-                        if (_faultStop) return false;
-                        if (WriteOutputTestIfNeeded()) return !_faultStop;
-                        long now = Stopwatch.GetTimestamp();
-                        double elapsed = _lastUserButtonTicks == 0 ? 0 : (now - _lastUserButtonTicks) / (double)Stopwatch.Frequency;
-                        _lastUserButtonTicks = now;
-                        var profile = _currentProfile;
-                        bool focusSuspended = profile != null && _focusGate.Update(_activeIntegration?.Detector?.IsForeground, profile, _inputSource, enabled: profile.PauseControlsOnFocusLoss);
-                        _cursorLockService.FocusSuspended = profile != null && profile.ReleaseCursorOnFocusLoss &&
-                            (focusSuspended || _activeIntegration?.Detector?.IsForeground == false);
-                        if (profile != null) _cursorLockService.UpdateHold(_cursorLockService.FocusSuspended ||
-                            ControlTickRules.EitherDown(_inputSource, profile.KeyUnlockCursor1, profile.KeyUnlockCursor2));
-                        if (focusSuspended)
-                        {
-                            steer = 16384; gas = brake = 0; shiftDown = shiftUp = false;
-                            _mathEngine?.Neutralize();
-                            Volatile.Write(ref _latestSteer, 16384);
-                            Volatile.Write(ref _latestGas, 0);
-                            Volatile.Write(ref _latestBrake, 0);
-                            Volatile.Write(ref _latestShiftDown, 0);
-                            Volatile.Write(ref _latestShiftUp, 0);
-                        }
-                        bool allowButtons = !forceNeutral && _validVirtualButtons && profile != null && _cursorLockService.Requested &&
-                            !ControlTickRules.EitherDown(_inputSource, profile.KeyUnlockCursor1, profile.KeyUnlockCursor2) &&
-                            _activeIntegration?.Detector?.IsRunning == true && (!profile.PauseControlsOnFocusLoss || _activeIntegration.Detector.IsForeground == true);
-                        var buttons = _userButtons.Process(profile?.VirtualButtons ?? [], _inputSource, allowButtons,
-                            true, elapsed, _output.TestCapabilities.ButtonCount);
-                        if (_output.SendWithRecovery(steer, gas, brake, shiftDown, shiftUp, buttons))
-                        {
-                            if (_output.LastWriteReacquired)
-                            {
-                                _userButtons.Reset();
-                                _tickState.VirtualButtons.Reset();
-                                _output.UpdateAxesAndButtons(16384, 0, 0, false, false);
-                            }
-                            return true;
-                        }
-                        Neutralize();
-                        RaiseFault($"{_output.Name} lost - vWheel Hub stopped.");
-                        return false;
-                    }
-                }
+        private bool WriteToVJoy(int steer, int gas, int brake, bool shiftDown, bool shiftUp, bool forceNeutral = false) =>
+            WriteOutputAxes(steer, gas, brake, 0, shiftDown, shiftUp, forceNeutral);
 
-        private static void PaceIteration(ref long nextDeadlineTicks, long intervalTicks, IPrecisionWaiter waiter)
+        private bool WriteOutputAxes(int steer, int gas, int brake, int clutch, bool shiftDown, bool shiftUp, bool forceNeutral = false)
+        {
+            lock (_stateLock)
+            {
+                if (_faultStop) return false;
+                if (WriteOutputTestIfNeeded()) return !_faultStop;
+                long now = Stopwatch.GetTimestamp();
+                double elapsed = _lastUserButtonTicks == 0 ? 0 : (now - _lastUserButtonTicks) / (double)Stopwatch.Frequency;
+                _lastUserButtonTicks = now;
+                var profile = _currentProfile;
+                bool focusSuspended = profile != null && _focusGate.Update(_activeIntegration?.Detector?.IsForeground, profile, _inputSource, enabled: profile.PauseControlsOnFocusLoss);
+                bool extraFocusSuspended = false;
+                bool inMenu = true;
+                ApplyOutputWriteExtensions(profile, ref extraFocusSuspended, ref inMenu);
+                _cursorLockService.FocusSuspended = profile != null && ((profile.ReleaseCursorOnFocusLoss &&
+                    (focusSuspended || _activeIntegration?.Detector?.IsForeground == false)) ||
+                    extraFocusSuspended);
+                if (profile != null) _cursorLockService.UpdateHold(_cursorLockService.FocusSuspended ||
+                    ControlTickRules.EitherDown(_cursorShortcutInputSource, profile.KeyUnlockCursor1, profile.KeyUnlockCursor2));
+                if (focusSuspended)
+                {
+                    steer = 16384; gas = brake = clutch = 0; shiftDown = shiftUp = false;
+                    _mathEngine?.Neutralize();
+                    Volatile.Write(ref _latestSteer, 16384);
+                    Volatile.Write(ref _latestGas, 0);
+                    Volatile.Write(ref _latestBrake, 0);
+                    Volatile.Write(ref _latestClutch, 0);
+                    Volatile.Write(ref _latestShiftDown, 0);
+                    Volatile.Write(ref _latestShiftUp, 0);
+                }
+                bool allowButtons = !forceNeutral && _validVirtualButtons && profile != null && _cursorLockService.Requested &&
+                    !ControlTickRules.EitherDown(_cursorShortcutInputSource, profile.KeyUnlockCursor1, profile.KeyUnlockCursor2) &&
+                    _activeIntegration?.Detector?.IsRunning == true && (!profile.PauseControlsOnFocusLoss || _activeIntegration.Detector.IsForeground == true);
+                var buttons = _userButtons.Process(profile?.VirtualButtons ?? [], _inputSource, allowButtons,
+                    inMenu, elapsed, _output.TestCapabilities.ButtonCount);
+                if (_output.SendWithRecovery(steer, gas, brake, shiftDown, shiftUp, buttons, clutch))
+                {
+                    if (_output.LastWriteReacquired)
+                    {
+                        _userButtons.Reset();
+                        _tickState.VirtualButtons.Reset();
+                        _output.UpdateAxesAndButtons(16384, 0, 0, false, false);
+                    }
+                    return true;
+                }
+                Neutralize();
+                RaiseFault($"{_output.Name} lost - vWheel Hub stopped.");
+                return false;
+            }
+        }
+
+        private static void PaceIteration(
+            ref long nextDeadlineTicks,
+            long intervalTicks,
+            IPrecisionWaiter waiter)
         {
             intervalTicks = Math.Max(1, intervalTicks);
             long nowTicks = Stopwatch.GetTimestamp();
+
             if (nextDeadlineTicks == 0)
             {
                 nextDeadlineTicks = nowTicks + intervalTicks;
@@ -831,6 +943,7 @@ namespace SimRacingHub.Application.Runtime
             else
             {
                 nextDeadlineTicks += intervalTicks;
+
                 if (nowTicks - nextDeadlineTicks >= intervalTicks)
                 {
                     nextDeadlineTicks = nowTicks + intervalTicks;
@@ -838,11 +951,11 @@ namespace SimRacingHub.Application.Runtime
             }
 
             long remainingTicks = nextDeadlineTicks - nowTicks;
-            if (remainingTicks <= 0)
-                return;
+            if (remainingTicks <= 0) return;
+
             double remainingSeconds = remainingTicks / (double)Stopwatch.Frequency;
-            if (waiter.Wait(remainingSeconds))
-                return;
+            if (waiter.Wait(remainingSeconds)) return;
+
             while ((remainingTicks = nextDeadlineTicks - Stopwatch.GetTimestamp()) > 0)
             {
                 double remainingMs = remainingTicks * 1000.0 / Stopwatch.Frequency;
@@ -859,8 +972,8 @@ namespace SimRacingHub.Application.Runtime
         private void LogIterationErrorThrottled(Exception ex)
         {
             long now = Environment.TickCount64;
-            if (now - _lastLoopErrorLog <= ErrorLogIntervalMs)
-                return;
+            if (now - _lastLoopErrorLog <= ErrorLogIntervalMs) return;
+
             _lastLoopErrorLog = now;
             AppLogger.Instance.LogError($"Runtime iteration error ({_consecutiveErrors} in a row)", ex);
         }
@@ -875,10 +988,10 @@ namespace SimRacingHub.Application.Runtime
                     _userButtons.Reset();
                     _tickState.VirtualButtons.Reset();
                 }
-
                 Volatile.Write(ref _latestSteer, 16384);
                 Volatile.Write(ref _latestGas, 0);
                 Volatile.Write(ref _latestBrake, 0);
+                Volatile.Write(ref _latestClutch, 0);
                 Volatile.Write(ref _latestShiftDown, 0);
                 Volatile.Write(ref _latestShiftUp, 0);
                 _neutralizeRequested = true;
@@ -893,7 +1006,7 @@ namespace SimRacingHub.Application.Runtime
         {
             _faultStop = true;
             CancelOutputTestForLifecycle();
-            ;
+            OnRaiseFaultBeforeNeutralize();
             _faultStop = true;
             _faultMessage = message;
             Neutralize();
@@ -903,6 +1016,7 @@ namespace SimRacingHub.Application.Runtime
             try { _cursorLockService.UnlockCursor(); }
             catch (Exception ex) { AppLogger.Instance.LogError("Could not release the cursor after a fault", ex); }
             AppLogger.Instance.LogError(message);
+
             try
             {
                 FaultOccurred?.Invoke(message);
@@ -923,10 +1037,11 @@ namespace SimRacingHub.Application.Runtime
 
         public void Dispose()
         {
-            if (_disposed)
-                return;
+            if (_disposed) return;
             _disposed = true;
+
             Stop();
+
             if (_ownsInputSource)
             {
                 _inputSource.Dispose();
@@ -936,6 +1051,23 @@ namespace SimRacingHub.Application.Runtime
 
             GC.SuppressFinalize(this);
         }
+
+        partial void InitializeRuntimeExtensions();
+        partial void ResolveIsLocked(ref bool isLocked);
+        partial void ResolveWasGameRunning(ref bool wasRunning);
+        partial void OnUpdateRuntimeProfileLocked(ResolvedProfile profile, IGameIntegration? nextIntegration);
+        partial void OnStartLocked(ResolvedProfile profile, IGameIntegration? activeIntegration);
+        partial void StartRuntimeExtensions(CancellationToken token);
+        partial void StopRuntimeExtensions(string reason);
+        partial void OnStopBeforeUnlock();
+        partial void OnStopLocked();
+        partial void OnStopAfterOutput();
+        partial void OnRaiseFaultBeforeNeutralize();
+        partial void ProcessTickExtended(double dtSeconds, ref bool handled, ref TickOutput output);
+        partial void BuildCustomSnapshot(bool isRunning, bool isLocked, double wheelNorm, double gasNorm, double brakeNorm, double clutchNorm, ref RuntimeSnapshot? snapshot);
+        partial void RunCustomBackgroundIteration(double actualDtSeconds, ref bool handled, ref long targetTicks);
+        partial void RunCustomOutputLoop(CancellationToken token, ref bool handled);
+        partial void ApplyOutputWriteExtensions(ResolvedProfile? profile, ref bool extraFocusSuspended, ref bool inMenu);
 
         private sealed class SingleFeederFactory : IOutputFeederFactory
         {
@@ -947,7 +1079,6 @@ namespace SimRacingHub.Application.Runtime
         private sealed class HeadlessInputSource : IInputSource
         {
             public bool IsRunning { get; private set; }
-
             public void Start() => IsRunning = true;
             public void Stop() => IsRunning = false;
             public int ConsumeDeltaX() => 0;
@@ -957,65 +1088,46 @@ namespace SimRacingHub.Application.Runtime
 
         private sealed class HeadlessPrecisionTimer : IPrecisionTimer
         {
-            public void BeginPeriod(uint periodMs)
-            {
-            }
-
-            public void EndPeriod(uint periodMs)
-            {
-            }
-
+            public void BeginPeriod(uint periodMs) { }
+            public void EndPeriod(uint periodMs) { }
             public IPrecisionWaiter CreateWaiter() => new HeadlessPrecisionWaiter();
+
             private sealed class HeadlessPrecisionWaiter : IPrecisionWaiter
             {
                 public bool Wait(double seconds)
                 {
-                    if (seconds > 0)
-                        Thread.Sleep(Math.Max(1, (int)(seconds * 1000)));
+                    if (seconds > 0) Thread.Sleep(Math.Max(1, (int)(seconds * 1000)));
                     return true;
                 }
-
-                public void Dispose()
-                {
-                }
+                public void Dispose() { }
             }
         }
 
         private sealed class HeadlessCursorLockService : ICursorLockService
         {
             public bool IsCursorLocked { get; private set; }
-
             public void LockCursorAtCurrentPosition() => IsCursorLocked = true;
             public void UnlockCursor() => IsCursorLocked = false;
-            public void ReapplyLock()
-            {
-            }
-
+            public void ReapplyLock() { }
             public void Dispose() => IsCursorLocked = false;
         }
 
         private sealed class HeadlessOutputFeederFactory : IOutputFeederFactory
         {
             public IOutputFeeder CreateFeeder(OutputDeviceMode mode) => new HeadlessOutputFeeder();
+
             private sealed class HeadlessOutputFeeder : IOutputFeeder
             {
                 public string Name => "HeadlessFeeder";
                 public bool IsConnected => true;
                 public int ConsecutiveFailures => 0;
                 public Exception? LastError => null;
-
                 public bool Acquire() => true;
-                public void Release()
-                {
-                }
-
+                public void Release() { }
                 public bool UpdateAxesAndButtons(int steer, int gas, int brake, bool shiftDown, bool shiftUp) => true;
                 public bool TryReacquire() => true;
-                public void Dispose()
-                {
-                }
+                public void Dispose() { }
             }
         }
-
     }
 }

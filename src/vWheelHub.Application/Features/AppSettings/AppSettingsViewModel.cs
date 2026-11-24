@@ -15,6 +15,9 @@ using SimRacingHub.Services.Games;
 
 namespace SimRacingHub.Application.Features.AppSettings
 {
+    /// <summary>
+    /// Static collection of authoritative external links and documentation references.
+    /// </summary>
     public static class AppSettingsUrls
     {
         public const string GitHubRepoUrl = "https://github.com/Barden-dev/vWheel-Hub";
@@ -24,6 +27,9 @@ namespace SimRacingHub.Application.Features.AppSettings
         public const string BoostyUrl = "https://boosty.to/barden_dev";
     }
 
+    /// <summary>
+    /// ViewModel for application-level settings, update banner, and external documentation/community links.
+    /// </summary>
     public partial class AppSettingsViewModel : ViewModelBase, IDisposable
     {
         private readonly IAppStorage _appStorage;
@@ -34,8 +40,21 @@ namespace SimRacingHub.Application.Features.AppSettings
         private readonly IPlatformCapabilities _platformCapabilities;
         private readonly IUiDispatcher? _uiDispatcher;
         private readonly IInputCompatibilityService? _inputCompatibility;
+
         private SimRacingHub.Core.AppSettings _appSettings;
         private bool _isDisposed;
+
+        private static readonly IReadOnlyList<string> DefaultSupportedGames = new[]
+        {
+            "LMU",
+            "Assetto Corsa",
+            "Assetto Corsa Competizione",
+            "Assetto Corsa Evo",
+            "Automobilista 2",
+            "BeamNG.drive",
+            "WRC Generations"
+        };
+
         #region Update Status Compatibility API
 
         public UpdateStatusViewModel Updates { get; }
@@ -55,7 +74,9 @@ namespace SimRacingHub.Application.Features.AppSettings
         private void ChildSettingsChanging(object? sender, System.ComponentModel.PropertyChangingEventArgs e) => OnPropertyChanging(e);
 
         #endregion
-#region Dependency Properties
+
+        #region Dependency Properties
+
         public IAppStorage AppStorage => _appStorage;
         public IAppMetadata AppMetadata => _appMetadata;
         public ILocalizationManager LocalizationManager => _localizationManager;
@@ -63,8 +84,11 @@ namespace SimRacingHub.Application.Features.AppSettings
         public IUserDialogService DialogService => _dialogService;
         public IPlatformCapabilities PlatformCapabilities => _platformCapabilities;
         public IUiDispatcher? UiDispatcher => _uiDispatcher;
-#endregion
-#region Version & Metadata Properties
+
+        #endregion
+
+        #region Version & Metadata Properties
+
         public string Version => _appMetadata.Version;
         public string CurrentVersion => _appMetadata.Version;
         public string AppVersion => _appMetadata.Version;
@@ -73,8 +97,10 @@ namespace SimRacingHub.Application.Features.AppSettings
         public string Copyright => _appMetadata.Copyright;
         public string FullVersionString => $"{_appMetadata.ApplicationName} v{_appMetadata.Version} ({_appMetadata.Edition})";
 
-#endregion
-#region General App Settings
+        #endregion
+
+        #region General App Settings
+
         // Legacy property name; this controls the hub on application launch, never OS login.
         public bool AutoStartWithWindows
         {
@@ -83,15 +109,7 @@ namespace SimRacingHub.Application.Features.AppSettings
             {
                 if (_appSettings.AutoStartHub != value)
                 {
-                    var latest = SimRacingHub.Core.AppSettings.Load(_appStorage.SettingsFilePath);
-                _appSettings.WelcomeVersionSeen = latest.WelcomeVersionSeen;
-                _appSettings.WindowsSelectedMousePath = latest.WindowsSelectedMousePath;
-                _appSettings.WindowsSelectedKeyboardPath = latest.WindowsSelectedKeyboardPath;
-                _appSettings.LinuxSelectedMousePath = latest.LinuxSelectedMousePath;
-                _appSettings.LinuxSelectedKeyboardPath = latest.LinuxSelectedKeyboardPath;
-                _appSettings.LinuxSelectedMouseIdentity = latest.LinuxSelectedMouseIdentity;
-                _appSettings.LinuxSelectedKeyboardIdentity = latest.LinuxSelectedKeyboardIdentity;
-                _appSettings.AutoStartHub = value;
+                    _appSettings.AutoStartHub = value;
                     SaveSettings();
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(AutoStartHub));
@@ -99,7 +117,11 @@ namespace SimRacingHub.Application.Features.AppSettings
             }
         }
 
-        public bool AutoStartHub { get => AutoStartWithWindows; set => AutoStartWithWindows = value; }
+        public bool AutoStartHub
+        {
+            get => AutoStartWithWindows;
+            set => AutoStartWithWindows = value;
+        }
 
         public bool StartMinimized
         {
@@ -137,6 +159,20 @@ namespace SimRacingHub.Application.Features.AppSettings
             }
         }
 
+        public bool SupportsAutomaticInput => _platformCapabilities.SupportsWindowsDriverTools;
+
+        public bool AutomaticInputEnabled
+        {
+            get => _appSettings.AutomaticInputEnabled;
+            set
+            {
+                if (_appSettings.AutomaticInputEnabled == value) return;
+                _appSettings.AutomaticInputEnabled = value;
+                SaveSettings();
+                OnPropertyChanged();
+            }
+        }
+
         public bool MouseLockSoundsEnabled
         {
             get => _appSettings.MouseLockSoundsEnabled;
@@ -165,16 +201,24 @@ namespace SimRacingHub.Application.Features.AppSettings
             }
         }
 
-        public bool AutoDetectOnStartup { get => AutoDetectGame; set => AutoDetectGame = value; }
+        public bool AutoDetectOnStartup
+        {
+            get => AutoDetectGame;
+            set => AutoDetectGame = value;
+        }
 
-#endregion
-#region Language Selection
+        #endregion
+
+        #region Language Selection
+
         public string SelectedLanguage
         {
             get => _localizationManager.CurrentCultureCode;
             set
             {
-                if (!string.IsNullOrWhiteSpace(value) && !string.Equals(_localizationManager.CurrentCultureCode, value, StringComparison.OrdinalIgnoreCase) && !string.Equals(_localizationManager.CurrentLanguageCode, value, StringComparison.OrdinalIgnoreCase))
+                if (!string.IsNullOrWhiteSpace(value) &&
+                    !string.Equals(_localizationManager.CurrentCultureCode, value, StringComparison.OrdinalIgnoreCase) &&
+                    !string.Equals(_localizationManager.CurrentLanguageCode, value, StringComparison.OrdinalIgnoreCase))
                 {
                     _localizationManager.SetLanguage(value, saveToSettings: false);
                     SaveSettings();
@@ -203,26 +247,58 @@ namespace SimRacingHub.Application.Features.AppSettings
 
         public IReadOnlyList<LanguageInfo> AvailableLanguages => _localizationManager.AvailableLanguages;
         public IReadOnlyList<string> AvailableLanguageCodes => AvailableLanguages.Select(l => l.DisplayCode).ToArray();
-        public string CacheDirectory => _appStorage.CacheDirectory;
-#endregion
-#region Game Setup Properties
-        public IReadOnlyList<string> SupportedGames { get; } = new[]
-        {
-            "LMU",
-            "Assetto Corsa",
-            "Assetto Corsa Competizione",
-            "Assetto Corsa Evo",
-            "Automobilista 2",
-            "BeamNG.drive",
-            "WRC Generations"
-        };
-#endregion
-#region Update Checker Inversion
-        public Func<CancellationToken, Task<UpdateCheckResult?>>? UpdateChecker { get => Updates.UpdateChecker; set => Updates.UpdateChecker = value; }
-        public string TargetReleaseUrl => AppSettingsUrls.GitHubReleasesUrl;
 
-#endregion
-        public AppSettingsViewModel(IAppStorage appStorage, IAppMetadata appMetadata, ILocalizationManager localizationManager, IExternalLauncher externalLauncher, IUserDialogService dialogService, IPlatformCapabilities platformCapabilities, IUiDispatcher? uiDispatcher = null, IInputCompatibilityService? inputCompatibility = null, IUpdateCheckService? updateCheckService = null)
+        public string CacheDirectory
+        {
+            get
+            {
+                string? custom = null;
+                ResolveCacheDirectory(ref custom);
+                return custom ?? _appStorage.CacheDirectory;
+            }
+        }
+
+        public IReadOnlyList<string> SupportedGames
+        {
+            get
+            {
+                IReadOnlyList<string>? custom = null;
+                ResolveSupportedGames(ref custom);
+                return custom ?? DefaultSupportedGames;
+            }
+        }
+
+        #endregion
+
+        #region Update Checker Inversion
+
+        /// <summary>
+        /// Optional delegate to execute or mock update check operations without touching the live network.
+        /// </summary>
+        public Func<CancellationToken, Task<UpdateCheckResult?>>? UpdateChecker { get => Updates.UpdateChecker; set => Updates.UpdateChecker = value; }
+
+        public string TargetReleaseUrl
+        {
+            get
+            {
+                string url = AppSettingsUrls.GitHubReleasesUrl;
+                ResolveTargetReleaseUrl(ref url);
+                return url;
+            }
+        }
+
+        #endregion
+
+        public AppSettingsViewModel(
+            IAppStorage appStorage,
+            IAppMetadata appMetadata,
+            ILocalizationManager localizationManager,
+            IExternalLauncher externalLauncher,
+            IUserDialogService dialogService,
+            IPlatformCapabilities platformCapabilities,
+            IUiDispatcher? uiDispatcher = null,
+            IInputCompatibilityService? inputCompatibility = null,
+            IUpdateCheckService? updateCheckService = null)
         {
             _appStorage = appStorage ?? throw new ArgumentNullException(nameof(appStorage));
             _appMetadata = appMetadata ?? throw new ArgumentNullException(nameof(appMetadata));
@@ -232,15 +308,20 @@ namespace SimRacingHub.Application.Features.AppSettings
             _inputCompatibility = inputCompatibility;
             _platformCapabilities = platformCapabilities ?? throw new ArgumentNullException(nameof(platformCapabilities));
             _uiDispatcher = uiDispatcher;
+            bool isProUpdateChannel = false;
+            ResolveUpdateChannel(ref isProUpdateChannel);
             Updates = new UpdateStatusViewModel(_appMetadata, _localizationManager, _externalLauncher, () => TargetReleaseUrl,
-                updateCheckService ?? new UpdateCheckService());
+                updateCheckService ?? new UpdateCheckService(pro: isProUpdateChannel));
             Updates.PropertyChanging += ChildSettingsChanging;
             Updates.PropertyChanged += UpdatesChanged;
+
             _appSettings = SimRacingHub.Core.AppSettings.Load(_appStorage.SettingsFilePath);
+
             _localizationManager.LanguageChanged += OnLanguageChanged;
         }
 
-#region Language Methods & Commands
+        #region Language Methods & Commands
+
         [RelayCommand]
         public void SetLanguage(string? cultureOrDisplayCode)
         {
@@ -269,6 +350,7 @@ namespace SimRacingHub.Application.Features.AppSettings
                 OnPropertyChanged(nameof(CurrentLanguage));
                 OnPropertyChanged(nameof(SelectedLanguageInfo));
                 OnPropertyChanged(nameof(InputCompatibilityStatusText));
+                OnLanguageChangedExtensions();
             }
 
             if (_uiDispatcher != null && !_uiDispatcher.CheckAccess())
@@ -281,8 +363,10 @@ namespace SimRacingHub.Application.Features.AppSettings
             }
         }
 
-#endregion
-#region App Settings Persistence
+        #endregion
+
+        #region App Settings Persistence
+
         public bool HasSeenWelcome => _appSettings.WelcomeVersionSeen >= 1;
 
         public void DismissWelcome()
@@ -325,6 +409,7 @@ namespace SimRacingHub.Application.Features.AppSettings
             OnPropertyChanged(nameof(MinimizeToTray));
             OnPropertyChanged(nameof(CloseToTray));
             OnPropertyChanged(nameof(MouseLockSoundsEnabled));
+            OnPropertyChanged(nameof(AutomaticInputEnabled));
             OnPropertyChanged(nameof(AutoStartWithWindows));
             OnPropertyChanged(nameof(AutoStartHub));
             OnPropertyChanged(nameof(AutoDetectGame));
@@ -334,29 +419,50 @@ namespace SimRacingHub.Application.Features.AppSettings
             OnPropertyChanged(nameof(CurrentLanguage));
         }
 
-#endregion
-#region Update Banner Methods & Commands
+        #endregion
+
+        #region External Resource Links Commands
 
         [RelayCommand]
-        public async Task OpenCacheFolderAsync(CancellationToken ct = default) => await _externalLauncher.OpenDirectoryAsync(CacheDirectory, ct);
-#endregion
-#region External Resource Links Commands
+        public Task OpenCacheFolderAsync(CancellationToken ct = default)
+        {
+            Task? custom = null;
+            TryOpenCacheFolderAsync(ct, ref custom);
+            return custom ?? _externalLauncher.OpenDirectoryAsync(CacheDirectory, ct);
+        }
+
         [RelayCommand]
-        public async Task OpenGitHubAsync(CancellationToken ct = default) => await _externalLauncher.OpenUriAsync(new Uri(AppSettingsUrls.GitHubRepoUrl), ct);
+        public async Task OpenGitHubAsync(CancellationToken ct = default) =>
+            await _externalLauncher.OpenUriAsync(new Uri(AppSettingsUrls.GitHubRepoUrl), ct);
+
         [RelayCommand]
-        public async Task OpenDiscordAsync(CancellationToken ct = default) => await _externalLauncher.OpenUriAsync(new Uri(AppSettingsUrls.DiscordUrl), ct);
+        public async Task OpenDiscordAsync(CancellationToken ct = default) =>
+            await _externalLauncher.OpenUriAsync(new Uri(AppSettingsUrls.DiscordUrl), ct);
+
         [RelayCommand]
-        public async Task OpenDocumentationAsync(CancellationToken ct = default) => await _externalLauncher.OpenUriAsync(new Uri(AppSettingsUrls.DocumentationUrl), ct);
+        public async Task OpenDocumentationAsync(CancellationToken ct = default) =>
+            await _externalLauncher.OpenUriAsync(new Uri(AppSettingsUrls.DocumentationUrl), ct);
+
         [RelayCommand]
-        public async Task OpenWikiAsync(CancellationToken ct = default) => await OpenDocumentationAsync(ct);
+        public async Task OpenWikiAsync(CancellationToken ct = default) =>
+            await OpenDocumentationAsync(ct);
+
         [RelayCommand]
-        public async Task OpenBoostyAsync(CancellationToken ct = default) => await _externalLauncher.OpenUriAsync(new Uri(AppSettingsUrls.BoostyUrl), ct);
+        public async Task OpenBoostyAsync(CancellationToken ct = default) =>
+            await _externalLauncher.OpenUriAsync(new Uri(AppSettingsUrls.BoostyUrl), ct);
+
         [RelayCommand]
-        public async Task OpenReleasesAsync(CancellationToken ct = default) => await _externalLauncher.OpenUriAsync(new Uri(AppSettingsUrls.GitHubReleasesUrl), ct);
+        public async Task OpenReleasesAsync(CancellationToken ct = default) =>
+            await _externalLauncher.OpenUriAsync(new Uri(AppSettingsUrls.GitHubReleasesUrl), ct);
+
         [RelayCommand]
-        public async Task OpenProfilesFolderAsync(CancellationToken ct = default) => await _externalLauncher.OpenDirectoryAsync(_appStorage.ProfilesDirectory, ct);
+        public async Task OpenProfilesFolderAsync(CancellationToken ct = default) =>
+            await _externalLauncher.OpenDirectoryAsync(_appStorage.ProfilesDirectory, ct);
+
         [RelayCommand]
-        public async Task OpenLogsFolderAsync(CancellationToken ct = default) => await _externalLauncher.OpenDirectoryAsync(_appStorage.LogsDirectory, ct);
+        public async Task OpenLogsFolderAsync(CancellationToken ct = default) =>
+            await _externalLauncher.OpenDirectoryAsync(_appStorage.LogsDirectory, ct);
+
         [RelayCommand]
         public async Task OpenSettingsFolderAsync(CancellationToken ct = default)
         {
@@ -367,14 +473,17 @@ namespace SimRacingHub.Application.Features.AppSettings
             }
         }
 
-#endregion
-#region Input Compatibility
+        #endregion
+
+        #region Input Compatibility
+
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(InputCompatibilityStatusText))]
         [NotifyPropertyChangedFor(nameof(CanApplyInputCompatibility))]
         private bool _isCheckingInputCompatibility;
         private InputCompatibilityStatus? _inputStatus;
         private bool _inputFailed;
+
         public bool SupportsInputCompatibility => _inputCompatibility != null && _platformCapabilities.SupportsWindowsDriverTools;
         public bool CanApplyInputCompatibility => SupportsInputCompatibility && !IsCheckingInputCompatibility && _inputStatus is { IsAvailable: true, IsApplied: false };
         public string InputCompatibilityStatusText => _localizationManager.GetString(_inputFailed ? "InputFix_Failed"
@@ -391,7 +500,8 @@ namespace SimRacingHub.Application.Features.AppSettings
             finally
             {
                 IsCheckingInputCompatibility = false;
-                OnPropertyChanged(nameof(InputCompatibilityStatusText)); OnPropertyChanged(nameof(CanApplyInputCompatibility));
+                OnPropertyChanged(nameof(InputCompatibilityStatusText));
+                OnPropertyChanged(nameof(CanApplyInputCompatibility));
             }
         }
 
@@ -409,20 +519,34 @@ namespace SimRacingHub.Application.Features.AppSettings
             finally
             {
                 IsCheckingInputCompatibility = false;
-                OnPropertyChanged(nameof(InputCompatibilityStatusText)); OnPropertyChanged(nameof(CanApplyInputCompatibility));
+                OnPropertyChanged(nameof(InputCompatibilityStatusText));
+                OnPropertyChanged(nameof(CanApplyInputCompatibility));
             }
         }
-#endregion
-#region Disposal
+
+        #endregion
+
+        partial void ResolveCacheDirectory(ref string? directory);
+        partial void ResolveSupportedGames(ref IReadOnlyList<string>? games);
+        partial void ResolveTargetReleaseUrl(ref string url);
+        partial void ResolveUpdateChannel(ref bool isPro);
+        partial void TryOpenCacheFolderAsync(CancellationToken ct, ref Task? task);
+        partial void OnLanguageChangedExtensions();
+        partial void OnDisposeExtensions();
+
+        #region Disposal
+
         public void Dispose()
         {
-            if (_isDisposed)
-                return;
+            if (_isDisposed) return;
             _isDisposed = true;
+
             _localizationManager.LanguageChanged -= OnLanguageChanged;
             Updates.PropertyChanging -= ChildSettingsChanging;
             Updates.PropertyChanged -= UpdatesChanged;
+            OnDisposeExtensions();
         }
-#endregion
+
+        #endregion
     }
 }

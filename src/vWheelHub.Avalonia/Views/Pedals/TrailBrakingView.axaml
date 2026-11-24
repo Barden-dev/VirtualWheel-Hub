@@ -11,6 +11,7 @@
                 <TextBlock Name="TitleLabel" Text="{Binding PageTitle}" FontSize="24" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" IsVisible="False"/>
                 <TextBlock Name="DescriptionLabel" Text="{Binding Description}" FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
             </StackPanel>
+            <TextBlock Name="WarningLabel" Text="{Binding WarningText}" IsVisible="{Binding HasWarning}" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
             <!-- SECTION: TRAIL BRAKING CONTROLS -->
             <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="6" Padding="16">
                 <StackPanel Spacing="16">
@@ -54,7 +55,7 @@
                                         <TextBlock Text="{DynamicResource Ui_a665858de703}" FontWeight="SemiBold" FontSize="12" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextWrapping="Wrap"/>
                                         <TextBlock Text="{DynamicResource Ui_6363d1b49d13}" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
                                     </StackPanel>
-                                    <NumericUpDown Grid.Column="1" Name="TrailBrakingReleaseRateBox" Value="{Binding EffectiveTrailBrakingReleaseRate, Converter={StaticResource NumericConv}, Mode=TwoWay}" Minimum="0.002" Maximum="65536" Increment="0.1" FormatString="{DynamicResource Ui_NumberSecondsFormat}" Width="150" Margin="12,0,8,0" VerticalAlignment="Center" FontSize="13" MinHeight="32"/>
+                                    <NumericUpDown Grid.Column="1" Name="TrailBrakingReleaseRateBox" Value="{Binding EffectiveTrailBrakingReleaseRate, Converter={StaticResource NumericConv}, Mode=TwoWay}" Minimum="0.002" Maximum="65536" Increment="0.1" Classes="seconds" Width="150" Margin="12,0,8,0" VerticalAlignment="Center" FontSize="13" MinHeight="32"/>
                                     <Button Name="ResetTbDecayButton" Grid.Column="2" Classes="setting-revert" controls:SettingRevert.Session="{Binding ProfileSession}" controls:SettingRevert.PropertyName="TbDecay" Content="{DynamicResource Ui_RestoreSetting}" ToolTip.Tip="{DynamicResource Ui_RestoreSettingHint}"/>
                                 </Grid>
                                 <TextBlock Name="HubRateHintLabel" Text="{Binding HubRateHint}" FontSize="11" Foreground="{DynamicResource TextFillColorTertiaryBrush}" TextWrapping="Wrap"/>

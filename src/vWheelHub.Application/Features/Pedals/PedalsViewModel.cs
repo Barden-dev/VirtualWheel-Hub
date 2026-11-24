@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -12,13 +14,14 @@ namespace SimRacingHub.Application.Features.Pedals;
 public partial class PedalsViewModel : ViewModelBase, IDisposable
 {
     private readonly ProfileSession _profileSession;
-    private readonly ProfileSettingsViewModel[] _sections;
+    private readonly List<ProfileSettingsViewModel> _sections = new();
     private bool _disposed;
     public ProfileSession ProfileSession => _profileSession;
     public Profile CurrentProfile => _profileSession.CurrentProfile;
     public ResolvedProfile ResolvedProfile => _profileSession.ResolvedProfile;
     public ThrottleSettingsViewModel Throttle { get; }
     public BrakeSettingsViewModel Brake { get; }
+    public ClutchSettingsViewModel Clutch { get; }
     public PedalOutputSettingsViewModel Output { get; }
 
     public PedalsViewModel(ProfileSession profileSession, ILocalizationManager localizationManager)
@@ -27,19 +30,27 @@ public partial class PedalsViewModel : ViewModelBase, IDisposable
         ArgumentNullException.ThrowIfNull(localizationManager);
         Throttle = new ThrottleSettingsViewModel(profileSession);
         Brake = new BrakeSettingsViewModel(profileSession);
+        Clutch = new ClutchSettingsViewModel(profileSession);
         Output = new PedalOutputSettingsViewModel(profileSession);
-        _sections = new ProfileSettingsViewModel[] { Throttle, Brake, Output };
-        foreach (var section in _sections)
-        {
-            section.PropertyChanged += SectionChanged;
-            section.PropertyChanging += SectionChanging;
-        }
+        RegisterSection(Throttle);
+        RegisterSection(Brake);
+        RegisterSection(Clutch);
+        RegisterSection(Output);
+    }
+
+    private void RegisterSection(ProfileSettingsViewModel section)
+    {
+        _sections.Add(section);
+        section.PropertyChanged += SectionChanged;
+        section.PropertyChanging += SectionChanging;
     }
 
     public int EffectiveOutGasMin => Output.EffectiveOutGasMin;
     public int EffectiveOutGasMax => Output.EffectiveOutGasMax;
     public int EffectiveOutBrakeMin => Output.EffectiveOutBrakeMin;
     public int EffectiveOutBrakeMax => Output.EffectiveOutBrakeMax;
+    public int EffectiveOutClutchMin => Output.EffectiveOutClutchMin;
+    public int EffectiveOutClutchMax => Output.EffectiveOutClutchMax;
     public bool? CombinedPedals { get => Output.CombinedPedals; set => Output.CombinedPedals = value; }
     public bool EffectiveCombinedPedals { get => Output.EffectiveCombinedPedals; set => Output.EffectiveCombinedPedals = value; }
     public bool IsCombinedPedalsOverridden => Output.IsCombinedPedalsOverridden;
@@ -111,12 +122,41 @@ public partial class PedalsViewModel : ViewModelBase, IDisposable
     public double? BrakeDecaySeconds { get => Brake.BrakeDecaySeconds; set => Brake.BrakeDecaySeconds = value; }
     public double EffectiveBrakeDecaySeconds => Brake.EffectiveBrakeDecaySeconds;
     public bool IsBrakeDecayOverridden => Brake.IsBrakeDecayOverridden;
+    public bool? InvertClutch { get => Clutch.InvertClutch; set => Clutch.InvertClutch = value; }
+    public bool EffectiveInvertClutch { get => Clutch.EffectiveInvertClutch; set => Clutch.EffectiveInvertClutch = value; }
+    public bool IsInvertClutchOverridden => Clutch.IsInvertClutchOverridden;
+    public double? ClutchLinearity { get => Clutch.ClutchLinearity; set => Clutch.ClutchLinearity = value; }
+    public double? ClutchGamma { get => Clutch.ClutchGamma; set => Clutch.ClutchGamma = value; }
+    public double EffectiveClutchLinearity { get => Clutch.EffectiveClutchLinearity; set => Clutch.EffectiveClutchLinearity = value; }
+    public double EffectiveClutchGamma => Clutch.EffectiveClutchGamma;
+    public bool IsClutchLinearityOverridden => Clutch.IsClutchLinearityOverridden;
+    public bool IsClutchGammaOverridden => Clutch.IsClutchGammaOverridden;
+    public double? ClutchDeadzone { get => Clutch.ClutchDeadzone; set => Clutch.ClutchDeadzone = value; }
+    public double? ClutchThreshold { get => Clutch.ClutchThreshold; set => Clutch.ClutchThreshold = value; }
+    public double EffectiveClutchDeadzone => Clutch.EffectiveClutchDeadzone;
+    public double EffectiveClutchThreshold => Clutch.EffectiveClutchThreshold;
+    public bool IsClutchDeadzoneOverridden => Clutch.IsClutchDeadzoneOverridden;
+    public bool IsClutchThresholdOverridden => Clutch.IsClutchThresholdOverridden;
+    public double? ClutchAttackFastSeconds { get => Clutch.ClutchAttackFastSeconds; set => Clutch.ClutchAttackFastSeconds = value; }
+    public double EffectiveClutchAttackFastSeconds => Clutch.EffectiveClutchAttackFastSeconds;
+    public bool IsClutchAttackFastOverridden => Clutch.IsClutchAttackFastOverridden;
+    public double? ClutchAttackSlowSeconds { get => Clutch.ClutchAttackSlowSeconds; set => Clutch.ClutchAttackSlowSeconds = value; }
+    public double EffectiveClutchAttackSlowSeconds => Clutch.EffectiveClutchAttackSlowSeconds;
+    public bool IsClutchAttackSlowOverridden => Clutch.IsClutchAttackSlowOverridden;
+    public double? ClutchEstimatedFullPressSeconds => Clutch.ClutchEstimatedFullPressSeconds;
+    public double EffectiveClutchEstimatedFullPressSeconds => Clutch.EffectiveClutchEstimatedFullPressSeconds;
+    public double? ClutchDecaySeconds { get => Clutch.ClutchDecaySeconds; set => Clutch.ClutchDecaySeconds = value; }
+    public double EffectiveClutchDecaySeconds => Clutch.EffectiveClutchDecaySeconds;
+    public bool IsClutchDecayOverridden => Clutch.IsClutchDecayOverridden;
     public double ThrottleValue { get => Output.ThrottleValue; set => Output.ThrottleValue = value; }
     public double ThrottleInput { get => Output.ThrottleInput; set => Output.ThrottleInput = value; }
     public int ThrottleRaw { get => Output.ThrottleRaw; set => Output.ThrottleRaw = value; }
     public double BrakeValue { get => Output.BrakeValue; set => Output.BrakeValue = value; }
     public double BrakeInput { get => Output.BrakeInput; set => Output.BrakeInput = value; }
     public int BrakeRaw { get => Output.BrakeRaw; set => Output.BrakeRaw = value; }
+    public double ClutchValue { get => Output.ClutchValue; set => Output.ClutchValue = value; }
+    public double ClutchInput { get => Output.ClutchInput; set => Output.ClutchInput = value; }
+    public int ClutchRaw { get => Output.ClutchRaw; set => Output.ClutchRaw = value; }
     public void ClearCombinedPedalsOverride() => Output.ClearCombinedPedalsOverride();
     public IRelayCommand ClearCombinedPedalsOverrideCommand => Output.ClearCombinedPedalsOverrideCommand;
     public void ClearInvertThrottleOverride() => Throttle.ClearInvertThrottleOverride();
@@ -161,6 +201,22 @@ public partial class PedalsViewModel : ViewModelBase, IDisposable
     public IRelayCommand ClearBrakeAttackSlowOverrideCommand => Brake.ClearBrakeAttackSlowOverrideCommand;
     public void ClearBrakeDecayOverride() => Brake.ClearBrakeDecayOverride();
     public IRelayCommand ClearBrakeDecayOverrideCommand => Brake.ClearBrakeDecayOverrideCommand;
+    public void ClearInvertClutchOverride() => Clutch.ClearInvertClutchOverride();
+    public IRelayCommand ClearInvertClutchOverrideCommand => Clutch.ClearInvertClutchOverrideCommand;
+    public void ClearClutchLinearityOverride() => Clutch.ClearClutchLinearityOverride();
+    public IRelayCommand ClearClutchLinearityOverrideCommand => Clutch.ClearClutchLinearityOverrideCommand;
+    public void ClearClutchGammaOverride() => Clutch.ClearClutchGammaOverride();
+    public IRelayCommand ClearClutchGammaOverrideCommand => Clutch.ClearClutchGammaOverrideCommand;
+    public void ClearClutchDeadzoneOverride() => Clutch.ClearClutchDeadzoneOverride();
+    public IRelayCommand ClearClutchDeadzoneOverrideCommand => Clutch.ClearClutchDeadzoneOverrideCommand;
+    public void ClearClutchThresholdOverride() => Clutch.ClearClutchThresholdOverride();
+    public IRelayCommand ClearClutchThresholdOverrideCommand => Clutch.ClearClutchThresholdOverrideCommand;
+    public void ClearClutchAttackFastOverride() => Clutch.ClearClutchAttackFastOverride();
+    public IRelayCommand ClearClutchAttackFastOverrideCommand => Clutch.ClearClutchAttackFastOverrideCommand;
+    public void ClearClutchAttackSlowOverride() => Clutch.ClearClutchAttackSlowOverride();
+    public IRelayCommand ClearClutchAttackSlowOverrideCommand => Clutch.ClearClutchAttackSlowOverrideCommand;
+    public void ClearClutchDecayOverride() => Clutch.ClearClutchDecayOverride();
+    public IRelayCommand ClearClutchDecayOverrideCommand => Clutch.ClearClutchDecayOverrideCommand;
 
     [RelayCommand]
     public void ClearOverride(string? propertyName)
@@ -168,73 +224,115 @@ public partial class PedalsViewModel : ViewModelBase, IDisposable
         TryClearOverride(propertyName);
     }
 
-
     public bool TryClearOverride(string? propertyName)
     {
-        if (string.IsNullOrEmpty(propertyName))
-            return false;
+        if (string.IsNullOrEmpty(propertyName)) return false;
+
         switch (propertyName)
         {
             case nameof(CombinedPedals):
                 ClearCombinedPedalsOverride();
                 return true;
+
             case nameof(InvertThrottle):
             case nameof(InvertGas):
                 ClearInvertThrottleOverride();
                 return true;
+
             case nameof(InvertBrake):
                 ClearInvertBrakeOverride();
                 return true;
+
+            case nameof(InvertClutch):
+                ClearInvertClutchOverride();
+                return true;
+
             case nameof(ThrottleLinearity):
             case nameof(GasGamma):
                 ClearThrottleLinearityOverride();
                 return true;
+
             case nameof(BrakeLinearity):
             case nameof(BrakeGamma):
                 ClearBrakeLinearityOverride();
                 return true;
+
+            case nameof(ClutchLinearity):
+            case nameof(ClutchGamma):
+                ClearClutchLinearityOverride();
+                return true;
+
             case nameof(ThrottleDeadzone):
             case nameof(GasThreshold):
                 ClearThrottleDeadzoneOverride();
                 return true;
+
             case nameof(BrakeDeadzone):
             case nameof(BrakeThreshold):
                 ClearBrakeDeadzoneOverride();
                 return true;
+
+            case nameof(ClutchDeadzone):
+            case nameof(ClutchThreshold):
+                ClearClutchDeadzoneOverride();
+                return true;
+
             case nameof(ThrottleTurbo):
             case nameof(GasAttackTurboSeconds):
             case nameof(GasAttackTurbo):
                 ClearThrottleTurboOverride();
                 return true;
+
             case nameof(BrakeTurbo):
                 ClearBrakeTurboOverride();
                 return true;
+
             case nameof(GasAttackFastSeconds):
                 ClearGasAttackFastOverride();
                 return true;
+
             case nameof(GasAttackSlowSeconds):
                 ClearGasAttackSlowOverride();
                 return true;
+
             case nameof(GasDecaySeconds):
                 ClearGasDecayOverride();
                 return true;
+
             case nameof(GasInstantCutSeconds):
                 ClearGasInstantCutOverride();
                 return true;
+
             case nameof(BrakeAttackFastSeconds):
                 ClearBrakeAttackFastOverride();
                 return true;
+
             case nameof(BrakeAttackSlowSeconds):
                 ClearBrakeAttackSlowOverride();
                 return true;
+
             case nameof(BrakeDecaySeconds):
                 ClearBrakeDecayOverride();
                 return true;
+
+            case nameof(ClutchAttackFastSeconds):
+                ClearClutchAttackFastOverride();
+                return true;
+
+            case nameof(ClutchAttackSlowSeconds):
+                ClearClutchAttackSlowOverride();
+                return true;
+
+            case nameof(ClutchDecaySeconds):
+                ClearClutchDecayOverride();
+                return true;
+
             default:
-                return false;
+                bool handled = false;
+                TryClearExtraOverride(propertyName, ref handled);
+                return handled;
         }
     }
-
 
     [RelayCommand]
     public void ClearAllPedalOverrides()
@@ -243,10 +341,13 @@ public partial class PedalsViewModel : ViewModelBase, IDisposable
         ClearCombinedPedalsOverride();
         ClearInvertThrottleOverride();
         ClearInvertBrakeOverride();
+        ClearInvertClutchOverride();
         ClearThrottleLinearityOverride();
         ClearBrakeLinearityOverride();
+        ClearClutchLinearityOverride();
         ClearThrottleDeadzoneOverride();
         ClearBrakeDeadzoneOverride();
+        ClearClutchDeadzoneOverride();
         ClearThrottleTurboOverride();
         ClearBrakeTurboOverride();
         ClearGasAttackFastOverride();
@@ -256,20 +357,11 @@ public partial class PedalsViewModel : ViewModelBase, IDisposable
         ClearBrakeAttackFastOverride();
         ClearBrakeAttackSlowOverride();
         ClearBrakeDecayOverride();
-        ;
-        ;
-        ;
-        ;
-        ;
-        ;
-        ;
-        ;
-        ;
-        ;
-        ;
-        ;
+        ClearClutchAttackFastOverride();
+        ClearClutchAttackSlowOverride();
+        ClearClutchDecayOverride();
+        ClearAllExtraPedalOverrides();
     }
-
 
     [RelayCommand]
     public void ResetPedals()
@@ -282,10 +374,18 @@ public partial class PedalsViewModel : ViewModelBase, IDisposable
     {
         Throttle.NotifyAllPedalProperties();
         Brake.NotifyAllPedalProperties();
+        Clutch.NotifyAllPedalProperties();
         Output.NotifyAllPedalProperties();
+        NotifyExtraPedalProperties();
     }
+
+    partial void TryClearExtraOverride(string propertyName, ref bool handled);
+    partial void ClearAllExtraPedalOverrides();
+    partial void NotifyExtraPedalProperties();
+
     private void SectionChanged(object? sender, PropertyChangedEventArgs e) => OnPropertyChanged(e);
     private void SectionChanging(object? sender, PropertyChangingEventArgs e) => OnPropertyChanging(e);
+
     public void Dispose()
     {
         if (_disposed) return;

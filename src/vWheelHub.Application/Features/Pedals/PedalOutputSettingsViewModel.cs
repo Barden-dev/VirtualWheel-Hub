@@ -32,6 +32,15 @@ public partial class PedalOutputSettingsViewModel : ProfileSettingsViewModel
     [ObservableProperty]
     private int _brakeRaw;
 
+    [ObservableProperty]
+    private double _clutchValue;
+
+    [ObservableProperty]
+    private double _clutchInput;
+
+    [ObservableProperty]
+    private int _clutchRaw;
+
     public int EffectiveOutGasMin => CurrentProfile?.OutGasMin ?? ResolvedProfile?.OutGasMin ?? 0;
 
     public int EffectiveOutGasMax => CurrentProfile?.OutGasMax ?? ResolvedProfile?.OutGasMax ?? 32768;
@@ -40,12 +49,18 @@ public partial class PedalOutputSettingsViewModel : ProfileSettingsViewModel
 
     public int EffectiveOutBrakeMax => CurrentProfile?.OutBrakeMax ?? ResolvedProfile?.OutBrakeMax ?? 32768;
 
+    public int EffectiveOutClutchMin => CurrentProfile?.OutClutchMin ?? ResolvedProfile?.OutClutchMin ?? 0;
+
+    public int EffectiveOutClutchMax => CurrentProfile?.OutClutchMax ?? ResolvedProfile?.OutClutchMax ?? 32768;
+
     private void NotifyOutputAxisProperties()
     {
         OnPropertyChanged(nameof(EffectiveOutGasMin));
         OnPropertyChanged(nameof(EffectiveOutGasMax));
         OnPropertyChanged(nameof(EffectiveOutBrakeMin));
         OnPropertyChanged(nameof(EffectiveOutBrakeMax));
+        OnPropertyChanged(nameof(EffectiveOutClutchMin));
+        OnPropertyChanged(nameof(EffectiveOutClutchMax));
     }
 
     /// <summary>
@@ -87,6 +102,8 @@ public partial class PedalOutputSettingsViewModel : ProfileSettingsViewModel
             case nameof(Profile.OutGasMax):
             case nameof(Profile.OutBrakeMin):
             case nameof(Profile.OutBrakeMax):
+            case nameof(Profile.OutClutchMin):
+            case nameof(Profile.OutClutchMax):
                 NotifyOutputAxisProperties();
                 break;
         }
@@ -101,6 +118,8 @@ public partial class PedalOutputSettingsViewModel : ProfileSettingsViewModel
             case nameof(ResolvedProfile.OutGasMax):
             case nameof(ResolvedProfile.OutBrakeMin):
             case nameof(ResolvedProfile.OutBrakeMax):
+            case nameof(ResolvedProfile.OutClutchMin):
+            case nameof(ResolvedProfile.OutClutchMax):
                 NotifyOutputAxisProperties();
                 break;
         }

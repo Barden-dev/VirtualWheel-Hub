@@ -7,67 +7,23 @@ public partial class Profile : ObservableObject
 {
     public const int CurrentSchemaVersion = 2;
 
-    [ObservableProperty]
-    private string? _name;
+    [ObservableProperty] private string? _name;
 
-    [ObservableProperty]
-    private double? _mouseSensitivity;
+    [ObservableProperty] private double? _mouseSensitivity;
 
-    [ObservableProperty]
-    private int? _steeringOffset;
+    [ObservableProperty] private int? _steeringOffset;
 
-    [ObservableProperty]
-    private double? _steeringGamma;
+    [ObservableProperty] private double? _steeringGamma;
 
-    [ObservableProperty]
-    private int? _pollingRate;
+    [ObservableProperty] private int? _pollingRate;
 
     // Version 1 stored pedal coefficients as a per-iteration step. Version 2
     // stores them in units per second. This field is read only while upgrading
     // transitional profiles and is removed on the first save.
-    [ObservableProperty]
-    private int? _schemaVersion;
+    [ObservableProperty] private int? _schemaVersion;
 
     [Newtonsoft.Json.JsonProperty("PedalReferenceRate", NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
     public int? PedalReferenceRate { get; set; }
-
-    // Gas
-    [ObservableProperty]
-    private double? _gasThreshold;
-
-    [ObservableProperty]
-    private double? _gasAttackTurbo;
-
-    [ObservableProperty]
-    private double? _gasAttackFast;
-
-    [ObservableProperty]
-    private double? _gasAttackSlow;
-
-    [ObservableProperty]
-    private double? _gasDecay;
-
-    [ObservableProperty]
-    private double? _gasInstantCut;
-
-    [ObservableProperty]
-    private double? _gasGamma;
-
-    // Brake
-    [ObservableProperty]
-    private double? _brakeThreshold;
-
-    [ObservableProperty]
-    private double? _brakeAttackFast;
-
-    [ObservableProperty]
-    private double? _brakeAttackSlow;
-
-    [ObservableProperty]
-    private double? _brakeDecay;
-
-    [ObservableProperty]
-    private double? _brakeGamma;
 
     // Trail braking
     [ObservableProperty] private bool? _enableTrailBraking;
@@ -78,7 +34,42 @@ public partial class Profile : ObservableObject
 
     [ObservableProperty] private double? _tbDecay;
 
-    public const double DefaultTbDecay = 2960.0;
+    // Gas
+    [ObservableProperty] private double? _gasThreshold;
+
+    [ObservableProperty] private double? _gasAttackTurbo;
+
+    [ObservableProperty] private double? _gasAttackFast;
+
+    [ObservableProperty] private double? _gasAttackSlow;
+
+    [ObservableProperty] private double? _gasDecay;
+
+    [ObservableProperty] private double? _gasInstantCut;
+
+    [ObservableProperty] private double? _gasGamma;
+
+    // Brake
+    [ObservableProperty] private double? _brakeThreshold;
+
+    [ObservableProperty] private double? _brakeAttackFast;
+
+    [ObservableProperty] private double? _brakeAttackSlow;
+
+    [ObservableProperty] private double? _brakeDecay;
+
+    [ObservableProperty] private double? _brakeGamma;
+
+    // Clutch
+    [ObservableProperty] private double? _clutchThreshold;
+
+    [ObservableProperty] private double? _clutchAttackFast;
+
+    [ObservableProperty] private double? _clutchAttackSlow;
+
+    [ObservableProperty] private double? _clutchDecay;
+
+    [ObservableProperty] private double? _clutchGamma;
 
     private readonly System.Collections.Generic.Dictionary<string, (double Rate, double Fraction)> _savedPedalRates = new();
 
@@ -87,7 +78,6 @@ public partial class Profile : ObservableObject
     internal void SetSavedPedalRates(ResolvedProfile saved)
     {
         _savedPedalRates.Clear();
-        _savedPedalRates[nameof(TbDecay)] = (saved.TbDecay, 1);
         _savedPedalRates[nameof(GasAttackTurbo)] = (saved.GasAttackTurbo, 1);
         _savedPedalRates[nameof(GasAttackFast)] = (saved.GasAttackFast, saved.GasThreshold);
         _savedPedalRates[nameof(GasAttackSlow)] = (saved.GasAttackSlow, 1 - saved.GasThreshold);
@@ -96,6 +86,10 @@ public partial class Profile : ObservableObject
         _savedPedalRates[nameof(BrakeAttackFast)] = (saved.BrakeAttackFast, saved.BrakeThreshold);
         _savedPedalRates[nameof(BrakeAttackSlow)] = (saved.BrakeAttackSlow, 1 - saved.BrakeThreshold);
         _savedPedalRates[nameof(BrakeDecay)] = (saved.BrakeDecay, 1);
+        _savedPedalRates[nameof(ClutchAttackFast)] = (saved.ClutchAttackFast, saved.ClutchThreshold);
+        _savedPedalRates[nameof(ClutchAttackSlow)] = (saved.ClutchAttackSlow, 1 - saved.ClutchThreshold);
+        _savedPedalRates[nameof(ClutchDecay)] = (saved.ClutchDecay, 1);
+        _savedPedalRates[nameof(TbDecay)] = (saved.TbDecay, 1);
     }
 
     private double? RateFromUiSeconds(string name, double? seconds, double? fraction = 1)
@@ -112,14 +106,19 @@ public partial class Profile : ObservableObject
 
     private double? _inheritedBrakeThreshold;
 
+    private double? _inheritedClutchThreshold;
+
     private double? GasSegmentFraction => GasThreshold ?? _inheritedGasThreshold;
 
     private double? BrakeSegmentFraction => BrakeThreshold ?? _inheritedBrakeThreshold;
 
-    internal void SetInheritedPedalThresholds(double gas, double brake)
+    private double? ClutchSegmentFraction => ClutchThreshold ?? _inheritedClutchThreshold;
+
+    internal void SetInheritedPedalThresholds(double gas, double brake, double clutch = 0.90)
     {
         _inheritedGasThreshold = gas;
         _inheritedBrakeThreshold = brake;
+        _inheritedClutchThreshold = clutch;
     }
 
     [Newtonsoft.Json.JsonIgnore]
@@ -133,7 +132,11 @@ public partial class Profile : ObservableObject
     }
 
     [Newtonsoft.Json.JsonIgnore]
-    public double? GasAttackTurboSeconds { get => PedalTimingConversion.ToSeconds(GasAttackTurbo); set => GasAttackTurbo = RateFromUiSeconds(nameof(GasAttackTurbo), value); }
+    public double? GasAttackTurboSeconds
+    {
+        get => PedalTimingConversion.ToSeconds(GasAttackTurbo);
+        set => GasAttackTurbo = RateFromUiSeconds(nameof(GasAttackTurbo), value);
+    }
 
     [Newtonsoft.Json.JsonIgnore]
     public double? GasAttackFastSeconds
@@ -142,8 +145,7 @@ public partial class Profile : ObservableObject
         set
         {
             double? rate = RateFromUiSeconds(nameof(GasAttackFast), value, GasSegmentFraction);
-            if (rate.HasValue)
-                GasAttackFast = rate.Value;
+            if (rate.HasValue) GasAttackFast = rate.Value;
         }
     }
 
@@ -154,16 +156,23 @@ public partial class Profile : ObservableObject
         set
         {
             double? rate = RateFromUiSeconds(nameof(GasAttackSlow), value, GasSegmentFraction is > 0 ? 1.0 - GasSegmentFraction.Value : null);
-            if (rate.HasValue)
-                GasAttackSlow = rate.Value;
+            if (rate.HasValue) GasAttackSlow = rate.Value;
         }
     }
 
     [Newtonsoft.Json.JsonIgnore]
-    public double? GasDecaySeconds { get => PedalTimingConversion.ToSeconds(GasDecay); set => GasDecay = RateFromUiSeconds(nameof(GasDecay), value); }
+    public double? GasDecaySeconds
+    {
+        get => PedalTimingConversion.ToSeconds(GasDecay);
+        set => GasDecay = RateFromUiSeconds(nameof(GasDecay), value);
+    }
 
     [Newtonsoft.Json.JsonIgnore]
-    public double? GasInstantCutSeconds { get => PedalTimingConversion.ToSeconds(GasInstantCut); set => GasInstantCut = RateFromUiSeconds(nameof(GasInstantCut), value); }
+    public double? GasInstantCutSeconds
+    {
+        get => PedalTimingConversion.ToSeconds(GasInstantCut);
+        set => GasInstantCut = RateFromUiSeconds(nameof(GasInstantCut), value);
+    }
 
     [Newtonsoft.Json.JsonIgnore]
     public double? BrakeAttackFastSeconds
@@ -172,8 +181,7 @@ public partial class Profile : ObservableObject
         set
         {
             double? rate = RateFromUiSeconds(nameof(BrakeAttackFast), value, BrakeSegmentFraction);
-            if (rate.HasValue)
-                BrakeAttackFast = rate.Value;
+            if (rate.HasValue) BrakeAttackFast = rate.Value;
         }
     }
 
@@ -184,19 +192,62 @@ public partial class Profile : ObservableObject
         set
         {
             double? rate = RateFromUiSeconds(nameof(BrakeAttackSlow), value, BrakeSegmentFraction is > 0 ? 1.0 - BrakeSegmentFraction.Value : null);
-            if (rate.HasValue)
-                BrakeAttackSlow = rate.Value;
+            if (rate.HasValue) BrakeAttackSlow = rate.Value;
         }
     }
 
     [Newtonsoft.Json.JsonIgnore]
-    public double? BrakeDecaySeconds { get => PedalTimingConversion.ToSeconds(BrakeDecay); set => BrakeDecay = RateFromUiSeconds(nameof(BrakeDecay), value); }
+    public double? BrakeDecaySeconds
+    {
+        get => PedalTimingConversion.ToSeconds(BrakeDecay);
+        set => BrakeDecay = RateFromUiSeconds(nameof(BrakeDecay), value);
+    }
 
     [Newtonsoft.Json.JsonIgnore]
-    public double? GasEstimatedFullPressSeconds => PedalTimingConversion.SegmentDuration(GasAttackFast, GasSegmentFraction) + PedalTimingConversion.SegmentDuration(GasAttackSlow, GasSegmentFraction is > 0 ? 1.0 - GasSegmentFraction.Value : null);
+    public double? ClutchAttackFastSeconds
+    {
+        get => PedalTimingConversion.ToSegmentSeconds(ClutchAttackFast, ClutchSegmentFraction);
+        set
+        {
+            double? rate = RateFromUiSeconds(nameof(ClutchAttackFast), value, ClutchSegmentFraction);
+            if (rate.HasValue) ClutchAttackFast = rate.Value;
+        }
+    }
 
     [Newtonsoft.Json.JsonIgnore]
-    public double? BrakeEstimatedFullPressSeconds => PedalTimingConversion.SegmentDuration(BrakeAttackFast, BrakeSegmentFraction) + PedalTimingConversion.SegmentDuration(BrakeAttackSlow, BrakeSegmentFraction is > 0 ? 1.0 - BrakeSegmentFraction.Value : null);
+    public double? ClutchAttackSlowSeconds
+    {
+        get => PedalTimingConversion.ToSegmentSeconds(ClutchAttackSlow, ClutchSegmentFraction is > 0 ? 1.0 - ClutchSegmentFraction.Value : null);
+        set
+        {
+            double? rate = RateFromUiSeconds(nameof(ClutchAttackSlow), value, ClutchSegmentFraction is > 0 ? 1.0 - ClutchSegmentFraction.Value : null);
+            if (rate.HasValue) ClutchAttackSlow = rate.Value;
+        }
+    }
+
+    [Newtonsoft.Json.JsonIgnore]
+    public double? ClutchDecaySeconds
+    {
+        get => PedalTimingConversion.ToSeconds(ClutchDecay);
+        set => ClutchDecay = RateFromUiSeconds(nameof(ClutchDecay), value);
+    }
+
+    [Newtonsoft.Json.JsonIgnore]
+    public double? GasEstimatedFullPressSeconds =>
+        PedalTimingConversion.SegmentDuration(GasAttackFast, GasSegmentFraction) +
+        PedalTimingConversion.SegmentDuration(GasAttackSlow, GasSegmentFraction is > 0 ? 1.0 - GasSegmentFraction.Value : null);
+
+    [Newtonsoft.Json.JsonIgnore]
+    public double? BrakeEstimatedFullPressSeconds =>
+        PedalTimingConversion.SegmentDuration(BrakeAttackFast, BrakeSegmentFraction) +
+        PedalTimingConversion.SegmentDuration(BrakeAttackSlow, BrakeSegmentFraction is > 0 ? 1.0 - BrakeSegmentFraction.Value : null);
+
+    [Newtonsoft.Json.JsonIgnore]
+    public double? ClutchEstimatedFullPressSeconds =>
+        PedalTimingConversion.SegmentDuration(ClutchAttackFast, ClutchSegmentFraction) +
+        PedalTimingConversion.SegmentDuration(ClutchAttackSlow, ClutchSegmentFraction is > 0 ? 1.0 - ClutchSegmentFraction.Value : null);
+
+    partial void OnTbDecayChanged(double? value) => OnPropertyChanged(nameof(TbDecaySeconds));
 
     partial void OnGasAttackTurboChanged(double? value) => OnPropertyChanged(nameof(GasAttackTurboSeconds));
 
@@ -224,21 +275,19 @@ public partial class Profile : ObservableObject
     {
         oldValue ??= _inheritedGasThreshold;
         _gasFastSecondsBeforeThresholdChange = PedalTimingConversion.ExactSegmentSeconds(GasAttackFast, oldValue);
-        _gasSlowSecondsBeforeThresholdChange = PedalTimingConversion.ExactSegmentSeconds(GasAttackSlow, oldValue is> 0 ? 1.0 - oldValue.Value : null);
+        _gasSlowSecondsBeforeThresholdChange = PedalTimingConversion.ExactSegmentSeconds(GasAttackSlow, oldValue is > 0 ? 1.0 - oldValue.Value : null);
     }
 
     partial void OnGasThresholdChanged(double? value)
     {
         value ??= _inheritedGasThreshold;
         double? fastRate = PedalTimingConversion.FromSegmentSeconds(_gasFastSecondsBeforeThresholdChange, value);
-        double? slowRate = PedalTimingConversion.FromSegmentSeconds(_gasSlowSecondsBeforeThresholdChange, value is> 0 ? 1.0 - value.Value : null);
+        double? slowRate = PedalTimingConversion.FromSegmentSeconds(_gasSlowSecondsBeforeThresholdChange, value is > 0 ? 1.0 - value.Value : null);
         IsAdjustingPedalRatesForThreshold = true;
         try
         {
-            if (fastRate.HasValue)
-                GasAttackFast = fastRate.Value;
-            if (slowRate.HasValue)
-                GasAttackSlow = slowRate.Value;
+            if (fastRate.HasValue) GasAttackFast = fastRate.Value;
+            if (slowRate.HasValue) GasAttackSlow = slowRate.Value;
         }
         finally
         {
@@ -262,8 +311,6 @@ public partial class Profile : ObservableObject
         OnPropertyChanged(nameof(BrakeEstimatedFullPressSeconds));
     }
 
-    partial void OnTbDecayChanged(double? value) => OnPropertyChanged(nameof(TbDecaySeconds));
-
     partial void OnBrakeDecayChanged(double? value) => OnPropertyChanged(nameof(BrakeDecaySeconds));
 
     private double? _brakeFastSecondsBeforeThresholdChange;
@@ -274,21 +321,19 @@ public partial class Profile : ObservableObject
     {
         oldValue ??= _inheritedBrakeThreshold;
         _brakeFastSecondsBeforeThresholdChange = PedalTimingConversion.ExactSegmentSeconds(BrakeAttackFast, oldValue);
-        _brakeSlowSecondsBeforeThresholdChange = PedalTimingConversion.ExactSegmentSeconds(BrakeAttackSlow, oldValue is> 0 ? 1.0 - oldValue.Value : null);
+        _brakeSlowSecondsBeforeThresholdChange = PedalTimingConversion.ExactSegmentSeconds(BrakeAttackSlow, oldValue is > 0 ? 1.0 - oldValue.Value : null);
     }
 
     partial void OnBrakeThresholdChanged(double? value)
     {
         value ??= _inheritedBrakeThreshold;
         double? fastRate = PedalTimingConversion.FromSegmentSeconds(_brakeFastSecondsBeforeThresholdChange, value);
-        double? slowRate = PedalTimingConversion.FromSegmentSeconds(_brakeSlowSecondsBeforeThresholdChange, value is> 0 ? 1.0 - value.Value : null);
+        double? slowRate = PedalTimingConversion.FromSegmentSeconds(_brakeSlowSecondsBeforeThresholdChange, value is > 0 ? 1.0 - value.Value : null);
         IsAdjustingPedalRatesForThreshold = true;
         try
         {
-            if (fastRate.HasValue)
-                BrakeAttackFast = fastRate.Value;
-            if (slowRate.HasValue)
-                BrakeAttackSlow = slowRate.Value;
+            if (fastRate.HasValue) BrakeAttackFast = fastRate.Value;
+            if (slowRate.HasValue) BrakeAttackSlow = slowRate.Value;
         }
         finally
         {
@@ -300,132 +345,153 @@ public partial class Profile : ObservableObject
         OnPropertyChanged(nameof(BrakeEstimatedFullPressSeconds));
     }
 
-    [ObservableProperty]
-    private bool? _useSteeringLockClamp;
+    partial void OnClutchAttackFastChanged(double? value)
+    {
+        OnPropertyChanged(nameof(ClutchAttackFastSeconds));
+        OnPropertyChanged(nameof(ClutchEstimatedFullPressSeconds));
+    }
 
-    [ObservableProperty]
-    private int? _carSteeringLock;
+    partial void OnClutchAttackSlowChanged(double? value)
+    {
+        OnPropertyChanged(nameof(ClutchAttackSlowSeconds));
+        OnPropertyChanged(nameof(ClutchEstimatedFullPressSeconds));
+    }
 
-    [ObservableProperty]
-    private int? _globalSteeringRange;
+    partial void OnClutchDecayChanged(double? value) => OnPropertyChanged(nameof(ClutchDecaySeconds));
+
+    private double? _clutchFastSecondsBeforeThresholdChange;
+
+    private double? _clutchSlowSecondsBeforeThresholdChange;
+
+    partial void OnClutchThresholdChanging(double? oldValue, double? newValue)
+    {
+        oldValue ??= _inheritedClutchThreshold;
+        _clutchFastSecondsBeforeThresholdChange = PedalTimingConversion.ExactSegmentSeconds(ClutchAttackFast, oldValue);
+        _clutchSlowSecondsBeforeThresholdChange = PedalTimingConversion.ExactSegmentSeconds(ClutchAttackSlow, oldValue is > 0 ? 1.0 - oldValue.Value : null);
+    }
+
+    partial void OnClutchThresholdChanged(double? value)
+    {
+        value ??= _inheritedClutchThreshold;
+        double? fastRate = PedalTimingConversion.FromSegmentSeconds(_clutchFastSecondsBeforeThresholdChange, value);
+        double? slowRate = PedalTimingConversion.FromSegmentSeconds(_clutchSlowSecondsBeforeThresholdChange, value is > 0 ? 1.0 - value.Value : null);
+        IsAdjustingPedalRatesForThreshold = true;
+        try
+        {
+            if (fastRate.HasValue) ClutchAttackFast = fastRate.Value;
+            if (slowRate.HasValue) ClutchAttackSlow = slowRate.Value;
+        }
+        finally
+        {
+            IsAdjustingPedalRatesForThreshold = false;
+        }
+
+        OnPropertyChanged(nameof(ClutchAttackFastSeconds));
+        OnPropertyChanged(nameof(ClutchAttackSlowSeconds));
+        OnPropertyChanged(nameof(ClutchEstimatedFullPressSeconds));
+    }
+
+    // Steering Lock Clamp
+    [ObservableProperty] private bool? _useSteeringLockClamp;
+
+    [ObservableProperty] private int? _carSteeringLock;
+
+    [ObservableProperty] private int? _globalSteeringRange;
 
     // Virtual Output Device Mode (VJoy DirectInput vs Xbox360 ViGEm)
     // 0: continue controls, 1: hold mouse steering, 2: pause all controls. Null inherits.
     [ObservableProperty] private int? _cursorUnlockedMode;
     [ObservableProperty] private bool? _pauseControlsOnFocusLoss;
     [ObservableProperty] private bool? _releaseCursorOnFocusLoss;
-    [ObservableProperty]
-    private OutputDeviceMode? _outputMode;
-
+    [ObservableProperty] private OutputDeviceMode? _outputMode;
     [ObservableProperty] private int? _vJoyDeviceId;
     [ObservableProperty] private bool? _vJoyWheelCompatibility;
     [ObservableProperty] private bool? _useHubVJoyDevice;
 
     // VJoy Output Limits
-    [ObservableProperty]
-    private int? _outSteerMin;
+    [ObservableProperty] private int? _outSteerMin;
 
-    [ObservableProperty]
-    private int? _outSteerMax;
+    [ObservableProperty] private int? _outSteerMax;
 
-    [ObservableProperty]
-    private int? _outGasMin;
+    [ObservableProperty] private int? _outGasMin;
 
-    [ObservableProperty]
-    private int? _outGasMax;
+    [ObservableProperty] private int? _outGasMax;
 
-    [ObservableProperty]
-    private int? _outBrakeMin;
+    [ObservableProperty] private int? _outBrakeMin;
 
-    [ObservableProperty]
-    private int? _outBrakeMax;
+    [ObservableProperty] private int? _outBrakeMax;
 
-    [ObservableProperty]
-    private bool? _invertSteering;
+    [ObservableProperty] private int? _outClutchMin;
 
-    [ObservableProperty]
-    private bool? _invertGas;
+    [ObservableProperty] private int? _outClutchMax;
 
-    [ObservableProperty]
-    private bool? _invertBrake;
+    [ObservableProperty] private bool? _invertSteering;
+
+    [ObservableProperty] private bool? _invertGas;
+
+    [ObservableProperty] private bool? _invertBrake;
+
+    [ObservableProperty] private bool? _invertClutch;
 
     // Keyboard Steering Mode
-    [ObservableProperty]
-    private bool? _useKeyboardOnlyMode;
+    [ObservableProperty] private bool? _useKeyboardOnlyMode;
 
-    [ObservableProperty]
-    private double? _keySteerRampUpMs;
+    [ObservableProperty] private double? _keySteerRampUpMs;
 
-    [ObservableProperty]
-    private double? _keySteerRampDownMs;
+    [ObservableProperty] private double? _keySteerRampDownMs;
 
-    [ObservableProperty]
-    private bool? _keySteerSnapToFullLock;
+    [ObservableProperty] private bool? _keySteerSnapToFullLock;
 
     // Key Bindings (Virtual Key Codes)
-    [ObservableProperty]
-    private int? _keySteerLeft1;
+    [ObservableProperty] private int? _keySteerLeft1;
 
-    [ObservableProperty]
-    private int? _keySteerLeft2;
+    [ObservableProperty] private int? _keySteerLeft2;
 
-    [ObservableProperty]
-    private int? _keySteerRight1;
+    [ObservableProperty] private int? _keySteerRight1;
 
-    [ObservableProperty]
-    private int? _keySteerRight2;
+    [ObservableProperty] private int? _keySteerRight2;
 
-    [ObservableProperty]
-    private int? _keyGas1;
+    [ObservableProperty] private int? _keyGas1;
 
-    [ObservableProperty]
-    private int? _keyGas2;
+    [ObservableProperty] private int? _keyGas2;
 
-    [ObservableProperty]
-    private int? _keyBrake1;
+    [ObservableProperty] private int? _keyBrake1;
 
-    [ObservableProperty]
-    private int? _keyBrake2;
+    [ObservableProperty] private int? _keyBrake2;
 
-    [ObservableProperty]
-    private int? _keyShiftUp1;
+    [ObservableProperty] private int? _keyClutch1;
 
-    [ObservableProperty]
-    private int? _keyShiftUp2;
+    [ObservableProperty] private int? _keyClutch2;
 
-    [ObservableProperty]
-    private int? _keyShiftDown1;
+    [ObservableProperty] private int? _keyShiftUp1;
 
-    [ObservableProperty]
-    private int? _keyShiftDown2;
+    [ObservableProperty] private int? _keyShiftUp2;
 
-    [ObservableProperty]
-    private int? _keyCenterSteering1;
+    [ObservableProperty] private int? _keyShiftDown1;
 
-    [ObservableProperty]
-    private int? _keyCenterSteering2;
+    [ObservableProperty] private int? _keyShiftDown2;
 
-    [ObservableProperty]
-    private int? _keyToggleHub1;
+    [ObservableProperty] private int? _keyCenterSteering1;
 
-    [ObservableProperty]
-    private int? _keyToggleHub2;
+    [ObservableProperty] private int? _keyCenterSteering2;
 
-    [ObservableProperty]
-    private int? _keyToggleLock1;
+    [ObservableProperty] private int? _keyToggleHub1;
 
-    [ObservableProperty]
-    private int? _keyToggleLock2;
+    [ObservableProperty] private int? _keyToggleHub2;
 
-    [ObservableProperty]
-    private int? _keyUnlockCursor1;
+    [ObservableProperty] private int? _keyToggleLock1;
 
-    [ObservableProperty]
-    private int? _keyUnlockCursor2;
+    [ObservableProperty] private int? _keyToggleLock2;
+
+    [ObservableProperty] private int? _keyUnlockCursor1;
+
+    [ObservableProperty] private int? _keyUnlockCursor2;
 
     public Profile()
     {
     }
+
+    public const double DefaultTbDecay = 2960.0;
 
     public static Profile CreateDefault(string name = "Universal") => ProfileDefaults.CreateDefault(name);
 
@@ -449,8 +515,7 @@ public partial class Profile : ObservableObject
 
     public void CopyFrom(Profile source)
     {
-        if (source == null)
-            return;
+        if (source == null) return;
         var props = this.GetType().GetProperties();
         foreach (var prop in props)
         {
@@ -462,5 +527,4 @@ public partial class Profile : ObservableObject
     }
 
     public bool MigrateToCurrentSchema(int fallbackRate = 1000) => ProfileSchemaMigrator.Migrate(this, fallbackRate);
-
 }

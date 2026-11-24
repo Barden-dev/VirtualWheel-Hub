@@ -12,18 +12,27 @@ namespace SimRacingHub.Avalonia.Onboarding;
 public partial class GettingStartedOverlay : UserControl
 {
     public sealed record Step(PageId Page, string Target, string Key);
-    public static IReadOnlyList<Step> Steps { get; } = Array.AsReadOnly(new[]
+    public static IReadOnlyList<Step> Steps { get; } = BuildSteps();
+
+    private static IReadOnlyList<Step> BuildSteps()
     {
-        new Step(PageId.Dashboard, "TourDashboard", "Dashboard"),
-        new Step(PageId.Profiles, "TourProfiles", "Profiles"),
-        new Step(PageId.Steering, "TourSteering", "Axes"),
-        new Step(PageId.KeyBindings, "TourKeys", "Keys"),
-        new Step(PageId.ControlAssignment, "ControlAssignmentPage", "Assignment"),
-        new Step(PageId.InputDevices, "InputDevicesPage", "Input"),
-        new Step(PageId.Output, "TourOutput", "Output"),
-        new Step(PageId.Settings, "TourSettings", "Settings"),
-        new Step(PageId.Dashboard, "TourDashboard", "Ready")
-    });
+        var steps = new List<Step>
+        {
+            new Step(PageId.Dashboard, "TourDashboard", "Dashboard"),
+            new Step(PageId.Profiles, "TourProfiles", "Profiles"),
+            new Step(PageId.Steering, "TourSteering", "Axes"),
+            new Step(PageId.KeyBindings, "TourKeys", "Keys"),
+            new Step(PageId.ControlAssignment, "ControlAssignmentPage", "Assignment"),
+            new Step(PageId.InputDevices, "InputDevicesPage", "Input"),
+            new Step(PageId.Output, "TourOutput", "Output"),
+            new Step(PageId.Settings, "TourSettings", "Settings"),
+            new Step(PageId.Dashboard, "TourDashboard", "Ready")
+        };
+        CustomizeSteps(steps);
+        return Array.AsReadOnly(steps.ToArray());
+    }
+
+    static partial void CustomizeSteps(List<Step> steps);
 
     private MainWindow? _owner;
     private AppShellViewModel? _shell;

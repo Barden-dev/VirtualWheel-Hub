@@ -1,0 +1,75 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:shell="clr-namespace:SimRacingHub.Application.Features.Shell;assembly=vWheelHub.Application"
+             xmlns:controls="clr-namespace:SimRacingHub.Avalonia.Controls"
+             xmlns:conv="clr-namespace:SimRacingHub.Avalonia.Converters"
+             x:Class="SimRacingHub.Avalonia.MainWindowEditionSlots"
+             x:DataType="shell:AppShellViewModel"
+             x:CompileBindings="True">
+    <UserControl.Resources>
+        <conv:PageIdEqualsConverter x:Key="PageEquals" />
+    </UserControl.Resources>
+    <StackPanel>
+        <Panel Name="TopNoticeHost" />
+        <Panel Name="ControlTabHost">
+            <Button Name="SectionSoundPreview" Classes="hub-section-tab" Classes.active="{Binding CurrentPageId, Converter={StaticResource PageEquals}, ConverterParameter={x:Static shell:PageId.SoundPreview}}" Content="{DynamicResource Offer_SoundTab}" Command="{Binding NavigateCommand}" CommandParameter="{x:Static shell:PageId.SoundPreview}"/>
+        </Panel>
+        <Panel Name="ApplicationTabHost">
+            <Button Name="SectionDataPreview" Classes="hub-section-tab" Classes.active="{Binding CurrentPageId, Converter={StaticResource PageEquals}, ConverterParameter={x:Static shell:PageId.GameDataPreview}}" Content="{DynamicResource Offer_DataTab}" Command="{Binding NavigateCommand}" CommandParameter="{x:Static shell:PageId.GameDataPreview}"/>
+        </Panel>
+        <Panel Name="PagesHost">
+            <Panel IsVisible="{Binding CurrentPageId, Converter={StaticResource PageEquals}, ConverterParameter={x:Static shell:PageId.SoundPreview}}">
+                <ScrollViewer Classes="hub-scroll" VerticalScrollBarVisibility="Auto">
+                    <StackPanel Spacing="16" Margin="0,0,16,24">
+                        <controls:FeaturePreview Name="SoundOfferFront" Heading="{DynamicResource Offer_Front}" Summary="{DynamicResource Offer_SoundInfo}">
+                            <controls:FeaturePreview.Sample>
+                                <StackPanel Spacing="10">
+                                    <ToggleSwitch Content="{DynamicResource Offer_Enable}" IsChecked="False"/>
+                                    <Grid ColumnDefinitions="*,150" ColumnSpacing="12"><TextBlock Text="{DynamicResource Offer_Volume}" VerticalAlignment="Center" TextWrapping="Wrap"/><NumericUpDown Grid.Column="1" Value="25" Minimum="0" Maximum="1000"/></Grid>
+                                    <Grid ColumnDefinitions="*,150" ColumnSpacing="12"><TextBlock Text="{DynamicResource Offer_Pitch}" VerticalAlignment="Center" TextWrapping="Wrap"/><NumericUpDown Grid.Column="1" Value="280" Minimum="0" Maximum="1000"/></Grid>
+                                </StackPanel>
+                            </controls:FeaturePreview.Sample>
+                        </controls:FeaturePreview>
+                        <controls:FeaturePreview Name="SoundOfferRear" Heading="{DynamicResource Offer_Rear}" Summary="{DynamicResource Offer_SoundInfo}">
+                            <controls:FeaturePreview.Sample>
+                                <StackPanel Spacing="10">
+                                    <ToggleSwitch Content="{DynamicResource Offer_Enable}" IsChecked="False"/>
+                                    <Grid ColumnDefinitions="*,150" ColumnSpacing="12"><TextBlock Text="{DynamicResource Offer_Volume}" VerticalAlignment="Center" TextWrapping="Wrap"/><NumericUpDown Grid.Column="1" Value="25" Minimum="0" Maximum="1000"/></Grid>
+                                    <Grid ColumnDefinitions="*,150" ColumnSpacing="12"><TextBlock Text="{DynamicResource Offer_Pitch}" VerticalAlignment="Center" TextWrapping="Wrap"/><NumericUpDown Grid.Column="1" Value="280" Minimum="0" Maximum="1000"/></Grid>
+                                </StackPanel>
+                            </controls:FeaturePreview.Sample>
+                        </controls:FeaturePreview>
+                        <controls:FeaturePreview Name="SoundOfferTc" Heading="{DynamicResource Offer_Tc}" Summary="{DynamicResource Offer_SoundInfo}">
+                            <controls:FeaturePreview.Sample>
+                                <StackPanel Spacing="10">
+                                    <ToggleSwitch Content="{DynamicResource Offer_Enable}" IsChecked="False"/>
+                                    <Grid ColumnDefinitions="*,150" ColumnSpacing="12"><TextBlock Text="{DynamicResource Offer_Volume}" VerticalAlignment="Center" TextWrapping="Wrap"/><NumericUpDown Grid.Column="1" Value="25" Minimum="0" Maximum="1000"/></Grid>
+                                    <Grid ColumnDefinitions="*,150" ColumnSpacing="12"><TextBlock Text="{DynamicResource Offer_Pitch}" VerticalAlignment="Center" TextWrapping="Wrap"/><NumericUpDown Grid.Column="1" Value="280" Minimum="0" Maximum="1000"/></Grid>
+                                </StackPanel>
+                            </controls:FeaturePreview.Sample>
+                        </controls:FeaturePreview>
+                    </StackPanel>
+                </ScrollViewer>
+            </Panel>
+            <Panel IsVisible="{Binding CurrentPageId, Converter={StaticResource PageEquals}, ConverterParameter={x:Static shell:PageId.GameDataPreview}}">
+                <ScrollViewer Classes="hub-scroll" VerticalScrollBarVisibility="Auto">
+                    <StackPanel Spacing="16" Margin="0,0,16,24">
+                        <controls:FeaturePreview Name="DataOffer" Heading="{DynamicResource Offer_Data}" Summary="{DynamicResource Offer_DataInfo}">
+                            <controls:FeaturePreview.Sample>
+                                <StackPanel Spacing="10">
+                                    <TextBox Text="—" IsReadOnly="True"/>
+                                    <Button Content="{DynamicResource Offer_Prepare}"/>
+                                </StackPanel>
+                            </controls:FeaturePreview.Sample>
+                        </controls:FeaturePreview>
+                    </StackPanel>
+                </ScrollViewer>
+            </Panel>
+        </Panel>
+        <Panel Name="FooterRightHost">
+            <Button Name="ProFeaturesLink" ToolTip.Tip="{Binding OfferDetails}" Command="{Binding AppSettings.OpenBoostyCommand}" Background="#261E26" BorderBrush="#63324F" Foreground="#F9A8D4" CornerRadius="4" Padding="9,2" MinHeight="24" FontSize="11">
+                <TextBlock controls:LocalizedText.Value="{Binding OfferCount}" controls:LocalizedText.Format="{DynamicResource Offer_Count}"/>
+            </Button>
+        </Panel>
+    </StackPanel>
+</UserControl>

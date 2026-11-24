@@ -9,4 +9,4 @@ public readonly record struct OutputButtons(ulong Low = 0, ulong High = 0)
     public static OutputButtons Gears(bool down, bool up) => new((down ? 1UL : 0) | (up ? 2UL : 0));
 }
 
-public readonly record struct OutputReport(int Steer, int Gas, int Brake, OutputButtons Buttons);
+public readonly record struct OutputReport(int Steer, int Gas, int Brake, OutputButtons Buttons, int Clutch = 0);

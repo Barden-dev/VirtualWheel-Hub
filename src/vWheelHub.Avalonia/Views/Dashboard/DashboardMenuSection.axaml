@@ -1,0 +1,13 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:SimRacingHub.Avalonia.Controls"
+             x:Class="SimRacingHub.Avalonia.Views.Dashboard.DashboardMenuSection">
+    <controls:FeaturePreview Name="MenuOffer" Heading="{DynamicResource Offer_Menu}" Summary="{DynamicResource Offer_MenuInfo}">
+        <controls:FeaturePreview.Sample>
+            <StackPanel Spacing="10">
+                <ToggleSwitch Content="{DynamicResource Offer_Pause}"/>
+                <ToggleSwitch Content="{DynamicResource Offer_Cursor}"/>
+            </StackPanel>
+        </controls:FeaturePreview.Sample>
+    </controls:FeaturePreview>
+</UserControl>

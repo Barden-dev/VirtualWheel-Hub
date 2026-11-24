@@ -6,6 +6,7 @@ namespace SimRacingHub.Models
         public double TargetSteering { get; set; } = 0.0;
         public double GasVal { get; set; } = -32768.0;
         public double BrakeVal { get; set; } = -32768.0;
+        public double ClutchVal { get; set; } = -32768.0;
         
         public void Reset(double min)
         {
@@ -13,6 +14,7 @@ namespace SimRacingHub.Models
             TargetSteering = 0;
             GasVal = min;
             BrakeVal = min;
+            ClutchVal = min;
         }
     }
 }

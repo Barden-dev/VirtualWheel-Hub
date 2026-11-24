@@ -16,6 +16,9 @@ public static partial class ProfileSchemaMigrator
         profile.BrakeAttackFast = ScaleRate(profile.BrakeAttackFast, factor);
         profile.BrakeAttackSlow = ScaleRate(profile.BrakeAttackSlow, factor);
         profile.BrakeDecay = ScaleRate(profile.BrakeDecay, factor);
+        profile.ClutchAttackFast = ScaleRate(profile.ClutchAttackFast, factor);
+        profile.ClutchAttackSlow = ScaleRate(profile.ClutchAttackSlow, factor);
+        profile.ClutchDecay = ScaleRate(profile.ClutchDecay, factor);
     }
 
 }

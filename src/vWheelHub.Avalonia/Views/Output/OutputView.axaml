@@ -40,6 +40,12 @@
                         <NumericUpDown Name="OutBrakeMaxBox" Grid.Column="2" Value="{Binding EffectiveOutBrakeMax, Converter={StaticResource NumericConv}}" Minimum="0" Maximum="32768" Increment="100" FormatString="0" MinHeight="32"/>
                         <ToggleSwitch Name="InvertBrakeSwitch" Grid.Column="3" IsChecked="{Binding EffectiveInvertBrake, Mode=TwoWay}" ToolTip.Tip="{DynamicResource Output_Invert}"/>
                     </Grid>
+                    <Grid ColumnDefinitions="*,150,150,90" ColumnSpacing="12">
+                        <TextBlock Text="{DynamicResource Ui_ClutchAxis}" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                        <NumericUpDown Name="OutClutchMinBox" Grid.Column="1" Value="{Binding EffectiveOutClutchMin, Converter={StaticResource NumericConv}}" Minimum="0" Maximum="32768" Increment="100" FormatString="0" MinHeight="32"/>
+                        <NumericUpDown Name="OutClutchMaxBox" Grid.Column="2" Value="{Binding EffectiveOutClutchMax, Converter={StaticResource NumericConv}}" Minimum="0" Maximum="32768" Increment="100" FormatString="0" MinHeight="32"/>
+                        <ToggleSwitch Name="InvertClutchSwitch" Grid.Column="3" IsChecked="{Binding EffectiveInvertClutch, Mode=TwoWay}" ToolTip.Tip="{DynamicResource Output_Invert}"/>
+                    </Grid>
                 </StackPanel>
             </Border>
             <Border Name="PollingRateSettings" Classes="hub-card" Padding="16,14">

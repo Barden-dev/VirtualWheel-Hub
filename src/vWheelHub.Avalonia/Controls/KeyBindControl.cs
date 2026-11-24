@@ -207,8 +207,6 @@ namespace SimRacingHub.Avalonia.Controls
                 Foreground = new SolidColorBrush(Color.FromRgb(241, 245, 249))  // #F1F5F9
             };
             _bindButton.Click += OnBindButtonClick;
-            _bindButton.PointerPressed += OnBindButtonPointerPressed;
-            _bindButton.PointerWheelChanged += OnBindButtonPointerWheelChanged;
             _bindButton.LostFocus += OnBindButtonLostFocus;
 
             _conflictBorder = new Border
@@ -273,6 +271,7 @@ namespace SimRacingHub.Avalonia.Controls
             if (oldSlot != null)
             {
                 oldSlot.PropertyChanged -= OnSlotPropertyChanged;
+                if (ReferenceEquals(oldSlot.Parent.CapturingSlot, oldSlot)) oldSlot.Parent.CancelCapture();
             }
 
             if (newSlot != null)
@@ -371,11 +370,12 @@ namespace SimRacingHub.Avalonia.Controls
         public void StartCapture()
         {
             ClearConflict();
-            IsListening = true;
-            if (SlotViewModel != null)
+            if (SlotViewModel is { } slot)
             {
-                SlotViewModel.StartCapture();
+                slot.StartCapture();
+                if (!slot.IsListening) return;
             }
+            else IsListening = true;
 
             CaptureStarted?.Invoke(this, EventArgs.Empty);
             _bindButton.Focus();
@@ -385,12 +385,9 @@ namespace SimRacingHub.Avalonia.Controls
         {
             if (!IsListening) return;
 
-            IsListening = false;
-            if (SlotViewModel != null && SlotViewModel.IsListening)
-            {
-                SlotViewModel.IsListening = false;
-                SlotViewModel.Refresh();
-            }
+            if (SlotViewModel is { } slot && ReferenceEquals(slot.Parent.CapturingSlot, slot))
+                slot.Parent.CancelCapture();
+            else IsListening = false;
 
             UpdateDisplayText();
             CaptureCancelled?.Invoke(this, EventArgs.Empty);
@@ -399,11 +396,8 @@ namespace SimRacingHub.Avalonia.Controls
 
         public void ClearBinding()
         {
-            VirtualKeyCode = 0;
-            if (SlotViewModel != null)
-            {
-                SlotViewModel.Clear();
-            }
+            if (SlotViewModel is { } slot) slot.Clear();
+            else SetCurrentValue(VirtualKeyCodeProperty, 0);
 
             ClearConflict();
             IsListening = false;
@@ -428,10 +422,13 @@ namespace SimRacingHub.Avalonia.Controls
         private void OnBindButtonLostFocus(object? sender, RoutedEventArgs e)
         {
             ((BindingCaptureButton)_bindButton).ResetCapturedKeys();
-            if (IsListening)
-            {
-                CancelCapture();
-            }
+            CancelCapture();
+        }
+
+        protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+        {
+            CancelCapture();
+            base.OnDetachedFromVisualTree(e);
         }
 
         private void OnBindButtonKeyDown(object? sender, KeyEventArgs e)
@@ -483,36 +480,46 @@ namespace SimRacingHub.Avalonia.Controls
                 base.OnKeyUp(e);
             }
 
+            protected override void OnPointerPressed(PointerPressedEventArgs e)
+            {
+                if (!owner.CaptureMouseButton(e)) base.OnPointerPressed(e);
+            }
+
+            protected override void OnPointerWheelChanged(PointerWheelEventArgs e)
+            {
+                if (!owner.CaptureMouseWheel(e)) base.OnPointerWheelChanged(e);
+            }
+
             public void ResetCapturedKeys() => _capturedKeys.Clear();
         }
 
-        private void OnBindButtonPointerPressed(object? sender, PointerPressedEventArgs e)
+        internal bool CaptureMouseButton(PointerPressedEventArgs e)
         {
-            if (!IsListening) return;
+            if (!IsListening || e.Pointer.Type != PointerType.Mouse) return false;
 
-            var point = e.GetCurrentPoint(_bindButton);
-            int vk = 0;
-
-            if (point.Properties.IsLeftButtonPressed) vk = CanonicalKeyMapper.MouseLeft;
-            else if (point.Properties.IsRightButtonPressed) vk = CanonicalKeyMapper.MouseRight;
-            else if (point.Properties.IsMiddleButtonPressed) vk = CanonicalKeyMapper.MouseMiddle;
-            else if (point.Properties.IsXButton1Pressed) vk = CanonicalKeyMapper.MouseXButton1;
-            else if (point.Properties.IsXButton2Pressed) vk = CanonicalKeyMapper.MouseXButton2;
-
-            if (vk != 0)
+            int vk = e.GetCurrentPoint(this).Properties.PointerUpdateKind switch
             {
-                e.Handled = true;
-                TryAssignKey(vk);
-            }
+                PointerUpdateKind.LeftButtonPressed => CanonicalKeyMapper.MouseLeft,
+                PointerUpdateKind.RightButtonPressed => CanonicalKeyMapper.MouseRight,
+                PointerUpdateKind.MiddleButtonPressed => CanonicalKeyMapper.MouseMiddle,
+                PointerUpdateKind.XButton1Pressed => CanonicalKeyMapper.MouseXButton1,
+                PointerUpdateKind.XButton2Pressed => CanonicalKeyMapper.MouseXButton2,
+                _ => 0
+            };
+            if (vk == 0) return false;
+            e.Handled = true;
+            TryAssignKey(vk);
+            return true;
         }
 
-        private void OnBindButtonPointerWheelChanged(object? sender, PointerWheelEventArgs e)
+        internal bool CaptureMouseWheel(PointerWheelEventArgs e)
         {
-            if (!IsListening) return;
+            if (!IsListening || e.Delta.Y == 0) return false;
 
             int vk = e.Delta.Y > 0 ? CanonicalKeyMapper.MouseWheelUp : CanonicalKeyMapper.MouseWheelDown;
             e.Handled = true;
             TryAssignKey(vk);
+            return true;
         }
 
         public void TryAssignKey(int virtualKeyCode)
@@ -524,22 +531,19 @@ namespace SimRacingHub.Avalonia.Controls
             }
 
             // Check for conflict via SlotViewModel or parent profile
-            if (SlotViewModel != null)
+            if (SlotViewModel is { } slot)
             {
-                SlotViewModel.Parent.TryAssignKey(SlotViewModel.ActionId, SlotViewModel.IsSecondary, virtualKeyCode);
-                VirtualKeyCode = SlotViewModel.VirtualKeyCode;
-                HasConflict = SlotViewModel.HasConflict;
-                ConflictMessage = SlotViewModel.ConflictMessage;
-                IsListening = false;
-                UpdateDisplayText();
-                UpdateConflictVisuals();
+                var parent = slot.Parent;
+                bool assigned = ReferenceEquals(parent.CapturingSlot, slot)
+                    ? parent.ApplyKey(virtualKeyCode)
+                    : parent.TryAssignKey(slot.ActionId, slot.IsSecondary, virtualKeyCode);
 
-                if (HasConflict)
+                if (!assigned && HasConflict)
                 {
                     ConflictOccurred?.Invoke(this, ConflictMessage ?? string.Empty);
                     ConflictOccurredCommand?.Execute(ConflictMessage);
                 }
-                else
+                else if (assigned)
                 {
                     KeyAssigned?.Invoke(this, virtualKeyCode);
                     KeyAssignedCommand?.Execute(virtualKeyCode);
@@ -561,7 +565,7 @@ namespace SimRacingHub.Avalonia.Controls
             }
 
             // Successfully assign key
-            VirtualKeyCode = virtualKeyCode;
+            SetCurrentValue(VirtualKeyCodeProperty, virtualKeyCode);
             ClearConflict();
             IsListening = false;
             UpdateDisplayText();

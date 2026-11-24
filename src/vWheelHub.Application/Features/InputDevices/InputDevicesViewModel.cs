@@ -20,6 +20,30 @@ public partial class InputDevicesViewModel : ViewModelBase, IPendingSettingsChan
     private InputDeviceOption? _selectedMouse, _selectedKeyboard;
     private (bool Dirty, bool Ready, bool Busy, bool Error) _notifiedState;
 
+    private SimRacingHub.Application.Features.AppSettings.AppSettingsViewModel? _settings;
+    public bool SupportsAutomaticInput => _settings?.SupportsAutomaticInput == true;
+    public bool AutomaticInput
+    {
+        get => SupportsAutomaticInput && _settings!.AutomaticInputEnabled;
+        set { if (SupportsAutomaticInput) _settings!.AutomaticInputEnabled = value; }
+    }
+
+    public void ConfigureInputMode(SimRacingHub.Application.Features.AppSettings.AppSettingsViewModel settings)
+    {
+        if (_settings != null) _settings.PropertyChanged -= InputModeChanged;
+        _settings = settings;
+        _settings.PropertyChanged += InputModeChanged;
+        NotifyState();
+    }
+
+    private void InputModeChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName != "AutomaticInputEnabled") return;
+        Revert();
+        if (_discovered) RefreshDevices();
+        NotifyState();
+    }
+
     public event Action? Changed;
     public IReadOnlyList<InputDeviceOption> Mice { get; private set; } = Array.Empty<InputDeviceOption>();
     public IReadOnlyList<InputDeviceOption> Keyboards { get; private set; } = Array.Empty<InputDeviceOption>();
@@ -35,21 +59,21 @@ public partial class InputDevicesViewModel : ViewModelBase, IPendingSettingsChan
     }
     public bool HasChanges => _selectionEdited && (SelectedMouse?.Path != _savedMouse || SelectedKeyboard?.Path != _savedKeyboard);
     public bool HasError => _saveFailed;
-    public bool CanSave => !IsBusy && _checks?.IsPairIdentification != true && _devices != null && SelectedMouse != null && SelectedKeyboard != null;
+    public bool CanSave => !AutomaticInput && !IsBusy && _checks?.IsPairIdentification != true && _devices != null && SelectedMouse != null && SelectedKeyboard != null;
     public bool IsPolling => !IsBusy && _checks?.IsChecking == true;
     public bool CanRefresh => !IsBusy;
-    public bool CanSelectDevices => !IsBusy && _checks?.IsPairIdentification != true;
-    public bool CanIdentifyPair => !IsBusy && Mice.Count > 0 && Keyboards.Count > 0;
+    public bool CanSelectDevices => !AutomaticInput && !IsBusy && _checks?.IsPairIdentification != true;
+    public bool CanIdentifyPair => !AutomaticInput && !IsBusy && Mice.Count > 0 && Keyboards.Count > 0;
     public bool CanIdentifyMouse => CanSelectDevices && Mice.Count > 0;
     public bool CanIdentifyKeyboard => CanSelectDevices && Keyboards.Count > 0;
-    public bool CanCheck => !IsBusy && _devices != null && SelectedMouse != null && SelectedKeyboard != null;
+    public bool CanCheck => !AutomaticInput && !IsBusy && _devices != null && SelectedMouse != null && SelectedKeyboard != null;
     public bool ShowCheck => _checks?.IsChecking != true;
     public bool ShowStop => _checks?.IsChecking == true && _checks.Identifying == null && !IsBusy;
     public string IdentifyPairText => Text(_checks?.IsPairIdentification == true ? "InputDevices_CancelFind" : "InputDevices_FindPair");
     public string IdentifyMouseText => Text(_checks?.Identifying == InputDeviceKind.Mouse ? "InputDevices_CancelFind" : "InputDevices_FindMouse");
     public string IdentifyKeyboardText => Text(_checks?.Identifying == InputDeviceKind.Keyboard ? "InputDevices_CancelFind" : "InputDevices_FindKeyboard");
     public string StatusText => Text(_status);
-    public bool ShowStatus => _status != "InputDevices_Choose";
+    public bool ShowStatus => _status is not ("InputDevices_Choose" or "InputDevices_AutomaticActive");
     public string MouseActivityText => ActivityText(InputDeviceKind.Mouse, SelectedMouse, _savedMouse);
     public string KeyboardActivityText => ActivityText(InputDeviceKind.Keyboard, SelectedKeyboard, _savedKeyboard);
 
@@ -108,7 +132,7 @@ public partial class InputDevicesViewModel : ViewModelBase, IPendingSettingsChan
             SelectedMouse = Mice.FirstOrDefault(d => d.Path == mouse);
             SelectedKeyboard = Keyboards.FirstOrDefault(d => d.Path == keyboard);
             _discovered = true;
-            _status = Mice.Count == 0 || Keyboards.Count == 0 ? "InputDevices_None" :
+            _status = AutomaticInput ? "InputDevices_AutomaticActive" : Mice.Count == 0 || Keyboards.Count == 0 ? "InputDevices_None" :
                 (found.SelectedMouse != null && SelectedMouse == null) || (found.SelectedKeyboard != null && SelectedKeyboard == null)
                     ? "InputDevices_Missing" : "InputDevices_Choose";
         }
@@ -250,7 +274,7 @@ public partial class InputDevicesViewModel : ViewModelBase, IPendingSettingsChan
 
     private void NotifyState()
     {
-        foreach (string name in new[] { nameof(HasChanges), nameof(HasError), nameof(CanSave), nameof(IsPolling), nameof(CanRefresh),
+        foreach (string name in new[] { nameof(SupportsAutomaticInput), nameof(AutomaticInput), nameof(HasChanges), nameof(HasError), nameof(CanSave), nameof(IsPolling), nameof(CanRefresh),
             nameof(CanSelectDevices), nameof(CanIdentifyPair), nameof(CanIdentifyMouse), nameof(CanIdentifyKeyboard), nameof(CanCheck),
             nameof(ShowCheck), nameof(ShowStop), nameof(IdentifyPairText), nameof(IdentifyMouseText), nameof(IdentifyKeyboardText),
             nameof(StatusText), nameof(ShowStatus), nameof(MouseActivityText), nameof(KeyboardActivityText) }) OnPropertyChanged(name);
@@ -264,5 +288,6 @@ public partial class InputDevicesViewModel : ViewModelBase, IPendingSettingsChan
         _disposed = true;
         Deactivate();
         _checks?.Dispose();
+        if (_settings != null) _settings.PropertyChanged -= InputModeChanged;
     }
 }

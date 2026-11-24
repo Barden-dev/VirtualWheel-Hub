@@ -98,7 +98,7 @@ namespace SimRacingHub.Linux
             return Acquire();
         }
 
-        public OutputTestCapabilities TestCapabilities => new(_mode == OutputDeviceMode.Xbox360 ? 8 : 42);
+        public OutputTestCapabilities TestCapabilities => new(_mode == OutputDeviceMode.Xbox360 ? 8 : 42, _mode != OutputDeviceMode.Xbox360);
         private static readonly ushort[] XboxTestButtons = { LinuxNative.BTN_TL, LinuxNative.BTN_TR,
             LinuxNative.BTN_SOUTH, LinuxNative.BTN_EAST, LinuxNative.BTN_NORTH, LinuxNative.BTN_WEST,
             LinuxNative.BTN_SELECT, LinuxNative.BTN_START };
@@ -108,17 +108,17 @@ namespace SimRacingHub.Linux
 
         public bool UpdateTestReport(OutputTestReport report)
             => SendReport(report.Steer, report.Gas, report.Brake, report.Button == 1, report.Button == 2,
-                report.Button, true);
+                report.Button, true, clutch: report.Clutch);
 
         public bool UpdateReport(OutputReport report) => SendReport(report.Steer, report.Gas, report.Brake,
-            report.Buttons.IsDown(1), report.Buttons.IsDown(2), 0, false, report.Buttons);
+            report.Buttons.IsDown(1), report.Buttons.IsDown(2), 0, false, report.Buttons, report.Clutch);
 
-        private unsafe bool SendReport(int steer, int gas, int brake, bool shiftDown, bool shiftUp, int button, bool test, OutputButtons buttons = default)
+        private unsafe bool SendReport(int steer, int gas, int brake, bool shiftDown, bool shiftUp, int button, bool test, OutputButtons buttons = default, int clutch = 0)
         {
             int fd = _fd;
             if (fd < 0) return false;
 
-            Span<InputEvent> packetBuffer = stackalloc InputEvent[48];
+            Span<InputEvent> packetBuffer = stackalloc InputEvent[52];
             int count = 0;
 
             if (_mode == OutputDeviceMode.Xbox360)
@@ -137,14 +137,16 @@ namespace SimRacingHub.Linux
             }
             else
             {
-                // Virtual Wheel: steer, gas, brake [0..32768]
+                // Virtual Wheel: steer, gas, brake, clutch [0..32768]
                 int mappedSteer = Math.Clamp(steer, 0, 32768);
                 int mappedGas = Math.Clamp(Math.Max(0, gas), 0, 32768);
                 int mappedBrake = Math.Clamp(Math.Max(0, brake), 0, 32768);
+                int mappedClutch = Math.Clamp(Math.Max(0, clutch), 0, 32768);
 
                 packetBuffer[count++] = new InputEvent { Type = LinuxNative.EV_ABS, Code = LinuxNative.ABS_X, Value = mappedSteer };
                 packetBuffer[count++] = new InputEvent { Type = LinuxNative.EV_ABS, Code = LinuxNative.ABS_Y, Value = mappedGas };
                 packetBuffer[count++] = new InputEvent { Type = LinuxNative.EV_ABS, Code = LinuxNative.ABS_RZ, Value = mappedBrake };
+                packetBuffer[count++] = new InputEvent { Type = LinuxNative.EV_ABS, Code = LinuxNative.ABS_Z, Value = mappedClutch };
                 packetBuffer[count++] = new InputEvent { Type = LinuxNative.EV_KEY, Code = LinuxNative.BTN_GEAR_DOWN, Value = shiftDown ? 1 : 0 };
                 packetBuffer[count++] = new InputEvent { Type = LinuxNative.EV_KEY, Code = LinuxNative.BTN_GEAR_UP, Value = shiftUp ? 1 : 0 };
                 packetBuffer[count++] = new InputEvent { Type = LinuxNative.EV_SYN, Code = LinuxNative.SYN_REPORT, Value = 0 };
@@ -200,10 +202,12 @@ namespace SimRacingHub.Linux
             LinuxNative.Ioctl(fd, LinuxNative.UI_SET_ABSBIT, LinuxNative.ABS_X);
             LinuxNative.Ioctl(fd, LinuxNative.UI_SET_ABSBIT, LinuxNative.ABS_Y);
             LinuxNative.Ioctl(fd, LinuxNative.UI_SET_ABSBIT, LinuxNative.ABS_RZ);
+            LinuxNative.Ioctl(fd, LinuxNative.UI_SET_ABSBIT, LinuxNative.ABS_Z);
 
             SetupAbsAxis(fd, LinuxNative.ABS_X, 0, 32768, 0, 0);
             SetupAbsAxis(fd, LinuxNative.ABS_Y, 0, 32768, 0, 0);
             SetupAbsAxis(fd, LinuxNative.ABS_RZ, 0, 32768, 0, 0);
+            SetupAbsAxis(fd, LinuxNative.ABS_Z, 0, 32768, 0, 0);
 
             var setup = new UInputSetup
             {

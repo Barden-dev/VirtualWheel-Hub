@@ -1,3 +1,4 @@
+using System;
 using Avalonia;
 using Avalonia.Controls;
 using SimRacingHub.Application.Features.AppSettings;
@@ -5,8 +6,8 @@ using SimRacingHub.Application.Features.AppSettings;
 namespace SimRacingHub.Avalonia.Views.AppSettings
 {
     /// <summary>
-    /// UserControl view for application settings, language switching, system autostart,
-    /// update checker, learning cache management, simulator setup, and external links.
+    /// UserControl view for application settings, language switching, startup preferences,
+    /// update checker, and external links.
     /// Bound to AppSettingsViewModel.
     /// </summary>
     public partial class AppSettingsView : UserControl
@@ -14,12 +15,15 @@ namespace SimRacingHub.Avalonia.Views.AppSettings
         public AppSettingsView()
         {
             InitializeComponent();
+            PopulateExtraCards();
         }
 
         public AppSettingsView(AppSettingsViewModel viewModel) : this()
         {
             DataContext = viewModel;
         }
+
+        partial void PopulateExtraCards();
 
         private void LanguageSelectorOpened(object? sender, EventArgs e)
         {

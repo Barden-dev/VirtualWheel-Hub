@@ -3,24 +3,29 @@ using SimRacingHub.Models;
 
 namespace SimRacingHub.Core
 {
-    public class MathEngine
+    public partial class MathEngine
     {
         private readonly ResolvedProfile _profile;
         private readonly AxisState _state;
+
         public MathEngine(ResolvedProfile profile, AxisState state)
         {
             _profile = profile;
             _state = state;
         }
 
-        public void ProcessSteering(int deltaX)
+        public void ProcessSteering(int deltaX) => ProcessSteeringScaled(deltaX, 1.0);
+
+        private void ProcessSteeringScaled(int deltaX, double sensitivityScale)
         {
-            if (_profile.UseKeyboardOnlyMode)
-                return;
-            double mouseSens = _profile.MouseSensitivity;
+            if (_profile.UseKeyboardOnlyMode) return;
+
+            double mouseSens = _profile.MouseSensitivity * sensitivityScale;
             _state.Steering += deltaX * mouseSens;
+
             double steerMaxLimit = 32768.0;
             double steerMinLimit = -32768.0;
+
             if (_profile.UseSteeringLockClamp && _profile.GlobalSteeringRange > 0)
             {
                 double ratio = (double)_profile.CarSteeringLock / _profile.GlobalSteeringRange;
@@ -28,16 +33,14 @@ namespace SimRacingHub.Core
                 steerMinLimit = -32768.0 * ratio;
             }
 
-            if (_state.Steering > steerMaxLimit)
-                _state.Steering = steerMaxLimit;
-            else if (_state.Steering < steerMinLimit)
-                _state.Steering = steerMinLimit;
+            if (_state.Steering > steerMaxLimit) _state.Steering = steerMaxLimit;
+            else if (_state.Steering < steerMinLimit) _state.Steering = steerMinLimit;
         }
 
         public void UpdateKeyboardSteering(bool isSteerLeft, bool isSteerRight, double dtSeconds)
         {
-            if (!_profile.UseKeyboardOnlyMode)
-                return;
+            if (!_profile.UseKeyboardOnlyMode) return;
+
             double targetSteer = 0.0;
             if (isSteerLeft && !isSteerRight)
             {
@@ -62,17 +65,19 @@ namespace SimRacingHub.Core
 
             double rampUpTime = Math.Max(0.01, _profile.KeySteerRampUpMs / 1000.0);
             double rampDownTime = Math.Max(0.01, _profile.KeySteerRampDownMs / 1000.0);
+
             double maxRange = 32768.0;
             if (_profile.UseSteeringLockClamp && _profile.GlobalSteeringRange > 0)
             {
                 double ratio = (double)_profile.CarSteeringLock / _profile.GlobalSteeringRange;
-                if (ratio > 0)
-                    maxRange *= ratio;
+                if (ratio > 0) maxRange *= ratio;
             }
 
             double rampUpSpeed = maxRange / rampUpTime;
             double rampDownSpeed = maxRange / rampDownTime;
+
             double current = _state.Steering;
+
             if (targetSteer == 0.0)
             {
                 if (current > 0)
@@ -120,11 +125,42 @@ namespace SimRacingHub.Core
             _state.Reset(-32768.0);
         }
 
-        public void UpdatePedals(bool isGasPressed, bool isBrakePressed, bool isTurboGas, bool isTurboBrake, double dtSeconds)
+        public void UpdatePedals(bool isGasPressed, bool isBrakePressed, bool isTurboGas, bool isTurboBrake, double dtSeconds, bool isClutchPressed = false)
+            => UpdatePedalsCore(isGasPressed, isBrakePressed, isTurboGas, isTurboBrake, dtSeconds, disableBrakeLimit: false, isClutchPressed);
+
+        private void UpdatePedalsCore(bool isGasPressed, bool isBrakePressed, bool isTurboGas, bool isTurboBrake, double dtSeconds, bool disableBrakeLimit, bool isClutchPressed)
         {
             double dtFactor = GetPedalDtFactor(dtSeconds);
-            UpdateBrake(isBrakePressed, isTurboBrake, isTurboGas, dtFactor);
+            UpdateBrake(isBrakePressed, isTurboBrake, isTurboGas, dtFactor, disableBrakeLimit);
             UpdateGas(isGasPressed, isBrakePressed, isTurboGas, dtFactor);
+            UpdateClutch(isClutchPressed, dtFactor);
+        }
+
+        private void UpdateClutch(bool isClutchPressed, double dtFactor)
+        {
+            double fullRange = 65536.0;
+            double axisMin = -32768.0;
+            double axisMax = 32768.0;
+
+            double currentClutchPct = (_state.ClutchVal - axisMin) / fullRange;
+            if (isClutchPressed)
+            {
+                if (currentClutchPct < _profile.ClutchThreshold)
+                {
+                    _state.ClutchVal += _profile.ClutchAttackFast * dtFactor;
+                }
+                else
+                {
+                    _state.ClutchVal += _profile.ClutchAttackSlow * dtFactor;
+                }
+            }
+            else
+            {
+                _state.ClutchVal -= _profile.ClutchDecay * dtFactor;
+            }
+
+            if (_state.ClutchVal > axisMax) _state.ClutchVal = axisMax;
+            else if (_state.ClutchVal < axisMin) _state.ClutchVal = axisMin;
         }
 
         private double GetPedalDtFactor(double dtSeconds)
@@ -135,11 +171,14 @@ namespace SimRacingHub.Core
                 dtSeconds = 1.0 / pollingRate;
             }
 
+            // A debugger pause or a system stall must not turn into a giant
+            // one-frame pedal jump. 20 ms is also the valid step at the minimum
+            // supported Hub Rate of 50 Hz.
             dtSeconds = Math.Min(dtSeconds, 0.020);
             return dtSeconds;
         }
 
-        private void UpdateBrake(bool isBrakePressed, bool isTurboBrake, bool isTurboGas, double dtFactor)
+        private void UpdateBrake(bool isBrakePressed, bool isTurboBrake, bool isTurboGas, double dtFactor, bool disableBrakeLimit)
         {
             double fullRange = 65536.0;
             double steeringMin = -32768.0;
@@ -147,7 +186,7 @@ namespace SimRacingHub.Core
 
             // Trail braking limit
             double brakeLimitVal;
-            if (!_profile.EnableTrailBraking)
+            if (!_profile.EnableTrailBraking || disableBrakeLimit)
             {
                 brakeLimitVal = steeringMax;
             }
@@ -210,6 +249,7 @@ namespace SimRacingHub.Core
             double fullRange = 65536.0;
             double steeringMin = -32768.0;
             double steeringMax = 32768.0;
+
             bool shouldApplyGas = isBrakePressed ? isTurboGas : isGasPressed;
             double currentGasPct = (_state.GasVal - steeringMin) / fullRange;
             if (shouldApplyGas)
@@ -239,10 +279,8 @@ namespace SimRacingHub.Core
                 }
             }
 
-            if (_state.GasVal > steeringMax)
-                _state.GasVal = steeringMax;
-            else if (_state.GasVal < steeringMin)
-                _state.GasVal = steeringMin;
+            if (_state.GasVal > steeringMax) _state.GasVal = steeringMax;
+            else if (_state.GasVal < steeringMin) _state.GasVal = steeringMin;
         }
 
         public int MapAxis(double val, double inMin, double inMax, double outMin, double outMax)
@@ -250,14 +288,21 @@ namespace SimRacingHub.Core
             return (int)Math.Round(outMin + ((val - inMin) / (inMax - inMin)) * (outMax - outMin));
         }
 
+        /// <summary>
+        /// Maps steering without touching pedal state. The dedicated steering
+        /// loop uses this cheap path at 1 kHz; gas/brake curves are not evaluated
+        /// for every mouse sample.
+        /// </summary>
         public int GetMappedSteering()
         {
             double rawSteerNorm = _state.Steering / 32768.0;
             rawSteerNorm = Math.Clamp(rawSteerNorm, -1.0, 1.0);
+
             double steerGamma = _profile.SteeringGamma <= 0 ? 1.0 : _profile.SteeringGamma;
             double curvedSteerNorm = Math.Sign(rawSteerNorm) * Math.Pow(Math.Abs(rawSteerNorm), steerGamma);
             double finalSteering = (curvedSteerNorm * 32768.0) + _profile.SteeringOffset;
             finalSteering = Math.Clamp(finalSteering, -32768.0, 32768.0);
+
             int mappedSteer = MapAxis(finalSteering, -32768, 32768, _profile.OutSteerMin, _profile.OutSteerMax);
             if (_profile.InvertSteering)
             {
@@ -267,29 +312,26 @@ namespace SimRacingHub.Core
             return mappedSteer;
         }
 
-        public (int steer, int gas, int brake) GetMappedOutputs()
+        public (int steer, int gas, int brake) GetMappedOutputs() => GetMappedOutputsScaled(1.0, 1.0);
+
+        private (int steer, int gas, int brake) GetMappedOutputsScaled(double gasScale, double brakeScale)
         {
             int mappedSteer = GetMappedSteering();
-            double rawGasNorm = (_state.GasVal - (-32768.0)) / 65536.0;
-            if (rawGasNorm > 1.0)
-                rawGasNorm = 1.0;
-            else if (rawGasNorm < 0.0)
-                rawGasNorm = 0.0;
+
+            double rawGasNorm = Math.Clamp((_state.GasVal - (-32768.0)) / 65536.0, 0.0, 1.0);
             double gasGamma = _profile.GasGamma <= 0 ? 1.0 : _profile.GasGamma;
             double curvedGasNorm = Math.Pow(rawGasNorm, gasGamma);
             double curvedGasVal = -32768.0 + (curvedGasNorm * 65536.0);
             double rawGas = MapAxis(curvedGasVal, -32768, 32768, _profile.OutGasMin, _profile.OutGasMax);
-            int mappedGas = (int)Math.Round(rawGas);
-            double rawBrakeNorm = (_state.BrakeVal - (-32768.0)) / 65536.0;
-            if (rawBrakeNorm > 1.0)
-                rawBrakeNorm = 1.0;
-            else if (rawBrakeNorm < 0.0)
-                rawBrakeNorm = 0.0;
+            int mappedGas = (int)Math.Round(_profile.OutGasMin + (rawGas - _profile.OutGasMin) * gasScale);
+
+            double rawBrakeNorm = Math.Clamp((_state.BrakeVal - (-32768.0)) / 65536.0, 0.0, 1.0);
             double brakeGamma = _profile.BrakeGamma <= 0 ? 1.0 : _profile.BrakeGamma;
             double curvedBrakeNorm = Math.Pow(rawBrakeNorm, brakeGamma);
             double curvedBrakeVal = -32768.0 + (curvedBrakeNorm * 65536.0);
             double rawBrake = MapAxis(curvedBrakeVal, -32768, 32768, _profile.OutBrakeMin, _profile.OutBrakeMax);
-            int mappedBrake = (int)Math.Round(rawBrake);
+            int mappedBrake = (int)Math.Round(_profile.OutBrakeMin + (rawBrake - _profile.OutBrakeMin) * brakeScale);
+
             if (_profile.InvertGas)
             {
                 mappedGas = _profile.OutGasMax - (mappedGas - _profile.OutGasMin);
@@ -301,6 +343,22 @@ namespace SimRacingHub.Core
             }
 
             return (mappedSteer, mappedGas, mappedBrake);
+        }
+
+        public int GetMappedClutch()
+        {
+            double rawClutchNorm = Math.Clamp((_state.ClutchVal - (-32768.0)) / 65536.0, 0.0, 1.0);
+            double clutchGamma = _profile.ClutchGamma <= 0 ? 1.0 : _profile.ClutchGamma;
+            double curvedClutchNorm = Math.Pow(rawClutchNorm, clutchGamma);
+            double curvedClutchVal = -32768.0 + (curvedClutchNorm * 65536.0);
+
+            int mappedClutch = MapAxis(curvedClutchVal, -32768, 32768, _profile.OutClutchMin, _profile.OutClutchMax);
+            if (_profile.InvertClutch)
+            {
+                mappedClutch = _profile.OutClutchMax - (mappedClutch - _profile.OutClutchMin);
+            }
+
+            return mappedClutch;
         }
     }
 }

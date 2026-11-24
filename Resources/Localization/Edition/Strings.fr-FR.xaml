@@ -1,0 +1,49 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+  <sys:String x:Key="Ui_897c55421a11" xml:space="preserve">Réponse de l’accélérateur et du freinage et timing de la pression.</sys:String>
+  <sys:String x:Key="InputFix_Title" xml:space="preserve">LMU — compatibilité d'entrée</sys:String>
+  <sys:String x:Key="InputFix_Description" xml:space="preserve">Activez le repli DirectInput pour des taux d'entrée jusqu'à 1 000 Hz. Fermez le jeu avant de postuler. Le fichier de paramètres d'origine est sauvegardé.</sys:String>
+  <sys:String x:Key="InputFix_NotChecked" xml:space="preserve">Les paramètres d'entrée n'ont pas été vérifiés.</sys:String>
+  <sys:String x:Key="InputFix_NotFound" xml:space="preserve">Le fichier de contrôles LMU est introuvable.</sys:String>
+  <sys:String x:Key="InputFix_Applied" xml:space="preserve">La compatibilité des entrées est activée.</sys:String>
+  <sys:String x:Key="InputFix_Ready" xml:space="preserve">La compatibilité d'entrée peut être activée.</sys:String>
+  <sys:String x:Key="InputFix_Failed" xml:space="preserve">L'opération a échoué. Fermez le jeu et vérifiez l'accès à ses fichiers.</sys:String>
+  <sys:String x:Key="InputFix_Check" xml:space="preserve">Vérifier</sys:String>
+  <sys:String x:Key="InputFix_Apply" xml:space="preserve">Activer</sys:String>
+  <sys:String x:Key="Edition_Description" xml:space="preserve">Édition FREE — open source</sys:String>
+  <sys:String x:Key="Tour_AssignmentBody" xml:space="preserve">Choisissez la direction, l'accélérateur, le frein ou un changement de vitesse. Utilisez Once pour une seule affectation afin que les pressions répétées ne puissent pas changer de menu par la suite. Cliquez sur Démarrer, passez au jeu et ouvrez la liaison souhaitée : le signal commence au bout de 5 secondes.</sys:String>
+  <sys:String x:Key="Tour_AxesTip" xml:space="preserve">Utilisez l'outil d'affectation lorsque vous avez besoin d'un signal de sortie connu. Cette visite ne déclenche jamais de signal ni ne modifie vos liaisons.</sys:String>
+  <sys:String x:Key="Tour_ReadyTip" xml:space="preserve">Si quelque chose ne répond pas : vérifiez l'activité du périphérique physique → liaisons du hub → sortie virtuelle → liaisons du jeu. Rouvrez ce guide à tout moment depuis Mise en route. Terminer vous ramène à votre page précédente.</sys:String>
+  <sys:String x:Key="Offer_Enable" xml:space="preserve">Activer</sys:String>
+  <sys:String x:Key="Offer_Abs" xml:space="preserve">Assistant ABS</sys:String>
+  <sys:String x:Key="Offer_AbsInfo" xml:space="preserve">Réduit la puissance de freinage lorsque les roues se bloquent.</sys:String>
+  <sys:String x:Key="Offer_Tc" xml:space="preserve">Assistant TC</sys:String>
+  <sys:String x:Key="Offer_TcInfo" xml:space="preserve">Réduit la puissance de l’accélérateur lorsque les roues patinent.</sys:String>
+  <sys:String x:Key="Offer_Speed" xml:space="preserve">Direction sensible à la vitesse</sys:String>
+  <sys:String x:Key="Offer_SpeedInfo" xml:space="preserve">Ajuste la réponse de la direction en utilisant la vitesse de jeu actuelle.</sys:String>
+  <sys:String x:Key="Offer_Slip" xml:space="preserve">Seuil de glissement</sys:String>
+  <sys:String x:Key="Offer_Drop" xml:space="preserve">Réduction maximale (%)</sys:String>
+  <sys:String x:Key="Offer_Recover" xml:space="preserve">Taux de récupération</sys:String>
+  <sys:String x:Key="Offer_Minimum" xml:space="preserve">Vitesse minimale (km/h)</sys:String>
+  <sys:String x:Key="Offer_Maximum" xml:space="preserve">Vitesse maximale (km/h)</sys:String>
+  <sys:String x:Key="Offer_Intensity" xml:space="preserve">Intensité (%)</sys:String>
+  <sys:String x:Key="Offer_Sound" xml:space="preserve">Retour sonore</sys:String>
+  <sys:String x:Key="Offer_SoundTab" xml:space="preserve">Audio · PRO</sys:String>
+  <sys:String x:Key="Offer_SoundInfo" xml:space="preserve">Écoutez les changements d’adhérence et l’activité d’assistance pendant la conduite.</sys:String>
+  <sys:String x:Key="Offer_Volume" xml:space="preserve">Volumes (%)</sys:String>
+  <sys:String x:Key="Offer_Pitch" xml:space="preserve">Pas (Hz)</sys:String>
+  <sys:String x:Key="Offer_Front" xml:space="preserve">Essieu avant</sys:String>
+  <sys:String x:Key="Offer_Rear" xml:space="preserve">Essieu arrière</sys:String>
+  <sys:String x:Key="Offer_Data" xml:space="preserve">Données de jeu en direct</sys:String>
+  <sys:String x:Key="Offer_DataTab" xml:space="preserve">Connexion au jeu · PRO</sys:String>
+  <sys:String x:Key="Offer_DataInfo" xml:space="preserve">Les données de jeu permettent une sélection automatique des voitures et des assistants de conduite pris en charge.</sys:String>
+  <sys:String x:Key="Offer_Prepare" xml:space="preserve">Préparer le jeu</sys:String>
+  <sys:String x:Key="Offer_Menu" xml:space="preserve">Menus de jeu</sys:String>
+  <sys:String x:Key="Offer_MenuInfo" xml:space="preserve">Utilisez l'état connu du menu du jeu pour suspendre les commandes et relâcher le curseur.</sys:String>
+  <sys:String x:Key="Offer_Pause" xml:space="preserve">Suspendre les contrôles dans les menus du jeu</sys:String>
+  <sys:String x:Key="Offer_Cursor" xml:space="preserve">Relâchez le curseur dans les menus du jeu</sys:String>
+  <sys:String x:Key="Offer_Count" xml:space="preserve">Données de jeu en direct et fonctionnalités {0} PRO</sys:String>
+  <sys:String x:Key="Offer_TireSound" xml:space="preserve">Retour sonore des pneus</sys:String>
+  <sys:String x:Key="Offer_TcSound" xml:space="preserve">TC retour sonore</sys:String>
+</ResourceDictionary>

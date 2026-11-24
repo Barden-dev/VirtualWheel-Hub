@@ -23,6 +23,7 @@ public sealed class WindowsInputSource : IInputSource
             if (IsRunning) return;
             Stop();
             var settings = AppSettings.Load(_settingsPath);
+            ConfigureSelection(settings);
             if (!string.IsNullOrWhiteSpace(settings.WindowsSelectedMousePath) || !string.IsNullOrWhiteSpace(settings.WindowsSelectedKeyboardPath))
             {
                 var devices = WindowsRawDevices.Discover();
@@ -34,6 +35,17 @@ public sealed class WindowsInputSource : IInputSource
             _state = state;
             _lease = WindowsRawInputHub.Subscribe(state.Accept);
         }
+    }
+
+    internal static void ConfigureSelection(AppSettings settings)
+    {
+        if (settings.AutomaticInputEnabled)
+        {
+            settings.WindowsSelectedMousePath = null;
+            settings.WindowsSelectedKeyboardPath = null;
+        }
+        else if (string.IsNullOrWhiteSpace(settings.WindowsSelectedMousePath) || string.IsNullOrWhiteSpace(settings.WindowsSelectedKeyboardPath))
+            throw new IOException(SimRacingHub.Application.Localization.LocalizationManager.Instance.GetString("Prep_InputSelectionRequired"));
     }
 
     public void Stop()

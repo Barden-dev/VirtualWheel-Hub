@@ -15,7 +15,7 @@ namespace SimRacingHub.Application.Features.Steering;
 public partial class SteeringViewModel : ViewModelBase, IDisposable
 {
     private readonly ProfileSession _profileSession;
-    private readonly ProfileSettingsViewModel[] _sections;
+    private readonly List<ProfileSettingsViewModel> _sections = new();
     private bool _disposed;
     public ProfileSession ProfileSession => _profileSession;
     public Profile CurrentProfile => _profileSession.CurrentProfile;
@@ -23,20 +23,34 @@ public partial class SteeringViewModel : ViewModelBase, IDisposable
     public MouseSteeringSettingsViewModel Mouse { get; }
     public KeyboardSteeringSettingsViewModel Keyboard { get; }
     public SteeringOutputSettingsViewModel Output { get; }
+
     public SteeringViewModel(ProfileSession profileSession, ILocalizationManager localizationManager)
+        : this(profileSession, localizationManager, skipExtraInit: false)
+    {
+    }
+
+    private SteeringViewModel(ProfileSession profileSession, ILocalizationManager localizationManager, bool skipExtraInit)
     {
         _profileSession = profileSession ?? throw new ArgumentNullException(nameof(profileSession));
         ArgumentNullException.ThrowIfNull(localizationManager);
         Mouse = new MouseSteeringSettingsViewModel(profileSession);
         Keyboard = new KeyboardSteeringSettingsViewModel(profileSession);
         Output = new SteeringOutputSettingsViewModel(profileSession, localizationManager);
-        _sections = new ProfileSettingsViewModel[] { Mouse, Keyboard, Output };
-        foreach (var section in _sections)
+        RegisterSection(Mouse);
+        RegisterSection(Keyboard);
+        RegisterSection(Output);
+        if (!skipExtraInit)
         {
-            section.PropertyChanged += SectionChanged;
-            section.PropertyChanging += SectionChanging;
+            InitializeExtraSections(localizationManager);
         }
         _profileSession.UndoStateChanged += OnUndoStateChanged;
+    }
+
+    private void RegisterSection(ProfileSettingsViewModel section)
+    {
+        _sections.Add(section);
+        section.PropertyChanged += SectionChanged;
+        section.PropertyChanging += SectionChanging;
     }
 
     public double InputValue { get => Mouse.InputValue; set => Mouse.InputValue = value; }
@@ -157,20 +171,18 @@ public partial class SteeringViewModel : ViewModelBase, IDisposable
     public IRelayCommand ClearOutSteerMaxOverrideCommand => Output.ClearOutSteerMaxOverrideCommand;
     public double EvaluateCurve(double input) => Mouse.EvaluateCurve(input);
     public void OnMonitorMarkerDragged(string markerName, double value) => Output.OnMonitorMarkerDragged(markerName, value);
+
     [RelayCommand]
     public void ResetSteering()
     {
         using var edit = _profileSession.BeginEditGroup(nameof(ResetSteering));
-        if (CurrentProfile == null)
-            return;
+        if (CurrentProfile == null) return;
+
         var defaultProfile = ProfileDefaults.CreateDefault();
         MouseSensitivity = defaultProfile.MouseSensitivity;
         SteeringGamma = defaultProfile.SteeringGamma;
         SteeringOffset = defaultProfile.SteeringOffset;
-        ;
-        ;
-        ;
-        ;
+        ResetExtraSteering(defaultProfile);
         UseKeyboardOnlyMode = defaultProfile.UseKeyboardOnlyMode;
         KeySteerRampUpMs = defaultProfile.KeySteerRampUpMs;
         KeySteerRampDownMs = defaultProfile.KeySteerRampDownMs;
@@ -188,63 +200,81 @@ public partial class SteeringViewModel : ViewModelBase, IDisposable
     [RelayCommand]
     public void ClearOverride(string? propertyName)
     {
-        if (string.IsNullOrWhiteSpace(propertyName))
-            return;
+        if (string.IsNullOrWhiteSpace(propertyName)) return;
+
         switch (propertyName)
         {
             case nameof(MouseSensitivity):
             case nameof(SteeringSensitivity):
                 ClearMouseSensitivityOverride();
                 break;
+
             case nameof(SteeringGamma):
             case nameof(SteeringLinearity):
                 ClearSteeringGammaOverride();
                 break;
+
             case nameof(SteeringOffset):
             case nameof(SteeringDeadzone):
                 ClearSteeringOffsetOverride();
                 break;
+
             case nameof(UseKeyboardOnlyMode):
                 ClearUseKeyboardOnlyModeOverride();
                 break;
+
             case nameof(KeySteerRampUpMs):
             case nameof(KeyboardSteeringRampTime):
                 ClearKeySteerRampUpMsOverride();
                 break;
+
             case nameof(KeySteerRampDownMs):
             case nameof(CenterSteeringReturnSpeed):
                 ClearKeySteerRampDownMsOverride();
                 break;
+
             case nameof(KeySteerSnapToFullLock):
             case nameof(KeyboardSteeringSnapAngle):
                 ClearKeySteerSnapToFullLockOverride();
                 break;
+
             case nameof(KeyCenterSteering1):
             case nameof(KeyCenterSteering):
                 ClearKeyCenterSteering1Override();
                 break;
+
             case nameof(KeyCenterSteering2):
                 ClearKeyCenterSteering2Override();
                 break;
+
             case nameof(UseSteeringLockClamp):
                 ClearUseSteeringLockClampOverride();
                 break;
+
             case nameof(CarSteeringLock):
             case nameof(SteeringWheelRotationDeg):
                 ClearCarSteeringLockOverride();
                 break;
+
             case nameof(GlobalSteeringRange):
             case nameof(MaxWheelAngle):
                 ClearGlobalSteeringRangeOverride();
                 break;
+
             case nameof(InvertSteering):
                 ClearInvertSteeringOverride();
                 break;
+
             case nameof(OutSteerMin):
                 ClearOutSteerMinOverride();
                 break;
+
             case nameof(OutSteerMax):
                 ClearOutSteerMaxOverride();
+                break;
+
+            default:
+                TryClearExtraOverride(propertyName);
                 break;
         }
     }
@@ -261,10 +291,7 @@ public partial class SteeringViewModel : ViewModelBase, IDisposable
         ClearMouseSensitivityOverride();
         ClearSteeringGammaOverride();
         ClearSteeringOffsetOverride();
-        ;
-        ;
-        ;
-        ;
+        ClearAllExtraSteeringOverrides();
         ClearUseKeyboardOnlyModeOverride();
         ClearKeySteerRampUpMsOverride();
         ClearKeySteerRampDownMsOverride();
@@ -290,10 +317,19 @@ public partial class SteeringViewModel : ViewModelBase, IDisposable
         Mouse.NotifyAllSteeringProperties();
         Keyboard.NotifyAllSteeringProperties();
         Output.NotifyAllSteeringProperties();
+        NotifyExtraSteeringProperties();
     }
+
+    partial void InitializeExtraSections(ILocalizationManager localizationManager);
+    partial void ResetExtraSteering(Profile defaultProfile);
+    partial void TryClearExtraOverride(string propertyName);
+    partial void ClearAllExtraSteeringOverrides();
+    partial void NotifyExtraSteeringProperties();
+
     private void OnUndoStateChanged(object? sender, EventArgs e) => NotifyAllSteeringProperties();
     private void SectionChanged(object? sender, PropertyChangedEventArgs e) => OnPropertyChanged(e);
     private void SectionChanging(object? sender, PropertyChangingEventArgs e) => OnPropertyChanging(e);
+
     public void Dispose()
     {
         if (_disposed) return;

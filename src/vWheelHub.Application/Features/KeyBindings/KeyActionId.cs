@@ -9,6 +9,7 @@
         SteerRight,
         Throttle,
         Brake,
+        Clutch = 4,
         ShiftUp = 5,
         ShiftDown,
         CenterSteering,

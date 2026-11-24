@@ -104,6 +104,7 @@ namespace SimRacingHub.Core
                     SaveInternal();
                     return existing;
                 }
+                if (existing?.FileBackups.Count > 0) ArchivePersistedJournal();
                 var state = new GamePreparationState
                 {
                     GameId = key,
@@ -337,33 +338,82 @@ namespace SimRacingHub.Core
 
         // Persist the original BEFORE changing a file. Complete only after the atomic replacement succeeds.
         public FileChange CaptureFile(string gameId, string path)
+            => CaptureFileCore(gameId, path, allowUpdatedSnapshot: false, expectedBytes: null);
+
+        /// <summary>For a merge that preserves the latest settings, with the exact bytes already parsed by its caller.</summary>
+        public FileChange CaptureFileForMerge(string gameId, string path, byte[]? expectedBytes)
+            => CaptureFileCore(gameId, path, allowUpdatedSnapshot: true, expectedBytes);
+
+        private FileChange CaptureFileCore(string gameId, string path, bool allowUpdatedSnapshot, byte[]? expectedBytes)
         {
             path = Path.GetFullPath(path);
             lock (_sync)
             {
+                byte[]? snapshot = null;
+                string? snapshotHash = null;
+                if (allowUpdatedSnapshot)
+                {
+                    try { snapshot = File.ReadAllBytes(path); }
+                    catch (Exception ex) when (ex is FileNotFoundException or DirectoryNotFoundException) { }
+                    snapshotHash = snapshot == null ? null : ComputeHash(snapshot);
+                    string? expected = expectedBytes == null ? null : ComputeHash(expectedBytes);
+                    if (snapshotHash != expected) throw new PreparationFileConflictException(path);
+                }
                 var state = GetState(gameId);
                 if (state == null || state.Status == "Reverted") state = StartPreparation(gameId);
                 var previous = state.FileBackups.FirstOrDefault(b => b.OriginalFilePath == path && !b.Restored);
+                bool updatedBaseline = false;
                 if (previous != null)
                 {
                     var current = File.Exists(path) ? HashFile(path) : null;
+                    if (allowUpdatedSnapshot && current != snapshotHash) throw new PreparationFileConflictException(path);
                     if (current != previous.AppliedHash && current != previous.OriginalHash)
-                        throw new PreparationFileConflictException(path);
-                    return new FileChange(this, previous);
+                    {
+                        if (!allowUpdatedSnapshot) throw new PreparationFileConflictException(path);
+                        updatedBaseline = true;
+                    }
+                    else return new FileChange(this, previous, snapshotHash, allowUpdatedSnapshot);
                 }
-                bool exists = File.Exists(path);
+                bool exists = allowUpdatedSnapshot ? snapshot != null : File.Exists(path);
                 string backupPath = Path.Combine(Path.GetDirectoryName(_storagePath)!, "preparation-backups", Guid.NewGuid().ToString("N"));
                 Directory.CreateDirectory(Path.GetDirectoryName(backupPath)!);
-                if (exists) File.Copy(path, backupPath);
+                if (exists)
+                {
+                    if (allowUpdatedSnapshot) File.WriteAllBytes(backupPath, snapshot!);
+                    else File.Copy(path, backupPath);
+                }
+                if (updatedBaseline)
+                {
+                    // Preserve the whole old record before replacing its active baseline.
+                    // Keeping history outside FileBackups also makes rollback safe in older
+                    // builds: their unchanged journal reader sees only the current baseline.
+                    ArchivePersistedJournal();
+                }
                 var backup = new PreparedFileBackup
                 {
                     OriginalFilePath = path, BackupFilePath = backupPath, OriginalExisted = exists,
                     OriginalHash = exists ? HashFile(backupPath) : "", AppliedHash = exists ? HashFile(backupPath) : ""
                 };
+                if (updatedBaseline) state.FileBackups.Remove(previous!);
                 state.FileBackups.Add(backup);
-                SaveInternal();
-                return new FileChange(this, backup);
+                try { SaveInternal(); }
+                catch
+                {
+                    state.FileBackups.Remove(backup);
+                    if (updatedBaseline) state.FileBackups.Add(previous!);
+                    throw;
+                }
+                return new FileChange(this, backup, snapshotHash, allowUpdatedSnapshot);
             }
+        }
+
+        private void ArchivePersistedJournal()
+        {
+            byte[] history = File.ReadAllBytes(_storagePath);
+            if (ComputeHash(history) != _persistedHash) throw new PreparationJournalConflictException(_storagePath);
+            string folder = Path.Combine(Path.GetDirectoryName(_storagePath)!, "preparation-backups");
+            Directory.CreateDirectory(folder);
+            File.WriteAllBytes(Path.Combine(folder, "history-" + Guid.NewGuid().ToString("N") + ".json"), history);
         }
 
         public sealed class FileChange : IDisposable
@@ -371,11 +421,16 @@ namespace SimRacingHub.Core
             private readonly GamePreparationJournal _owner;
             private readonly PreparedFileBackup _backup;
             private string? _expectedHash;
-            internal FileChange(GamePreparationJournal owner, PreparedFileBackup backup) { _owner = owner; _backup = backup; }
+            private readonly string? _snapshotHash;
+            private readonly bool _verifySnapshot;
+            internal FileChange(GamePreparationJournal owner, PreparedFileBackup backup, string? snapshotHash = null, bool verifySnapshot = false)
+            { _owner = owner; _backup = backup; _snapshotHash = snapshotHash; _verifySnapshot = verifySnapshot; }
             public void Expect(byte[] bytes)
             {
                 lock (_owner._sync)
                 {
+                    if (_verifySnapshot && (File.Exists(_backup.OriginalFilePath) ? HashFile(_backup.OriginalFilePath) : null) != _snapshotHash)
+                        throw new PreparationFileConflictException(_backup.OriginalFilePath);
                     _expectedHash = ComputeHash(bytes);
                     _backup.AppliedHash = _expectedHash;
                     _owner.SaveInternal();

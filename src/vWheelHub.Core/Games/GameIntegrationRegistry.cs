@@ -2,18 +2,23 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SimRacingHub.Services.Games
-{
-    public class GameIntegrationRegistry : IDisposable
-    {
-        private readonly List<IGameIntegration> _integrations = new List<IGameIntegration>();
-        public GameIntegrationRegistry() : this(true)
-        {
-        }
+namespace SimRacingHub.Services.Games;
 
-        public GameIntegrationRegistry(bool registerDefaults)
+public partial class GameIntegrationRegistry : IDisposable
+{
+    private readonly List<IGameIntegration> _integrations = new List<IGameIntegration>();
+
+    public GameIntegrationRegistry() : this(true)
+    {
+    }
+
+    public GameIntegrationRegistry(bool registerDefaults)
+    {
+        if (registerDefaults)
         {
-            if (registerDefaults)
+            bool handled = false;
+            RegisterExtendedDefaults(ref handled);
+            if (!handled)
             {
                 _integrations.Add(new BasicProcessIntegration("Le Mans Ultimate", "Le Mans Ultimate"));
                 _integrations.Add(new BasicProcessIntegration("iRacing", "iRacingSim64DX11"));
@@ -31,32 +36,32 @@ namespace SimRacingHub.Services.Games
                 _integrations.Add(new BasicProcessIntegration("Forza Horizon 4", "ForzaHorizon4"));
             }
         }
+    }
 
-        public void Register(IGameIntegration integration)
+    partial void RegisterExtendedDefaults(ref bool handled);
+
+    public void Register(IGameIntegration integration)
+    {
+        if (integration != null)
         {
-            if (integration != null)
-            {
-                _integrations.Add(integration);
-            }
+            _integrations.Add(integration);
         }
+    }
 
-        public IGameIntegration? GetIntegration(string? gameId)
-        {
-            if (string.IsNullOrEmpty(gameId))
-                return null;
-            return _integrations.FirstOrDefault(i => string.Equals(i.GameId, gameId, StringComparison.OrdinalIgnoreCase));
-        }
+    public IGameIntegration? GetIntegration(string? gameId)
+    {
+        if (string.IsNullOrEmpty(gameId)) return null;
+        return _integrations.FirstOrDefault(i => string.Equals(i.GameId, gameId, StringComparison.OrdinalIgnoreCase));
+    }
 
-        public IEnumerable<IGameIntegration> GetAll() => _integrations;
-        public void Dispose()
+    public IEnumerable<IGameIntegration> GetAll() => _integrations;
+
+    public void Dispose()
+    {
+        foreach (var integration in _integrations)
         {
-            foreach (var integration in _integrations)
-            {
-                if (integration is IDisposable resource)
-                    resource.Dispose();
-                else if (integration.Detector is IDisposable detector)
-                    detector.Dispose();
-            }
+            if (integration is IDisposable resource) resource.Dispose();
+            else if (integration.Detector is IDisposable detector) detector.Dispose();
         }
     }
 }

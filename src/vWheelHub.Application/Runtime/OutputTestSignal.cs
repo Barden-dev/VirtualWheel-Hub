@@ -3,7 +3,7 @@ using SimRacingHub.Core;
 
 namespace SimRacingHub.Application.Runtime;
 
-public enum OutputTestAction { SteeringBoth, SteeringLeft, SteeringRight, Gas, Brake, Button = 6, ShiftDown, ShiftUp }
+public enum OutputTestAction { SteeringBoth, SteeringLeft, SteeringRight, Gas, Brake, Clutch = 5, Button = 6, ShiftDown, ShiftUp }
 
 public interface IOutputTestSession
 {
@@ -63,6 +63,7 @@ public static class OutputTestSignal
                 OutputTestAction.ShiftUp => 2,
                 OutputTestAction.Button => button,
                 _ => 0
-            } : 0);
+            } : 0,
+            Clutch: action == OutputTestAction.Clutch ? value : 0);
     }
 }

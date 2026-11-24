@@ -12,7 +12,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Version>2.0.3</Version>
+    <Version>2.1.0</Version>
     <AssemblyVersion>$(Version).0</AssemblyVersion>
     <FileVersion>$(Version).0</FileVersion>
     <InformationalVersion>$(Version)</InformationalVersion>
@@ -30,6 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Using Include="SimRacingHub.Services.Games" />
     <ProjectReference Include="..\vWheelHub.Core\vWheelHub.Core.csproj" />
     <ProjectReference Include="..\vWheelHub.Application\vWheelHub.Application.csproj" />
     <ProjectReference Include="..\vWheelHub.Linux\vWheelHub.Linux.csproj" />
@@ -37,7 +38,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\..\Resources\Localization\*.xaml" Link="Resources\Localization\%(Filename)%(Extension)">
+    <None Include="..\..\Resources\Localization\**\*.xaml" Link="Resources\Localization\%(RecursiveDir)%(Filename)%(Extension)">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

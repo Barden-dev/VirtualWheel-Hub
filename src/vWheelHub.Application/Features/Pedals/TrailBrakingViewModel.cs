@@ -35,6 +35,20 @@ namespace SimRacingHub.Application.Features.Pedals
         public string Description =>
             _localizationManager.GetString("Page_TrailBraking_Desc", "Gradually releases brakes as steering angle increases.");
 
+        public string WarningText
+        {
+            get
+            {
+                string? warning = null;
+                ResolveExtraWarningText(ref warning);
+                return warning ?? string.Empty;
+            }
+        }
+
+        public bool HasWarning => !string.IsNullOrEmpty(WarningText);
+
+        partial void ResolveExtraWarningText(ref string? warning);
+
         public string HubRateHint =>
             _localizationManager.GetString("Page_TrailBraking_HubRateHint", "Release rate is adjusted per tick according to hub update frequency.");
 
@@ -393,6 +407,9 @@ namespace SimRacingHub.Application.Features.Pedals
                 case nameof(Profile.TbIntensity):
                     NotifyIntensityProperties();
                     break;
+                default:
+                    OnExtraProfilePropertyChanged(e.PropertyName);
+                    break;
             }
         }
 
@@ -418,13 +435,20 @@ namespace SimRacingHub.Application.Features.Pedals
                 case nameof(ResolvedProfile.TbIntensity):
                     NotifyIntensityProperties();
                     break;
+                default:
+                    OnExtraProfilePropertyChanged(e.PropertyName);
+                    break;
             }
         }
+
+        partial void OnExtraProfilePropertyChanged(string propertyName);
 
         private void OnLanguageChanged(string cultureCode)
         {
             OnPropertyChanged(nameof(PageTitle));
             OnPropertyChanged(nameof(Description));
+            OnPropertyChanged(nameof(WarningText));
+            OnPropertyChanged(nameof(HasWarning));
             OnPropertyChanged(nameof(HubRateHint));
         }
 
@@ -432,6 +456,8 @@ namespace SimRacingHub.Application.Features.Pedals
         {
             OnPropertyChanged(nameof(PageTitle));
             OnPropertyChanged(nameof(Description));
+            OnPropertyChanged(nameof(WarningText));
+            OnPropertyChanged(nameof(HasWarning));
             OnPropertyChanged(nameof(HubRateHint));
         }
 
@@ -447,7 +473,10 @@ namespace SimRacingHub.Application.Features.Pedals
             OnPropertyChanged(nameof(EffectiveEnableTrailBraking));
             OnPropertyChanged(nameof(IsTrailBrakingEnabledOverridden));
             OnPropertyChanged(nameof(IsEnableTrailBrakingOverridden));
+            NotifyExtraTrailBrakingEnabledProperties();
         }
+
+        partial void NotifyExtraTrailBrakingEnabledProperties();
 
         private void NotifyThresholdProperties()
         {

@@ -136,15 +136,15 @@ internal sealed class OutputConnection : IOutputFeeder
         }
     }
 
-    internal bool SendWithRecovery(int steer, int gas, int brake, bool shiftDown, bool shiftUp, OutputButtons extraButtons = default)
+    internal bool SendWithRecovery(int steer, int gas, int brake, bool shiftDown, bool shiftUp, OutputButtons extraButtons = default, int clutch = 0)
     {
         lock (_sync)
         {
             LastWriteReacquired = false;
             if (_feeder == null) return true;
             var buttons = new OutputButtons(extraButtons.Low | OutputButtons.Gears(shiftDown, shiftUp).Low, extraButtons.High);
-            bool sent = extraButtons == default ? _feeder.UpdateAxesAndButtons(steer, gas, brake, shiftDown, shiftUp)
-                : _feeder.UpdateReport(new(steer, gas, brake, buttons));
+            bool sent = clutch == 0 && extraButtons == default ? _feeder.UpdateAxesAndButtons(steer, gas, brake, shiftDown, shiftUp)
+                : _feeder.UpdateReport(new(steer, gas, brake, buttons, clutch));
             if (sent) return true;
             if (_feeder.ConsecutiveFailures <= MaxFailuresBeforeReacquire) return true;
             AppLogger.Instance.LogWarning($"{_feeder.Name} stopped accepting data ({_feeder.ConsecutiveFailures} failed attempts), trying to re-acquire it");
@@ -165,7 +165,7 @@ internal sealed class OutputConnection : IOutputFeeder
     }
     public bool UpdateReport(OutputReport report)
     {
-        lock (_sync) return report.Buttons.High == 0 && (report.Buttons.Low & ~3UL) == 0
+        lock (_sync) return report.Clutch == 0 && report.Buttons.High == 0 && (report.Buttons.Low & ~3UL) == 0
             ? _feeder?.UpdateAxesAndButtons(report.Steer, report.Gas, report.Brake, report.Buttons.IsDown(1), report.Buttons.IsDown(2)) ?? true
             : _feeder?.UpdateReport(report) ?? true;
     }

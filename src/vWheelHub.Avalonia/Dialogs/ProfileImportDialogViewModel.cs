@@ -1,5 +1,6 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -11,6 +12,10 @@ using SimRacingHub.Models;
 
 namespace SimRacingHub.Avalonia.Dialogs
 {
+    /// <summary>
+    /// ViewModel for the profile import dialog supporting share code text decoding,
+    /// clipboard pasting, file picker browsing, drag-and-drop loading, and categorized parameter preview.
+    /// </summary>
     public partial class ProfileImportDialogViewModel : ObservableObject
     {
         private readonly ProfileContext _currentContext;
@@ -19,68 +24,96 @@ namespace SimRacingHub.Avalonia.Dialogs
         private readonly ILocalizationManager _localizationManager;
         private readonly IAppMetadata? _appMetadata;
         private readonly ProfilePackageCodec _codec;
+
         [ObservableProperty]
         private string _shareCodeInput = string.Empty;
+
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(HasLoadedPackage))]
         [NotifyPropertyChangedFor(nameof(IsEmptyState))]
         [NotifyPropertyChangedFor(nameof(CanApply))]
         private ProfileSharePackage? _loadedPackage;
+
         public bool HasLoadedPackage => LoadedPackage != null;
         public bool IsEmptyState => LoadedPackage == null;
         public bool CanApply => LoadedPackage?.Settings != null;
 
         [ObservableProperty]
         private string _presetName = string.Empty;
+
         [ObservableProperty]
         private string _authorSubtitle = string.Empty;
+
         [ObservableProperty]
         private string _versionBadge = "v1.0.0";
+
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(HasDescription))]
         private string _description = string.Empty;
+
         public bool HasDescription => !string.IsNullOrWhiteSpace(Description);
 
         [ObservableProperty]
-        private string _targetContextText = "Universal";
+        private string _targetContextText = string.Empty;
+
         [ObservableProperty]
         private bool _isSpecificTarget;
+
         [ObservableProperty]
         private string _saveToTargetSlotButtonText = string.Empty;
+
         [ObservableProperty]
         private string _applyToCurrentContextButtonText = string.Empty;
+
         // Categorized parameter previews
         [ObservableProperty]
         private string _paramSteerSensText = string.Empty;
+
         [ObservableProperty]
         private string _paramSteerGammaText = string.Empty;
+
         [ObservableProperty]
         private string _paramSteerLockText = string.Empty;
+
         [ObservableProperty]
         private string _paramThrottleDynamicsText = string.Empty;
+
         [ObservableProperty]
         private string _paramThrottleGammaText = string.Empty;
+
         [ObservableProperty]
         private string _paramBrakeDynamicsText = string.Empty;
+
         [ObservableProperty]
         private string _paramBrakeGammaText = string.Empty;
+
         [ObservableProperty]
-        private string _paramAbsText = string.Empty;
-        [ObservableProperty]
-        private string _paramTcText = string.Empty;
+        private string _paramTrailBrakingText = string.Empty;
+
         // Input error or notification status
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(HasInputStatusText))]
         private string? _inputStatusText;
+
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(StatusColor))]
         private bool _isInputError;
+
         public bool HasInputStatusText => !string.IsNullOrEmpty(InputStatusText);
         public string StatusColor => IsInputError ? "#F87171" : "#4ADE80";
+
         public ProfileImportDialogResult Result { get; private set; } = ProfileImportDialogResult.Cancel;
 
         public event Action<ProfileImportDialogResult>? RequestClose;
-        public ProfileImportDialogViewModel(ProfileContext? currentContext, IClipboardService clipboardService, IFilePickerService filePickerService, ILocalizationManager? localizationManager = null, IAppMetadata? appMetadata = null, ProfilePackageCodec? codec = null, ProfileSharePackage? initialPackage = null)
+
+        public ProfileImportDialogViewModel(
+            ProfileContext? currentContext,
+            IClipboardService clipboardService,
+            IFilePickerService filePickerService,
+            ILocalizationManager? localizationManager = null,
+            IAppMetadata? appMetadata = null,
+            ProfilePackageCodec? codec = null,
+            ProfileSharePackage? initialPackage = null)
         {
             _currentContext = currentContext ?? new ProfileContext("Universal");
             _clipboardService = clipboardService ?? throw new ArgumentNullException(nameof(clipboardService));
@@ -88,9 +121,12 @@ namespace SimRacingHub.Avalonia.Dialogs
             _localizationManager = localizationManager ?? new LocalizationManager();
             _appMetadata = appMetadata;
             _codec = codec ?? new ProfilePackageCodec();
+            TargetContextText = _localizationManager.GetString("Common_Universal", "Universal");
             SaveToTargetSlotButtonText = _localizationManager.GetString("Ui_Message_baad7626ba", "Save to Target Slot");
+
             string curName = _currentContext.Car ?? _currentContext.CarClass ?? _currentContext.Game ?? "Current";
-            ApplyToCurrentContextButtonText = string.Format(System.Globalization.CultureInfo.CurrentUICulture, _localizationManager.GetString("Ui_Message_ae4e70372c", "Apply to Current Configuration ({0})"), curName);
+            ApplyToCurrentContextButtonText = string.Format(CultureInfo.CurrentUICulture, _localizationManager.GetString("Ui_Message_ae4e70372c", "Apply to Current Configuration ({0})"), curName);
+
             if (initialPackage != null)
             {
                 LoadPackage(initialPackage);
@@ -103,8 +139,7 @@ namespace SimRacingHub.Avalonia.Dialogs
             if (string.IsNullOrEmpty(trimmed))
             {
                 InputStatusText = null;
-                if (LoadedPackage == null)
-                    ResetPreview();
+                if (LoadedPackage == null) ResetPreview();
                 return;
             }
 
@@ -132,49 +167,68 @@ namespace SimRacingHub.Avalonia.Dialogs
 
             LoadedPackage = package;
             PresetName = !string.IsNullOrWhiteSpace(package.Name) ? package.Name : _localizationManager.GetString("Ui_Message_53b338d45a", "Imported Preset");
+
             string dateStr = package.CreatedAtUtc.ToLocalTime().ToString("yyyy-MM-dd");
             if (!string.IsNullOrWhiteSpace(package.Author))
             {
-                AuthorSubtitle = string.Format(System.Globalization.CultureInfo.CurrentUICulture, _localizationManager.GetString("Ui_Message_b1a4c78acc", "Created by {0} • {1}"), package.Author.Trim(), dateStr);
+                AuthorSubtitle = string.Format(CultureInfo.CurrentUICulture, _localizationManager.GetString("Ui_Message_b1a4c78acc", "Created by {0} • {1}"), package.Author.Trim(), dateStr);
             }
             else
             {
-                AuthorSubtitle = string.Format(System.Globalization.CultureInfo.CurrentUICulture, _localizationManager.GetString("Ui_Message_471a26cb56", "Created on {0}"), dateStr);
+                AuthorSubtitle = string.Format(CultureInfo.CurrentUICulture, _localizationManager.GetString("Ui_Message_471a26cb56", "Created on {0}"), dateStr);
             }
 
             VersionBadge = !string.IsNullOrWhiteSpace(package.AppVersion) ? $"v{package.AppVersion}" : "v1.0.0";
             Description = package.Description ?? string.Empty;
+
+            // Target Context
             string targetPath = package.TargetContext?.DisplayPath ?? "Universal";
-            TargetContextText = targetPath;
-            IsSpecificTarget = package.TargetContext != null && !string.IsNullOrEmpty(package.TargetContext.Game) && !package.TargetContext.Game.Equals("Universal", StringComparison.OrdinalIgnoreCase);
+            TargetContextText = targetPath == "Universal" ? _localizationManager.GetString("Common_Universal", "Universal") : targetPath;
+
+            IsSpecificTarget = package.TargetContext != null &&
+                               !string.IsNullOrEmpty(package.TargetContext.Game) &&
+                               !package.TargetContext.Game.Equals("Universal", StringComparison.OrdinalIgnoreCase);
+
             if (IsSpecificTarget && package.TargetContext != null)
             {
-                string targetCarName = !string.IsNullOrEmpty(package.TargetContext.Car) ? package.TargetContext.Car : (!string.IsNullOrEmpty(package.TargetContext.CarClass) ? package.TargetContext.CarClass : package.TargetContext.Game ?? string.Empty);
-                SaveToTargetSlotButtonText = string.Format(System.Globalization.CultureInfo.CurrentUICulture, _localizationManager.GetString("Ui_Message_f88169d7ab", "Save to Target Slot ({0})"), targetCarName);
+                string targetCarName = !string.IsNullOrEmpty(package.TargetContext.Car)
+                    ? package.TargetContext.Car
+                    : (!string.IsNullOrEmpty(package.TargetContext.CarClass) ? package.TargetContext.CarClass : package.TargetContext.Game ?? string.Empty);
+
+                SaveToTargetSlotButtonText = string.Format(CultureInfo.CurrentUICulture, _localizationManager.GetString("Ui_Message_f88169d7ab", "Save to Target Slot ({0})"), targetCarName);
             }
             else
             {
                 SaveToTargetSlotButtonText = _localizationManager.GetString("Ui_Message_baad7626ba", "Save to Target Slot");
             }
 
+            // Categorized parameters preview
             var p = package.Settings;
-            var inv = System.Globalization.CultureInfo.CurrentUICulture;
+            var inv = CultureInfo.CurrentUICulture;
+
+            // 1. Steering
             ParamSteerSensText = string.Format(inv, _localizationManager.GetString("Ui_Message_5a839bae46", "Sensitivity: {0:0.00} ({1} Hz)"), p.MouseSensitivity ?? 1.0, p.PollingRate ?? 1000);
             string linearSuffix = (p.SteeringGamma ?? 1.0) == 1.0 ? _localizationManager.GetString("Ui_Message_568ed9dc8d", " (Linear)") : "";
             ParamSteerGammaText = string.Format(inv, _localizationManager.GetString("Ui_Message_fad8a5066b", "Steer Gamma: {0:0.00}{1}"), p.SteeringGamma ?? 1.0, linearSuffix);
-            ;
-            ParamSteerLockText = p.UseSteeringLockClamp == true ? string.Format(inv, _localizationManager.GetString("Ui_Message_5e62a701ab", "Steering Lock: {0:0}°"), p.CarSteeringLock ?? 900) : _localizationManager.GetString("Ui_Message_c41ab16c71", "Steering Lock: Auto");
+
+            ParamSteerLockText = p.UseSteeringLockClamp == true
+                ? string.Format(inv, _localizationManager.GetString("Ui_Message_5e62a701ab", "Steering Lock: {0:0}°"), p.CarSteeringLock ?? 900)
+                : _localizationManager.GetString("Ui_Message_c41ab16c71", "Steering Lock: Auto");
+
+            // 2. Pedals
             ParamThrottleDynamicsText = string.Format(inv, _localizationManager.GetString("Ui_Message_91590274ad", "Throttle: Fast {0:0.000}s / Slow {1:0.000}s"), p.GasAttackFastSeconds ?? 0, p.GasAttackSlowSeconds ?? 0);
             ParamThrottleGammaText = string.Format(inv, _localizationManager.GetString("Ui_Message_f2593f97e1", "Throttle Gamma: {0:0.00}"), p.GasGamma ?? 1.0);
             ParamBrakeDynamicsText = string.Format(inv, _localizationManager.GetString("Ui_Message_c9c47a6dc0", "Brake: Fast {0:0.000}s / Slow {1:0.000}s"), p.BrakeAttackFastSeconds ?? 0, p.BrakeAttackSlowSeconds ?? 0);
             ParamBrakeGammaText = string.Format(inv, _localizationManager.GetString("Ui_Message_d5d188263a", "Brake Gamma: {0:0.00}"), p.BrakeGamma ?? 1.0);
-            ;
-            ;
-            ;
-            ;
-            ;
-            ;
+
+            ParamTrailBrakingText = p.EnableTrailBraking == true
+                ? string.Format(inv, _localizationManager.GetString("Ui_Message_1cc2680e19", "Trail Braking: Active ({0:0}%)"), (p.TbMinLimit ?? 0.2) * 100)
+                : _localizationManager.GetString("Ui_Message_13bdb9fee6", "Trail Braking: Disabled");
+
+            LoadExtraPackagePreview(p, inv);
         }
+
+        partial void LoadExtraPackagePreview(Profile p, CultureInfo inv);
 
         public void ResetPreview()
         {
@@ -182,7 +236,7 @@ namespace SimRacingHub.Avalonia.Dialogs
             PresetName = string.Empty;
             AuthorSubtitle = string.Empty;
             Description = string.Empty;
-            TargetContextText = "Universal";
+            TargetContextText = _localizationManager.GetString("Common_Universal", "Universal");
             IsSpecificTarget = false;
         }
 
@@ -193,6 +247,7 @@ namespace SimRacingHub.Avalonia.Dialogs
             {
                 string? text = await _clipboardService.GetTextAsync().ConfigureAwait(false);
                 string? trimmed = text?.Trim();
+
                 if (!string.IsNullOrEmpty(trimmed))
                 {
                     ShareCodeInput = trimmed;
@@ -206,7 +261,7 @@ namespace SimRacingHub.Avalonia.Dialogs
             catch (Exception ex)
             {
                 IsInputError = true;
-                InputStatusText = string.Format(System.Globalization.CultureInfo.CurrentUICulture, _localizationManager.GetString("Ui_Message_d3dae8fcb7", "Clipboard error: {0}"), ex.Message);
+                InputStatusText = string.Format(CultureInfo.CurrentUICulture, _localizationManager.GetString("Ui_Message_d3dae8fcb7", "Clipboard error: {0}"), ex.Message);
                 return false;
             }
         }
@@ -221,7 +276,11 @@ namespace SimRacingHub.Avalonia.Dialogs
                     new FileFilterItem(_localizationManager.GetString("Ui_Message_e28e63462f", "vWheel Hub Preset (*.vwhub, *.json)"), new[] { ".vwhub", ".json" }),
                     new FileFilterItem(_localizationManager.GetString("Ui_Message_6ae05840ac", "All Files (*.*)"), new[] { "*.*" })
                 };
-                var options = new FilePickerOpenOptions(title: _localizationManager.GetString("Ui_Message_27fe4208cf", "Open vWheel Hub Preset File"), filters: filters);
+
+                var options = new FilePickerOpenOptions(
+                    title: _localizationManager.GetString("Ui_Message_27fe4208cf", "Open vWheel Hub Preset File"),
+                    filters: filters);
+
                 var picked = await _filePickerService.OpenFileAsync(options);
                 if (picked == null)
                 {
@@ -233,7 +292,7 @@ namespace SimRacingHub.Avalonia.Dialogs
             catch (Exception ex)
             {
                 IsInputError = true;
-                InputStatusText = string.Format(System.Globalization.CultureInfo.CurrentUICulture, _localizationManager.GetString("Ui_Message_6ea8b29b14", "File error: {0}"), ex.Message);
+                InputStatusText = string.Format(CultureInfo.CurrentUICulture, _localizationManager.GetString("Ui_Message_6ea8b29b14", "File error: {0}"), ex.Message);
                 return false;
             }
         }
@@ -256,18 +315,18 @@ namespace SimRacingHub.Avalonia.Dialogs
                     ShareCodeInput = string.Empty;
                     LoadPackage(pkg);
                     IsInputError = false;
-                    InputStatusText = string.Format(System.Globalization.CultureInfo.CurrentUICulture, _localizationManager.GetString("Ui_Message_c19f1be820", "Loaded file: {0}"), picked.FileName);
+                    InputStatusText = string.Format(CultureInfo.CurrentUICulture, _localizationManager.GetString("Ui_Message_c19f1be820", "Loaded file: {0}"), picked.FileName);
                     return true;
                 }
 
                 IsInputError = true;
-                InputStatusText = string.Format(System.Globalization.CultureInfo.CurrentUICulture, _localizationManager.GetString("Ui_Message_7be4905ac4", "Could not parse selected file '{0}' as a valid preset."), picked.FileName);
+                InputStatusText = string.Format(CultureInfo.CurrentUICulture, _localizationManager.GetString("Ui_Message_7be4905ac4", "Could not parse selected file '{0}' as a valid preset."), picked.FileName);
                 return false;
             }
             catch (Exception ex)
             {
                 IsInputError = true;
-                InputStatusText = string.Format(System.Globalization.CultureInfo.CurrentUICulture, _localizationManager.GetString("Ui_Message_6ea8b29b14", "File error: {0}"), ex.Message);
+                InputStatusText = string.Format(CultureInfo.CurrentUICulture, _localizationManager.GetString("Ui_Message_6ea8b29b14", "File error: {0}"), ex.Message);
                 return false;
             }
         }

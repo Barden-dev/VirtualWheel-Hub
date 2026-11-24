@@ -1,13 +1,13 @@
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
 using SimRacingHub.Application.Features.Pedals;
+using SimRacingHub.Avalonia.Controls;
 
 namespace SimRacingHub.Avalonia.Views.Pedals
 {
     /// <summary>
-    /// UserControl view for pedal configuration (gas, brake, combined modes, inversion, response curves, deadzones,
-    /// attack rates, and simulator TC/ABS assistance helpers).
+    /// UserControl view for pedal configuration (gas, brake, clutch, inversion, response curves, deadzones,
+    /// and attack/decay rates).
     /// Bound to PedalsViewModel.
     /// </summary>
     public partial class PedalsView : UserControl
@@ -26,6 +26,7 @@ namespace SimRacingHub.Avalonia.Views.Pedals
         public PedalsView()
         {
             InitializeComponent();
+            EditionSlotNames.Attach(this, ThrottleExtraSlot, BrakeExtraSlot);
             PropertyChanged += (_, e) =>
             {
                 if (e.Property == SelectedTabIndexProperty && !ShowTabHeaders)
@@ -40,7 +41,7 @@ namespace SimRacingHub.Avalonia.Views.Pedals
             var compact = Bounds.Width < 760;
             if (_compactLayout == compact) return;
             _compactLayout = compact;
-            foreach (var grid in new[] { ThrottleDynamicsGrid, BrakeDynamicsGrid })
+            foreach (var grid in new[] { ThrottleDynamicsGrid, BrakeDynamicsGrid, ClutchDynamicsGrid })
             {
                 grid.ColumnDefinitions[1].Width = new GridLength(compact ? 0 : 300);
                 foreach (var child in grid.Children)

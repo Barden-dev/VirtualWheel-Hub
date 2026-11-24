@@ -1,0 +1,49 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+  <sys:String x:Key="Ui_897c55421a11" xml:space="preserve">Respuesta del acelerador y del freno y sincronización de la prensa.</sys:String>
+  <sys:String x:Key="InputFix_Title" xml:space="preserve">LMU: compatibilidad de entrada</sys:String>
+  <sys:String x:Key="InputFix_Description" xml:space="preserve">Habilite el respaldo DirectInput para velocidades de entrada de hasta 1000 Hz. Cierra el juego antes de aplicar. Se realiza una copia de seguridad del archivo de configuración original.</sys:String>
+  <sys:String x:Key="InputFix_NotChecked" xml:space="preserve">La configuración de entrada no ha sido verificada.</sys:String>
+  <sys:String x:Key="InputFix_NotFound" xml:space="preserve">No se encontró el archivo de controles LMU.</sys:String>
+  <sys:String x:Key="InputFix_Applied" xml:space="preserve">La compatibilidad de entrada está habilitada.</sys:String>
+  <sys:String x:Key="InputFix_Ready" xml:space="preserve">Se puede habilitar la compatibilidad de entrada.</sys:String>
+  <sys:String x:Key="InputFix_Failed" xml:space="preserve">La operación fracasó. Cierra el juego y comprueba el acceso a sus archivos.</sys:String>
+  <sys:String x:Key="InputFix_Check" xml:space="preserve">comprobar</sys:String>
+  <sys:String x:Key="InputFix_Apply" xml:space="preserve">Habilitar</sys:String>
+  <sys:String x:Key="Edition_Description" xml:space="preserve">Edición FREE: código abierto</sys:String>
+  <sys:String x:Key="Tour_AssignmentBody" xml:space="preserve">Elija dirección, acelerador, freno o cambio de marcha. Utilice Una vez para una sola tarea, de modo que las pulsaciones repetidas no puedan cambiar de menú después. Haga clic en Inicio, cambie al juego y abra el enlace deseado: la señal comienza después de 5 segundos.</sys:String>
+  <sys:String x:Key="Tour_AxesTip" xml:space="preserve">Utilice la herramienta de asignación cuando necesite una señal de salida conocida. Este recorrido nunca inicia una señal ni cambia sus fijaciones.</sys:String>
+  <sys:String x:Key="Tour_ReadyTip" xml:space="preserve">Si algo no responde: verifique la actividad del dispositivo físico → enlaces del concentrador → salida virtual → enlaces del juego. Vuelva a abrir esta guía en cualquier momento desde Introducción. Al finalizar, volverá a la página anterior.</sys:String>
+  <sys:String x:Key="Offer_Enable" xml:space="preserve">Habilitar</sys:String>
+  <sys:String x:Key="Offer_Abs" xml:space="preserve">Asistente ABS</sys:String>
+  <sys:String x:Key="Offer_AbsInfo" xml:space="preserve">Reduce la potencia del freno cuando las ruedas se bloquean.</sys:String>
+  <sys:String x:Key="Offer_Tc" xml:space="preserve">Asistente TC</sys:String>
+  <sys:String x:Key="Offer_TcInfo" xml:space="preserve">Reduce la salida del acelerador cuando las ruedas patinan.</sys:String>
+  <sys:String x:Key="Offer_Speed" xml:space="preserve">Dirección consciente de la velocidad</sys:String>
+  <sys:String x:Key="Offer_SpeedInfo" xml:space="preserve">Ajusta la respuesta de la dirección utilizando la velocidad actual del juego.</sys:String>
+  <sys:String x:Key="Offer_Slip" xml:space="preserve">Umbral de deslizamiento</sys:String>
+  <sys:String x:Key="Offer_Drop" xml:space="preserve">Reducción máxima (%)</sys:String>
+  <sys:String x:Key="Offer_Recover" xml:space="preserve">Tasa de recuperación</sys:String>
+  <sys:String x:Key="Offer_Minimum" xml:space="preserve">Velocidad mínima (km/h)</sys:String>
+  <sys:String x:Key="Offer_Maximum" xml:space="preserve">Velocidad máxima (km/h)</sys:String>
+  <sys:String x:Key="Offer_Intensity" xml:space="preserve">Intensidad (%)</sys:String>
+  <sys:String x:Key="Offer_Sound" xml:space="preserve">Respuesta sonora</sys:String>
+  <sys:String x:Key="Offer_SoundTab" xml:space="preserve">Audio · PRO</sys:String>
+  <sys:String x:Key="Offer_SoundInfo" xml:space="preserve">Escuche los cambios de agarre y la actividad de asistencia mientras conduce.</sys:String>
+  <sys:String x:Key="Offer_Volume" xml:space="preserve">Volumen (%)</sys:String>
+  <sys:String x:Key="Offer_Pitch" xml:space="preserve">Tono (Hz)</sys:String>
+  <sys:String x:Key="Offer_Front" xml:space="preserve">Eje delantero</sys:String>
+  <sys:String x:Key="Offer_Rear" xml:space="preserve">Eje trasero</sys:String>
+  <sys:String x:Key="Offer_Data" xml:space="preserve">Datos del juego en vivo</sys:String>
+  <sys:String x:Key="Offer_DataTab" xml:space="preserve">Conexión de juego · PRO</sys:String>
+  <sys:String x:Key="Offer_DataInfo" xml:space="preserve">Los datos del juego permiten la selección automática de automóviles y asistentes de conducción compatibles.</sys:String>
+  <sys:String x:Key="Offer_Prepare" xml:space="preserve">preparar el juego</sys:String>
+  <sys:String x:Key="Offer_Menu" xml:space="preserve">Menús de juego</sys:String>
+  <sys:String x:Key="Offer_MenuInfo" xml:space="preserve">Utilice el estado conocido del menú del juego para pausar los controles y soltar el cursor.</sys:String>
+  <sys:String x:Key="Offer_Pause" xml:space="preserve">Suspender controles en los menús del juego.</sys:String>
+  <sys:String x:Key="Offer_Cursor" xml:space="preserve">Suelta el cursor en los menús del juego.</sys:String>
+  <sys:String x:Key="Offer_Count" xml:space="preserve">Datos de juegos en vivo y funciones {0} PRO</sys:String>
+  <sys:String x:Key="Offer_TireSound" xml:space="preserve">Comentarios de sonido de los neumáticos</sys:String>
+  <sys:String x:Key="Offer_TcSound" xml:space="preserve">TC respuesta de sonido</sys:String>
+</ResourceDictionary>

@@ -51,26 +51,20 @@ namespace SimRacingHub.Avalonia
         public MainWindow()
         {
             InitializeComponent();
+            new MainWindowEditionSlots().AttachTo(this);
+            ConfigureEditionChrome();
             _sidebarAnimation.Tick += SidebarAnimation_Tick;
             Closed += (_, _) => _sidebarAnimation.Stop();
             InitializeGettingStarted();
             DataContextChanged += (_, _) =>
             {
-                if (_localizedModel != null)
-                    _localizedModel.PropertyChanged -= LocalizationChanged;
+                if (_localizedModel != null) _localizedModel.PropertyChanged -= LocalizationChanged;
                 _localizedModel = DataContext as AppShellViewModel;
                 _stringsCulture = null;
-                if (_localizedModel != null)
-                {
-                    _localizedModel.PropertyChanged += LocalizationChanged;
-                    SyncWindowStrings();
-                }
+                if (_localizedModel != null) { _localizedModel.PropertyChanged += LocalizationChanged; SyncWindowStrings(); }
             };
-            Closed += (_, _) =>
-            {
-                if (_localizedModel != null)
-                    _localizedModel.PropertyChanged -= LocalizationChanged;
-            };
+            Closed += (_, _) => { if (_localizedModel != null) _localizedModel.PropertyChanged -= LocalizationChanged; };
+
             Opened += async (_, _) =>
             {
                 if (_windowInitialized) return;
@@ -86,7 +80,7 @@ namespace SimRacingHub.Avalonia
                         {
                             _ = vm.Profiles?.RefreshForzaCatalogAsync(System.IO.Path.Combine(catalogServices.Storage.LocalDataDirectory, "Cache", "Forza"));
                         };
-                    if (App.Services?.DesktopSession is { } desktopSession)
+                    if (App.Services?.DesktopSession is {} desktopSession)
                         desktopSession.IsInteractionBlocked = () => _closePromptActive || IsGettingStartedOpen || !IsEnabled;
                     if (App.Services is { IsPreviewMode: false } && vm.AppSettings?.HasSeenWelcome == false &&
                         global::Avalonia.Application.Current?.ApplicationLifetime is global::Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime)
@@ -106,73 +100,51 @@ namespace SimRacingHub.Avalonia
                     await readiness.CheckReadinessAsync();
                 if (DesktopBehavior != null) await DesktopBehavior.StartAsync();
             };
+
             Closing += OnWindowClosing;
         }
 
         private async void OnWindowClosing(object? sender, WindowClosingEventArgs e)
         {
-            if (_closeApproved || DataContext is not AppShellViewModel vm)
-                return;
+            if (_closeApproved || DataContext is not AppShellViewModel vm) return;
             if (!_exitRequested && DesktopBehavior?.TryCloseToTray(e) == true) return;
+            // A headless view fixture has no application lifetime or user to answer a modal.
             if (global::Avalonia.Application.Current?.ApplicationLifetime is not global::Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime && UnsavedChangesPrompt == null)
-            {
-                await vm.ShutdownAsync();
-                return;
-            }
-
+            { await vm.ShutdownAsync(); return; }
             e.Cancel = true;
-            if (_closePromptActive)
-                return;
+            if (_closePromptActive) return;
             _closePromptActive = true;
             try
             {
                 if (vm.HasUnsavedChanges)
                 {
                     var choice = UnsavedChangesPrompt != null ? await UnsavedChangesPrompt() : await Dialogs.UnsavedChangesDialog.ShowAsync(this, vm.ProfileName);
-                    if (choice == Dialogs.UnsavedChangesDialogResult.Cancel)
-                        return;
-                    if (choice == Dialogs.UnsavedChangesDialogResult.Save && !await vm.ExecuteSaveProfileAsync())
-                        return;
+                    if (choice == Dialogs.UnsavedChangesDialogResult.Cancel) return;
+                    if (choice == Dialogs.UnsavedChangesDialogResult.Save && !await vm.ExecuteSaveProfileAsync()) return;
                 }
-
-                if (App.Services != null)
-                    AvaloniaWindowStateService.SaveWindowState(this, App.Services.Storage.WindowSettingsPath);
+                if (App.Services != null) AvaloniaWindowStateService.SaveWindowState(this, App.Services.Storage.WindowSettingsPath);
                 App.Services?.DesktopSession?.Dispose();
                 await vm.ShutdownAsync();
                 _closeApproved = true;
                 global::Avalonia.Threading.Dispatcher.UIThread.Post(Close);
             }
-            finally
-            {
-                _closePromptActive = false;
-                if (!_closeApproved) _exitRequested = false;
-            }
+            finally { _closePromptActive = false; if (!_closeApproved) _exitRequested = false; }
         }
 
         private async void HubToggle_Click(object? sender, global::Avalonia.Interactivity.RoutedEventArgs e)
         {
-            if (DataContext is not AppShellViewModel vm || sender is not ToggleSwitch toggle)
-                return;
+            if (DataContext is not AppShellViewModel vm || sender is not ToggleSwitch toggle) return;
             toggle.SetCurrentValue(ToggleSwitch.IsCheckedProperty, vm.IsHubRunning);
             toggle.IsEnabled = false;
-            try
-            {
-                await vm.ToggleHubAsync();
-            }
-            finally
-            {
-                toggle.SetCurrentValue(ToggleSwitch.IsCheckedProperty, vm.IsHubRunning);
-                toggle.IsEnabled = true;
-            }
+            try { await vm.ToggleHubAsync(); }
+            finally { toggle.SetCurrentValue(ToggleSwitch.IsCheckedProperty, vm.IsHubRunning); toggle.IsEnabled = true; }
         }
 
         private void MouseLockToggle_Click(object? sender, global::Avalonia.Interactivity.RoutedEventArgs e)
         {
-            if (DataContext is not AppShellViewModel vm || sender is not ToggleSwitch toggle)
-                return;
+            if (DataContext is not AppShellViewModel vm || sender is not ToggleSwitch toggle) return;
             vm.Dashboard?.ToggleLockCommand.Execute(null);
-            if (vm.Dashboard != null)
-                vm.IsLocked = vm.Dashboard.IsLocked;
+            if (vm.Dashboard != null) vm.IsLocked = vm.Dashboard.IsLocked;
             toggle.SetCurrentValue(ToggleSwitch.IsCheckedProperty, vm.IsLocked);
         }
 
@@ -206,21 +178,19 @@ namespace SimRacingHub.Avalonia
 
         private void LocalizationChanged(object? sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(AppShellViewModel.CurrentCultureCode))
-                SyncWindowStrings();
+            if (e.PropertyName == nameof(AppShellViewModel.CurrentCultureCode)) SyncWindowStrings();
         }
 
         private void SyncWindowStrings()
         {
-            if (_localizedModel == null)
-                return;
-            if (_stringsCulture == _localizedModel.CurrentCultureCode)
-                return;
+            if (_localizedModel == null) return;
+            if (_stringsCulture == _localizedModel.CurrentCultureCode) return;
             _stringsCulture = _localizedModel.CurrentCultureCode;
-            if (global::Avalonia.Application.Current is { } app)
+            if (global::Avalonia.Application.Current is {} app)
                 LocalizationResources.Apply(app, _localizedModel.LocalizationManager.GetAllKeys(_localizedModel.CurrentCultureCode));
-            foreach (var text in this.GetVisualDescendants().OfType<TextBlock>())
-                Controls.LocalizedText.Refresh(text);
+            foreach (var text in this.GetVisualDescendants().OfType<TextBlock>()) Controls.LocalizedText.Refresh(text);
         }
+
+        partial void ConfigureEditionChrome();
     }
 }

@@ -1,7 +1,7 @@
 # 🏎️ VirtualWheel Hub
 
 ---
-[![Version](https://img.shields.io/badge/version-v2.0.3-blue.svg)](https://github.com/Barden-dev/VirtualWheel-Hub)
+[![Version](https://img.shields.io/badge/version-v2.1.0-blue.svg)](https://github.com/Barden-dev/VirtualWheel-Hub)
 [![License](https://img.shields.io/badge/license-All_Rights_Reserved-red.svg)](LICENSE)
 [![Boosty](https://img.shields.io/badge/Support-Boosty-orange.svg?style=flat&logo=boosty)](https://boosty.to/barden_dev)
 [![Discord](https://img.shields.io/badge/Community-Discord-5865F2.svg?style=flat&logo=discord)](https://discord.gg/YQn5eh2vfc)
@@ -27,12 +27,12 @@ It translates real-time mouse movement into ultra-smooth virtual wheel angles an
 > * **Assetto Corsa** — Full Support (Telemetry & Auto-Detect)
 > * **Assetto Corsa Competizione** — Full Support (Native Shared Memory Telemetry & Auto-Detect)
 > * **Assetto Corsa EVO** — Full Support (Native Shared Memory Telemetry & Auto-Detect)
-> * **Le Mans Ultimate** — Full Support (Shared Memory Plugin & Auto-Detect, supports 1000 Hz with DirectInput Fix)
+> * **Le Mans Ultimate** — Full Support (Shared Memory Plugin & Auto-Detect)
 > * **BeamNG.drive** — Full Support (Telemetry Mod & Auto-Detect)
 > * **Automobilista 2** — Full Support (Telemetry & Auto-Detect)
+> * **iRacing** — Full Support (Telemetry without TC & ABS, Auto-Detect)
 > * **Forza Motorsport** — Experimental Telemetry Support (Data Out & Auto-Detect)
 > * **WRC Generations** — UDP Telemetry & Auto-Detect
-> * **iRacing** — Experimental Support (Auto-Detect Only)
 > * **Dirt Rally 2.0** — Experimental Support (Auto-Detect Only)
 > * **EA Sports WRC** — Experimental Support (Auto-Detect Only)
 > * **Richard Burns Rally** — Experimental Support (Auto-Detect Only)
@@ -46,8 +46,8 @@ It translates real-time mouse movement into ultra-smooth virtual wheel angles an
 
 * **High-Precision Mouse Steering:** Converts raw mouse movement into virtual joystick output at up to **1000 Hz**, utilizing Windows high-resolution waitable timers and non-blocking accumulated Raw Input deltas.
 * **Keyboard Steering Mode:** Full keyboard-only steering support with configurable ramp-up/ramp-down rates, instant full-lock snap, and a dedicated center-steering key.
-* **Schema V2 dt-Based Pedal Physics:** Frame-rate and polling-rate independent gas and brake dynamics calculated via true delta-time physics, with seconds-based segment tuning and Turbo dual-key attack.
-* **Smart In-Menu Controls & Cursor Locking:** In-menu control suspension, auto-unlocking cursor in menus, hold-to-unlock hotkey, and automatic game-exit cursor release.
+* **Schema V2 dt-Based Pedal Physics:** Frame-rate and polling-rate independent throttle, brake and clutch dynamics calculated via true delta-time physics, with seconds-based segment tuning, bite-point linearity, and Turbo dual-key attack.
+* **Smart In-Menu Controls & Live Status Bar:** In-menu control suspension, auto-unlocking cursor in menus, hold-to-unlock hotkey, automatic game-exit cursor release, and a real-time footer status indicator (including in-menu/driving state and ABS/TC indicators in PRO).
 * **Hierarchical Profile System:** Multi-tiered context profile inheritance (`Game` ➔ `Car Class` ➔ `Car Model`) with real-time undo/redo support (`Ctrl+Z` / `Ctrl+Y`).
 * **Self-Learning Grip Engine (Pro):** Adaptive grip learning continuously learns dry and wet tire grip limits per vehicle.
 * **Device Setup & Diagnostics:** Check your virtual wheel from Dashboard and follow the available setup steps. LMU also includes an input compatibility fix.
@@ -58,26 +58,25 @@ It translates real-time mouse movement into ultra-smooth virtual wheel angles an
 
 | Feature / Capability | Free (GitHub) | Pro Version (Boosty) |
 | :--- | :---: | :---: |
-| **Mouse Steering & Custom Curves (up to 1000 Hz)** | ✅ | ✅ |
-| **Keyboard Steering Mode (Ramp-up/down, snap, center key)** | ✅ | ✅ |
-| **Schema V2 dt-Based Gas & Brake Dynamics (Attack, Decay, Gamma, Turbo)** | ✅ | ✅ |
+| **Mouse Steering & Custom Curves** | ✅ | ✅ |
+| **Keyboard Steering Mode** | ✅ | ✅ |
+| **Schema V2 dt-Based Throttle, Brake & Clutch Dynamics** | ✅ | ✅ |
+| **Synthetic Trail Braking Engine** | ✅ | ✅ |
 | **Universal Profile & Game / Class / Car Profiles** | ✅ | ✅ |
 | **Real-Time Undo & Redo History** | ✅ | ✅ |
 | **Custom Hotkeys, Dual Keybindings & Conflict Alerts** | ✅ | ✅ |
-| **Profile Sharing (.vwh files & Share Codes)** | ✅ | ✅ |
+| **Profile Sharing** | ✅ | ✅ |
 | **vJoy Diagnostic & 1-Click Auto-Config** | ✅ | ✅ |
-| **LMU Input Compatibility Fix (DirectInput Fallback @ 1000 Hz)** | ✅ | ✅ |
-| **Game Process Auto-Detection** | ✅ (Process-based) | ✅ (Advanced + Plugins) |
-| **Telemetry ABS Helper (Wheel Lockup Prevention & Rate Control)** | ❌ *(Unlock on Boosty)* | ✅ |
-| **Smart Traction Control (TC Helper with Reactive Rates)** | ❌ *(Unlock on Boosty)* | ✅ |
-| **Adaptive Grip Learning Cache & UI Tools** | ❌ *(Unlock on Boosty)* | ✅ |
-| **Speed-Sensitive Steering (Dynamic Telemetry Scaling)** | ❌ *(Unlock on Boosty)* | ✅ |
-| **Synthetic Trail Braking Engine** | ✅ | ✅ |
-| **Slip Audio Feedback (Understeer / Oversteer Beeps)** | ❌ *(Unlock on Boosty)* | ✅ |
-| **TC Audio Feedback (Wheelspin Beeps)** | ❌ *(Unlock on Boosty)* | ✅ |
-| **In-Menu Control Suspension** | ❌ *(Unlock on Boosty)* | ✅ |
-| **Auto-Unlock Mouse Cursor in Menu** | ❌ *(Unlock on Boosty)* | ✅ |
-| **Automated Game Telemetry Plugin Installer** | ❌ *(Unlock on Boosty)* | ✅ |
+| **Game Process Auto-Detection** | ✅ | ✅ |
+| **Telemetry ABS Helper** | ❌ | ✅ |
+| **Smart Traction Control** | ❌ | ✅ |
+| **Adaptive Grip Learning Cache & UI Tools** | ❌ | ✅ |
+| **Speed-Sensitive Steering** | ❌ | ✅ |
+| **Slip Audio Feedback** | ❌ | ✅ |
+| **TC Audio Feedback** | ❌ | ✅ |
+| **In-Menu Control Suspension** | ❌ | ✅ |
+| **Auto-Unlock Mouse Cursor in Menu** | ❌ | ✅ |
+| **Automated Game Telemetry Plugin Installer** | ❌ | ✅ |
 | **Development Support & Priority Updates** | — | ❤️ Boosty Subscription |
 
 ---

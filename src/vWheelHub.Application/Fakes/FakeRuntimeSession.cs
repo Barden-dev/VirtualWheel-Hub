@@ -7,35 +7,53 @@ using SimRacingHub.Models;
 
 namespace SimRacingHub.Application.Fakes
 {
+    /// <summary>
+    /// Test and preview fake for IRuntimeSession with event triggers, state mutation, and cancellation support.
+    /// </summary>
     public sealed class FakeRuntimeSession : IRuntimeSession
     {
         private readonly List<RuntimeStartOptions> _recordedStartOptions = new();
         private readonly List<(Profile? Profile, ResolvedProfile Resolved)> _recordedProfiles = new();
+
         public bool IsRunning { get; set; }
         public bool IsLocked { get; set; }
         public bool HasFault { get; set; }
         public string? FaultMessage { get; set; }
+
         public RuntimeSnapshot CurrentSnapshot { get; set; } = RuntimeSnapshot.Stopped();
+
         public int StartCallCount { get; private set; }
         public int StopCallCount { get; private set; }
         public int UpdateProfileCallCount { get; private set; }
         public int GetSnapshotCallCount { get; private set; }
         public int DisposeAsyncCallCount { get; private set; }
         public int DisposeCallCount { get; private set; }
+
         public IReadOnlyList<RuntimeStartOptions> RecordedStartOptions => _recordedStartOptions;
         public IReadOnlyList<(Profile? Profile, ResolvedProfile Resolved)> RecordedProfiles => _recordedProfiles;
 
         public event Action<RuntimeSnapshot>? SnapshotUpdated;
         public event Action<string>? FaultOccurred;
+
         public Task StartAsync(RuntimeStartOptions options, CancellationToken ct = default)
         {
             ArgumentNullException.ThrowIfNull(options);
             ct.ThrowIfCancellationRequested();
+
             StartCallCount++;
             _recordedStartOptions.Add(options);
             IsRunning = true;
             IsLocked = options.LockCursorOnStart;
-            CurrentSnapshot = new RuntimeSnapshot(IsRunning: true, IsLocked: IsLocked, WheelAxis: 0, GasAxis: 0, BrakeAxis: 0, GameTitle: "Fake Simulator", StatusMessage: "Running");
+
+            CurrentSnapshot = new RuntimeSnapshot(
+                IsRunning: true,
+                IsLocked: IsLocked,
+                WheelAxis: 0,
+                GasAxis: 0,
+                BrakeAxis: 0,
+                GameTitle: "Fake Simulator",
+                StatusMessage: "Running");
+
             SnapshotUpdated?.Invoke(CurrentSnapshot);
             return Task.CompletedTask;
         }
@@ -43,9 +61,11 @@ namespace SimRacingHub.Application.Fakes
         public Task StopAsync(CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
+
             StopCallCount++;
             IsRunning = false;
             IsLocked = false;
+
             CurrentSnapshot = RuntimeSnapshot.Stopped();
             SnapshotUpdated?.Invoke(CurrentSnapshot);
             return Task.CompletedTask;

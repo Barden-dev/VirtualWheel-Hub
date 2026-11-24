@@ -12,6 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Using Include="SimRacingHub.Services.Games" />
     <ProjectReference Include="..\vWheelHub.Core\vWheelHub.Core.csproj" />
     <ProjectReference Include="..\vWheelHub.Application\vWheelHub.Application.csproj" />
   </ItemGroup>

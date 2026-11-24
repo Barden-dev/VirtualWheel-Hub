@@ -20,7 +20,7 @@ namespace SimRacingHub.Application.Features.Shell
         GameDataPreview = 16
     }
 
-    public enum AxisControlTab { Steering, Throttle, Brake }
+    public enum AxisControlTab { Steering, Throttle, Brake, Clutch }
 
     public enum NavigationSection
     {
@@ -28,5 +28,15 @@ namespace SimRacingHub.Application.Features.Shell
         Profiles,
         Controls,
         Application
+    }
+
+    internal static class PageIdSections
+    {
+        public static bool IsControlSection(PageId page) => page is PageId.Steering or PageId.Pedals or PageId.TrailBraking
+            or PageId.KeyBindings or PageId.Output or PageId.ControlAssignment or PageId.InputDevices or PageId.SoundPreview;
+
+        public static bool IsApplicationSection(PageId page) => page is PageId.Settings or PageId.About or PageId.GameDataPreview;
+
+        public static bool IsGameConnectionPage(PageId page) => false;
     }
 }

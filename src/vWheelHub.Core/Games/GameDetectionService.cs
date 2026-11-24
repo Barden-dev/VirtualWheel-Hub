@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,9 +21,12 @@ namespace SimRacingHub.Services.Games
         public event Action<string>? OnGameRunning;
         public event Action<GameVehicleStatus>? OnVehicleStatusChanged;
         public GameVehicleStatus VehicleStatus { get; private set; } = new(null, VehicleIdentityState.NotRunning);
+
         private ProfileContext _lastContext = new ProfileContext("Universal");
+
         [ObservableProperty]
         private bool _autoDetectEnabled = true;
+
         public GameDetectionService(GameIntegrationRegistry registry)
         {
             _registry = registry;
@@ -32,8 +34,7 @@ namespace SimRacingHub.Services.Games
 
         public void Start()
         {
-            if (_cts != null && !_cts.IsCancellationRequested)
-                return;
+            if (_cts != null && !_cts.IsCancellationRequested) return;
             _cts = new CancellationTokenSource();
             var token = _cts.Token;
             _worker = Task.Run(() => PollingLoop(token));
@@ -43,13 +44,12 @@ namespace SimRacingHub.Services.Games
         {
             var cts = _cts;
             _cts = null;
-            if (cts == null)
-                return;
+
+            if (cts == null) return;
             try
             {
                 cts.Cancel();
-                if (_worker != null && Task.CurrentId != _worker.Id)
-                    _worker.Wait(TimeSpan.FromSeconds(3));
+                if (_worker != null && Task.CurrentId != _worker.Id) _worker.Wait(TimeSpan.FromSeconds(3));
                 cts.Dispose();
             }
             catch (ObjectDisposedException)
@@ -72,11 +72,12 @@ namespace SimRacingHub.Services.Games
         private const int ErrorLogThrottleMs = 60_000;
         private int _lastErrorLogTicks;
         private bool _hasLoggedError;
+
         private void LogThrottled(string message, Exception ex)
         {
             int now = Environment.TickCount;
-            if (_hasLoggedError && unchecked(now - _lastErrorLogTicks) < ErrorLogThrottleMs)
-                return;
+            if (_hasLoggedError && unchecked(now - _lastErrorLogTicks) < ErrorLogThrottleMs) return;
+
             _lastErrorLogTicks = now;
             _hasLoggedError = true;
             AppLogger.Instance.LogError(message, ex);
@@ -95,18 +96,17 @@ namespace SimRacingHub.Services.Games
                     LogThrottled("Game auto-detection cycle failed and was skipped", ex);
                 }
 
-                if (token.WaitHandle.WaitOne(2000))
-                    break;
+                if (token.WaitHandle.WaitOne(2000)) break;
             }
         }
 
         private void PollOnce()
         {
-            lock (_pollLock)
-                PollCore();
+            lock (_pollLock) PollCore();
         }
 
         public void CheckNow() => PollOnce();
+
         private void PollCore()
         {
             if (!AutoDetectEnabled) return;
@@ -119,38 +119,36 @@ namespace SimRacingHub.Services.Games
                 var detector = integration.Detector;
                 lock (detector)
                 {
+                    try
+                    {
+                        detector.Update();
+                    }
+                    catch (Exception ex)
+                    {
+                        LogThrottled($"Detector for '{detector.GameName}' failed and was skipped", ex);
+                        continue;
+                    }
 
-                try
-                {
-                    detector.Update();
-                }
-                catch (Exception ex)
-                {
-                    LogThrottled($"Detector for '{detector.GameName}' failed and was skipped", ex);
-                    continue;
-                }
+                    if (detector.IsRunning) OnGameRunning?.Invoke(detector.GameName);
 
-                if (detector.IsRunning) OnGameRunning?.Invoke(detector.GameName);
-
-                if (detector.IsRunning && detectedContext == null)
-                {
-                    bool supported = detector.SupportsVehicleIdentification;
-                    bool confirmed = supported && detector.HasCurrentVehicleIdentity;
-                    string? car = confirmed || !supported ? detector.GetCurrentCar() : null;
-                    string? carClass = confirmed || !supported ? detector.GetCurrentClass() : null;
-                    vehicleStatus = new(detector.GameName, !supported ? VehicleIdentityState.Unsupported :
-                        confirmed ? VehicleIdentityState.Confirmed : VehicleIdentityState.Waiting, car, carClass);
-                    // Missing identity must not discard the last settings for this running game.
-                    detectedContext = supported && !confirmed && _lastContext.Game == detector.GameName
-                        ? new ProfileContext(_lastContext.Game, _lastContext.CarClass, _lastContext.Car)
-                        : new ProfileContext(detector.GameName, carClass, car);
-                }
+                    if (detector.IsRunning && detectedContext == null)
+                    {
+                        bool supported = detector.SupportsVehicleIdentification;
+                        bool confirmed = supported && detector.HasCurrentVehicleIdentity;
+                        string? car = confirmed || !supported ? detector.GetCurrentCar() : null;
+                        string? carClass = confirmed || !supported ? detector.GetCurrentClass() : null;
+                        vehicleStatus = new(detector.GameName, !supported ? VehicleIdentityState.Unsupported :
+                            confirmed ? VehicleIdentityState.Confirmed : VehicleIdentityState.Waiting, car, carClass);
+                        // Missing identity must not discard the last settings for this running game.
+                        detectedContext = supported && !confirmed && _lastContext.Game == detector.GameName
+                            ? new ProfileContext(_lastContext.Game, _lastContext.CarClass, _lastContext.Car)
+                            : new ProfileContext(detector.GameName, carClass, car);
+                    }
                 }
             }
 
-            // Poll every detector even after selecting the first running game. A previously
-            // active Linux integration must observe process exit and release its bridge socket
-            // when switching to a game earlier in registry order.
+            // Poll every detector even after selecting the first running game so previously
+            // active integrations observe process exit when switching games.
             detectedContext ??= new ProfileContext("Universal");
             if (!detectedContext.Equals(_lastContext))
             {
@@ -163,10 +161,9 @@ namespace SimRacingHub.Services.Games
                 OnVehicleStatusChanged?.Invoke(vehicleStatus);
             }
         }
-
     }
 
-    public class ProcessGameDetector : IGameDetector
+    public partial class ProcessGameDetector : IGameDetector
     {
         private readonly string[] _processNames;
         public bool? IsForeground => GameFocus.Matches(_processNames);
@@ -174,7 +171,8 @@ namespace SimRacingHub.Services.Games
         public bool SupportsVehicleIdentification => false;
         public bool IsRunning { get; private set; }
 
-        public ProcessGameDetector(string gameName, string processName) : this(gameName, new[] { processName })
+        public ProcessGameDetector(string gameName, string processName)
+            : this(gameName, new[] { processName })
         {
         }
 

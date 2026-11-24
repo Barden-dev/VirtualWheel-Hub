@@ -16,10 +16,13 @@ namespace SimRacingHub.Avalonia.Dialogs
         public ProfileImportDialog()
         {
             InitializeComponent();
+            PopulateExtraPreview();
             DragDrop.SetAllowDrop(this, true);
             AddHandler(DragDrop.DragOverEvent, OnDragOver, handledEventsToo: true);
             AddHandler(DragDrop.DropEvent, OnDrop, handledEventsToo: true);
         }
+
+        partial void PopulateExtraPreview();
 
         public ProfileImportDialog(ProfileImportDialogViewModel viewModel) : this()
         {

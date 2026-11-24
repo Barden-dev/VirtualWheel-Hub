@@ -156,7 +156,9 @@ namespace SimRacingHub.Core
 
         private string CleanupKey => $"vjoy-device-{_id}";
 
-        public OutputTestCapabilities TestCapabilities => new(Math.Clamp(GetButtonCount(_id), 0, 128));
+        private bool _hasClutchAxis;
+
+        public OutputTestCapabilities TestCapabilities => new(Math.Clamp(GetButtonCount(_id), 0, 128), CheckAxisExists(_id, HID_USAGE_RZ));
 
         public bool UpdateTestReport(OutputTestReport report)
         {
@@ -165,6 +167,7 @@ namespace SimRacingHub.Core
                 bool ok = SetAxis(report.Steer, _id, HID_USAGE_X);
                 ok &= SetAxis(report.Gas, _id, HID_USAGE_Y);
                 ok &= SetAxis(report.Brake, _id, HID_USAGE_Z);
+                if (_hasClutchAxis) ok &= SetAxis(report.Clutch, _id, HID_USAGE_RZ);
                 int buttons = Math.Clamp(GetButtonCount(_id), 0, 128);
                 for (int i = 1; i <= buttons; i++) ok &= SetBtn(report.Button == i, _id, (byte)i);
                 if (ok) { _lastButtons = new OutputButtons().With(report.Button); Volatile.Write(ref _consecutiveFailures, 0); }
@@ -211,6 +214,7 @@ namespace SimRacingHub.Core
             {
                 if (!AcquireVJD(_id)) return false;
 
+                _hasClutchAxis = CheckAxisExists(_id, HID_USAGE_RZ);
                 CrashSafety.Register(CleanupKey, Release);
                 Volatile.Write(ref _consecutiveFailures, 0);
                 _lastError = null;
@@ -258,6 +262,7 @@ namespace SimRacingHub.Core
                 ok = SetAxis(report.Steer, _id, HID_USAGE_X);
                 ok &= SetAxis(report.Gas, _id, HID_USAGE_Y);
                 ok &= SetAxis(report.Brake, _id, HID_USAGE_Z);
+                if (_hasClutchAxis) ok &= SetAxis(report.Clutch, _id, HID_USAGE_RZ);
                 ok &= SetBtn(report.Buttons.IsDown(1), _id, 1);
                 ok &= SetBtn(report.Buttons.IsDown(2), _id, 2);
                 for (int button = 3; button <= 128; button++)

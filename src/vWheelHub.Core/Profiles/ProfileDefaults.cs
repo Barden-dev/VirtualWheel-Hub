@@ -40,6 +40,10 @@ public static partial class ProfileDefaults
         {
             return CreateWrcGenerationsDefault(name);
         }
+        if (string.Equals(name, "iRacing", StringComparison.OrdinalIgnoreCase))
+        {
+            return CreateIRacingDefault(name);
+        }
         if (string.Equals(name, "Forza Motorsport", StringComparison.OrdinalIgnoreCase))
         {
             return CreateForzaMotorsportDefault(name);
@@ -83,6 +87,41 @@ public static partial class ProfileDefaults
         p.UseSteeringLockClamp = false;
         return p;
     }
+
+    public static Profile CreateIRacingDefault(string name = "iRacing")
+    {
+        var profile = CreateBaseDefault(name);
+        profile.MouseSensitivity = 2.2;
+        profile.GasAttackFastSeconds = 0.270;
+        profile.GasAttackSlowSeconds = 0.240;
+        profile.GasDecaySeconds = 0.240;
+        profile.GasAttackTurboSeconds = 0.100;
+        profile.GasInstantCutSeconds = 0.006;
+        profile.BrakeAttackFastSeconds = 0.310;
+        profile.BrakeAttackSlowSeconds = 0.290;
+        profile.BrakeDecaySeconds = 0.190;
+        profile.ClutchAttackFastSeconds = 0.120;
+        profile.ClutchAttackSlowSeconds = 0.100;
+        profile.ClutchDecaySeconds = 0.220;
+        profile.CarSteeringLock = 90;
+        profile.CursorUnlockedMode = 2;
+        profile.PauseControlsOnFocusLoss = false;
+        profile.ReleaseCursorOnFocusLoss = false;
+        profile.OutputMode = null;
+        profile.KeySteerLeft1 = 0;
+        profile.KeySteerRight1 = 0;
+        profile.KeyGas2 = 0;
+        profile.KeyBrake2 = 0;
+        profile.KeyShiftUp1 = 0x44;
+        profile.KeyShiftDown1 = 0x41;
+        profile.KeyCenterSteering1 = 0x2E;
+        profile.KeyToggleLock1 = 0x23;
+        profile.KeyUnlockCursor2 = null;
+        ApplyIRacingEditionDefaults(profile);
+        return profile;
+    }
+
+    static partial void ApplyIRacingEditionDefaults(Profile profile);
 
     public static Profile CreateForzaMotorsportDefault(string name = "Forza Motorsport")
     {

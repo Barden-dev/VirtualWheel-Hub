@@ -15,6 +15,10 @@ using SimRacingHub.Services;
 
 namespace SimRacingHub.Application.Features.Dashboard
 {
+    /// <summary>
+    /// ViewModel for the main dashboard, displaying real-time hub execution status,
+    /// live axis positions, cursor lock status, game context, and diagnostic summaries.
+    /// </summary>
     public partial class DashboardViewModel : ViewModelBase, IDisposable
     {
         private readonly IRuntimeSession _runtimeSession;
@@ -22,6 +26,7 @@ namespace SimRacingHub.Application.Features.Dashboard
         private readonly IOutputDiagnostics _outputDiagnostics;
         private readonly ILocalizationManager _localizationManager;
         private readonly IUiDispatcher? _uiDispatcher;
+
         private string? _outputStartFailureMessage;
         public void AcknowledgeOutputRecovery()
         {
@@ -35,39 +40,68 @@ namespace SimRacingHub.Application.Features.Dashboard
 
         private bool _isDisposed;
         private bool _eventsSubscribed;
+
         [ObservableProperty]
         private bool _isHubRunning;
+
         [ObservableProperty]
         private bool _isLocked;
+
         [ObservableProperty]
         private bool _hasFault;
+
         [ObservableProperty]
         private string? _faultMessage;
+
         [ObservableProperty]
         private string? _statusMessage;
+
         [ObservableProperty]
         private double _wheelAxis;
+
         [ObservableProperty]
         private double _gasAxis;
+
         [ObservableProperty]
         private double _brakeAxis;
+
+        [ObservableProperty]
+        private double _clutchAxis;
+
         [ObservableProperty]
         private string? _gameTitle;
+
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(GameContextDisplayName))]
         private ProfileContext _currentGameContext = new("Universal");
+
+        partial void OnCurrentGameContextChanged(ProfileContext value)
+        {
+            OnCurrentGameContextChangedExtensions(value);
+        }
+
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(HasPendingContext))]
         private ProfileContext? _pendingGameContext;
+
         public bool HasPendingContext => PendingGameContext != null;
 
         [ObservableProperty]
         private RuntimeSnapshot? _latestSnapshot;
+
+        partial void OnLatestSnapshotChanged(RuntimeSnapshot? value)
+        {
+            OnLatestSnapshotChangedExtensions(value);
+        }
+
         [ObservableProperty]
         private DeviceDiagnosticSnapshot? _deviceDiagnostics;
+
         public double WheelPercent => Math.Round(WheelAxis * 100.0, 1);
         public double GasPercent => Math.Round(GasAxis * 100.0, 1);
         public double BrakePercent => Math.Round(BrakeAxis * 100.0, 1);
+        public double ClutchPercent => Math.Round(ClutchAxis * 100.0, 1);
+
         public string GameContextDisplayName => CurrentGameContext?.Game is null or "Universal"
             ? _localizationManager.GetString("Common_Universal", "Universal") : CurrentGameContext.Game;
 
@@ -85,7 +119,7 @@ namespace SimRacingHub.Application.Features.Dashboard
         public int CursorUnlockedMode
         {
             get => Math.Clamp(_profileSession.CurrentProfile?.CursorUnlockedMode ?? _profileSession.ResolvedProfile.CursorUnlockedMode, 0, 2);
-            set { if (_profileSession.CurrentProfile is {} profile && CursorUnlockedMode != value) profile.CursorUnlockedMode = Math.Clamp(value, 0, 2); }
+            set { if (_profileSession.CurrentProfile is { } profile && CursorUnlockedMode != value) profile.CursorUnlockedMode = Math.Clamp(value, 0, 2); }
         }
 
         public string CursorUnlockedModeLabel => _localizationManager.GetString(CursorUnlockedMode switch
@@ -103,7 +137,16 @@ namespace SimRacingHub.Application.Features.Dashboard
             set { if (_profileSession.CurrentProfile is { } profile && PauseControlsOnFocusLoss != value) profile.PauseControlsOnFocusLoss = value; }
         }
 
-        public OutputDeviceMode SelectedOutputMode => _profileSession.CurrentProfile?.OutputMode ?? _profileSession.ResolvedProfile?.OutputMode ?? OutputDeviceMode.VJoy;
+        public OutputDeviceMode SelectedOutputMode
+        {
+            get
+            {
+                var saved = _profileSession.CurrentProfile?.OutputMode ??
+                    _profileSession.ResolvedProfile?.OutputMode ?? OutputDeviceMode.VJoy;
+                return _outputDiagnostics is IOutputModePolicy policy ? policy.ResolveOutputMode(saved) : saved;
+            }
+        }
+
         public IRuntimeSession RuntimeSession => _runtimeSession;
         public ProfileSession ProfileSession => _profileSession;
         public IOutputDiagnostics OutputDiagnostics => _outputDiagnostics;
@@ -118,14 +161,38 @@ namespace SimRacingHub.Application.Features.Dashboard
         [RelayCommand]
         private void CloseDeviceSetup() => IsDeviceSetupOpen = false;
 
-        public DashboardViewModel(IRuntimeSession runtimeSession, ProfileSession profileSession, IOutputDiagnostics outputDiagnostics, ILocalizationManager localizationManager, IUiDispatcher? uiDispatcher = null)
+        public DashboardViewModel(
+            IRuntimeSession runtimeSession,
+            ProfileSession profileSession,
+            IOutputDiagnostics outputDiagnostics,
+            ILocalizationManager localizationManager,
+            IUiDispatcher? uiDispatcher = null)
+            : this(runtimeSession, profileSession, outputDiagnostics, localizationManager, uiDispatcher, deferInitialSync: false)
+        {
+        }
+
+        private DashboardViewModel(
+            IRuntimeSession runtimeSession,
+            ProfileSession profileSession,
+            IOutputDiagnostics outputDiagnostics,
+            ILocalizationManager localizationManager,
+            IUiDispatcher? uiDispatcher,
+            bool deferInitialSync)
         {
             _runtimeSession = runtimeSession ?? throw new ArgumentNullException(nameof(runtimeSession));
             _profileSession = profileSession ?? throw new ArgumentNullException(nameof(profileSession));
             _outputDiagnostics = outputDiagnostics ?? throw new ArgumentNullException(nameof(outputDiagnostics));
-            ;
             _localizationManager = localizationManager ?? throw new ArgumentNullException(nameof(localizationManager));
             _uiDispatcher = uiDispatcher;
+
+            if (!deferInitialSync)
+            {
+                CompleteInitialization();
+            }
+        }
+
+        private void CompleteInitialization()
+        {
             SyncFromRuntimeSession();
             SyncFromProfileSession();
             SubscribeEvents();
@@ -133,25 +200,27 @@ namespace SimRacingHub.Application.Features.Dashboard
 
         private void SubscribeEvents()
         {
-            if (_eventsSubscribed)
-                return;
+            if (_eventsSubscribed) return;
+
             _runtimeSession.SnapshotUpdated += OnSnapshotUpdated;
             _runtimeSession.FaultOccurred += OnFaultOccurred;
             _profileSession.UndoStateChanged += OnProfileSessionUndoStateChanged;
             _profileSession.PropertyChanged += OnProfileSessionPropertyChanged;
             _localizationManager.LanguageChanged += OnLanguageChanged;
+
             _eventsSubscribed = true;
         }
 
         private void UnsubscribeEvents()
         {
-            if (!_eventsSubscribed)
-                return;
+            if (!_eventsSubscribed) return;
+
             _runtimeSession.SnapshotUpdated -= OnSnapshotUpdated;
             _runtimeSession.FaultOccurred -= OnFaultOccurred;
             _profileSession.UndoStateChanged -= OnProfileSessionUndoStateChanged;
             _profileSession.PropertyChanged -= OnProfileSessionPropertyChanged;
             _localizationManager.LanguageChanged -= OnLanguageChanged;
+
             _eventsSubscribed = false;
         }
 
@@ -173,7 +242,10 @@ namespace SimRacingHub.Application.Features.Dashboard
             IsLocked = _runtimeSession.IsLocked;
             HasFault = _runtimeSession.HasFault;
             FaultMessage = _runtimeSession.FaultMessage;
-            StatusMessage = HasFault ? FaultMessage : (IsHubRunning ? _localizationManager.GetString("Status_Running", "Running") : _localizationManager.GetString("Status_Stopped", "Stopped"));
+            StatusMessage = HasFault
+                ? FaultMessage
+                : (IsHubRunning ? _localizationManager.GetString("Status_Running", "Running") : _localizationManager.GetString("Status_Stopped", "Stopped"));
+
             var snapshot = _runtimeSession.GetSnapshot();
             if (snapshot != null)
             {
@@ -185,9 +257,14 @@ namespace SimRacingHub.Application.Features.Dashboard
         {
             if (CurrentGameContext == null && _profileSession.CurrentProfile != null)
             {
-                var profileName = string.IsNullOrWhiteSpace(_profileSession.CurrentProfile.Name) ? "Universal" : _profileSession.CurrentProfile.Name;
+                var profileName = string.IsNullOrWhiteSpace(_profileSession.CurrentProfile.Name)
+                    ? "Universal"
+                    : _profileSession.CurrentProfile.Name;
                 CurrentGameContext = new ProfileContext(profileName);
-            };
+            }
+
+            OnSyncFromProfileSessionExtensions();
+
             OnPropertyChanged(nameof(SelectedOutputMode));
             OnPropertyChanged(nameof(PollingRate));
             OnPropertyChanged(nameof(CursorUnlockedMode));
@@ -195,44 +272,46 @@ namespace SimRacingHub.Application.Features.Dashboard
             OnPropertyChanged(nameof(PauseControlsOnFocusLoss));
             OnPropertyChanged(nameof(ReleaseCursorOnFocusLoss));
             OnPropertyChanged(nameof(GameContextDisplayName));
-                OnPropertyChanged(nameof(CursorUnlockedModeLabel));
         }
 
         private void OnSnapshotUpdated(RuntimeSnapshot snapshot)
         {
-            if (snapshot == null)
-                return;
+            if (snapshot == null) return;
             RunOnUi(() => ApplySnapshot(snapshot));
         }
 
         private void ApplySnapshot(RuntimeSnapshot snapshot)
         {
+            OnBeforeApplySnapshotExtensions(snapshot);
             LatestSnapshot = snapshot;
+            OnAfterLatestSnapshotExtensions(snapshot);
             IsHubRunning = snapshot.IsRunning;
             IsLocked = snapshot.IsLocked;
             WheelAxis = snapshot.WheelAxis;
             GasAxis = snapshot.GasAxis;
             BrakeAxis = snapshot.BrakeAxis;
-            ;
-            ;
-            ;
-            ;
+            ClutchAxis = snapshot.ClutchAxis;
             GameTitle = snapshot.GameTitle;
+
             if (snapshot.HasFault)
             {
                 HasFault = true;
                 FaultMessage = snapshot.FaultMessage;
                 StatusMessage = snapshot.FaultMessage ?? _localizationManager.GetString("Status_Fault", "Fault");
             }
-            else if (!HasFault)
+            else if (snapshot.IsRunning || !HasFault)
             {
-                StatusMessage = snapshot.StatusMessage ?? (snapshot.IsRunning ? _localizationManager.GetString("Status_Running", "Running") : _localizationManager.GetString("Status_Stopped", "Stopped"));
+                _outputStartFailureMessage = null;
+                HasFault = false;
+                FaultMessage = null;
+                StatusMessage = snapshot.StatusMessage ??
+                    (snapshot.IsRunning ? _localizationManager.GetString("Status_Running", "Running") : _localizationManager.GetString("Status_Stopped", "Stopped"));
             }
 
             OnPropertyChanged(nameof(WheelPercent));
             OnPropertyChanged(nameof(GasPercent));
             OnPropertyChanged(nameof(BrakePercent));
-            OnPropertyChanged();
+            OnPropertyChanged(nameof(ClutchPercent));
         }
 
         private void OnFaultOccurred(string message)
@@ -253,7 +332,8 @@ namespace SimRacingHub.Application.Features.Dashboard
 
         private void OnProfileSessionPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(ProfileSession.CurrentProfile) || e.PropertyName == nameof(ProfileSession.ResolvedProfile))
+            if (e.PropertyName == nameof(ProfileSession.CurrentProfile) ||
+                e.PropertyName == nameof(ProfileSession.ResolvedProfile))
             {
                 RunOnUi(SyncFromProfileSession);
             }
@@ -263,11 +343,14 @@ namespace SimRacingHub.Application.Features.Dashboard
         {
             RunOnUi(() =>
             {
+                OnLanguageChangedExtensions();
                 OnPropertyChanged(nameof(GameContextDisplayName));
                 OnPropertyChanged(nameof(CursorUnlockedModeLabel));
                 if (!HasFault)
                 {
-                    StatusMessage = IsHubRunning ? _localizationManager.GetString("Status_Running", "Running") : _localizationManager.GetString("Status_Stopped", "Stopped");
+                    StatusMessage = IsHubRunning
+                        ? _localizationManager.GetString("Status_Running", "Running")
+                        : _localizationManager.GetString("Status_Stopped", "Stopped");
                 }
             });
         }
@@ -291,22 +374,26 @@ namespace SimRacingHub.Application.Features.Dashboard
             try
             {
                 SetBusy(true, _localizationManager.GetString("Status_StartingHub", "Starting Hub..."));
-                var options = new RuntimeStartOptions(OutputMode: SelectedOutputMode, RetainOutputConnection: true, LockCursorOnStart: false)
-                {
-                    Profile = _profileSession.ResolvedProfile,
-                    Context = CurrentGameContext
-                };
+                var options = new RuntimeStartOptions(
+                    OutputMode: SelectedOutputMode,
+                    RetainOutputConnection: true,
+                    LockCursorOnStart: false)
+                { Profile = _profileSession.ResolvedProfile, Context = CurrentGameContext };
+
                 await _runtimeSession.StartAsync(options, ct).ConfigureAwait(false);
+
                 RunOnUi(() =>
                 {
                     IsHubRunning = _runtimeSession.IsRunning;
                     IsLocked = _runtimeSession.IsLocked;
                     HasFault = _runtimeSession.HasFault;
                     FaultMessage = _runtimeSession.FaultMessage;
-                    StatusMessage = HasFault ? FaultMessage : _localizationManager.GetString("Status_Running", "Running");
+                    StatusMessage = HasFault
+                        ? FaultMessage
+                        : _localizationManager.GetString("Status_Running", "Running");
                 });
             }
-            catch (Exception ex)when (ex is not OperationCanceledException)
+            catch (Exception ex) when (ex is not OperationCanceledException || !ct.IsCancellationRequested)
             {
                 RunOnUi(() =>
                 {
@@ -329,14 +416,17 @@ namespace SimRacingHub.Application.Features.Dashboard
             {
                 SetBusy(true, _localizationManager.GetString("Status_StoppingHub", "Stopping Hub..."));
                 await _runtimeSession.StopAsync(ct).ConfigureAwait(false);
+
                 RunOnUi(() =>
                 {
                     IsHubRunning = _runtimeSession.IsRunning;
                     IsLocked = _runtimeSession.IsLocked;
-                    StatusMessage = HasFault ? FaultMessage : _localizationManager.GetString("Status_Stopped", "Stopped");
+                    StatusMessage = HasFault
+                        ? FaultMessage
+                        : _localizationManager.GetString("Status_Stopped", "Stopped");
                 });
             }
-            catch (Exception ex)when (ex is not OperationCanceledException)
+            catch (Exception ex) when (ex is not OperationCanceledException || !ct.IsCancellationRequested)
             {
                 RunOnUi(() =>
                 {
@@ -380,6 +470,7 @@ namespace SimRacingHub.Application.Features.Dashboard
         public void SetPendingContext(ProfileContext context)
         {
             ArgumentNullException.ThrowIfNull(context);
+
             if (CurrentGameContext != null && CurrentGameContext.Equals(context))
             {
                 return;
@@ -391,18 +482,25 @@ namespace SimRacingHub.Application.Features.Dashboard
         [RelayCommand]
         public void ApplyPendingContext()
         {
-            if (PendingGameContext == null)
-                return;
+            if (PendingGameContext == null) return;
+
             var target = PendingGameContext;
             PendingGameContext = null;
             CurrentGameContext = target;
-            ;
-            _profileSession.LoadContext(target);
-            if (_runtimeSession.IsRunning && _profileSession.ResolvedProfile != null)
+
+            bool handled = false;
+            ApplyPendingContextExtensions(target, ref handled);
+            if (!handled)
             {
-                _runtimeSession.UpdateProfile(_profileSession.ResolvedProfile, target);
-            };
+                _profileSession.LoadContext(target);
+                if (_runtimeSession.IsRunning && _profileSession.ResolvedProfile != null)
+                {
+                    _runtimeSession.UpdateProfile(_profileSession.ResolvedProfile, target);
+                }
+            }
+
             OnPropertyChanged(nameof(SelectedOutputMode));
+            OnAfterPendingContextApplied();
         }
 
         [RelayCommand]
@@ -420,8 +518,7 @@ namespace SimRacingHub.Application.Features.Dashboard
                 await Readiness.CheckReadinessAsync().ConfigureAwait(false);
                 result = Readiness.OutputSnapshot ?? DeviceDiagnosticSnapshot.Unavailable(SelectedOutputMode, Readiness.ProblemTitle);
             }
-            else
-                result = await _outputDiagnostics.CheckAsync(SelectedOutputMode, ct).ConfigureAwait(false);
+            else result = await _outputDiagnostics.CheckAsync(SelectedOutputMode, ct).ConfigureAwait(false);
             RunOnUi(() =>
             {
                 DeviceDiagnostics = result;
@@ -429,11 +526,20 @@ namespace SimRacingHub.Application.Features.Dashboard
             return result;
         }
 
+        partial void OnCurrentGameContextChangedExtensions(ProfileContext value);
+        partial void OnLatestSnapshotChangedExtensions(RuntimeSnapshot? value);
+        partial void OnSyncFromProfileSessionExtensions();
+        partial void OnBeforeApplySnapshotExtensions(RuntimeSnapshot snapshot);
+        partial void OnAfterLatestSnapshotExtensions(RuntimeSnapshot snapshot);
+        partial void OnLanguageChangedExtensions();
+        partial void ApplyPendingContextExtensions(ProfileContext target, ref bool handled);
+        partial void OnAfterPendingContextApplied();
+
         public void Dispose()
         {
-            if (_isDisposed)
-                return;
+            if (_isDisposed) return;
             _isDisposed = true;
+
             UnsubscribeEvents();
             GC.SuppressFinalize(this);
         }

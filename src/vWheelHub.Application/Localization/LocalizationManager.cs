@@ -267,24 +267,43 @@ namespace SimRacingHub.Application.Localization
             string? filePath = FindLocalizationFile(cultureCode, _customDirectory);
             if (filePath != null && File.Exists(filePath))
             {
-                try
+                LoadDictionaryFile(filePath, targetMap);
+
+                string? dir = Path.GetDirectoryName(filePath);
+                string fileName = Path.GetFileName(filePath);
+                if (!string.IsNullOrEmpty(dir))
                 {
-                    using var stream = File.OpenRead(filePath);
-                    var doc = XDocument.Load(stream);
-                    foreach (var element in doc.Descendants())
+                    foreach (var subDir in new[] { "Edition", "Extras" })
                     {
-                        var keyAttr = element.Attributes().FirstOrDefault(a =>
-                            string.Equals(a.Name.LocalName, "Key", StringComparison.OrdinalIgnoreCase));
-                        if (keyAttr != null && !string.IsNullOrEmpty(keyAttr.Value))
+                        string overlayPath = Path.Combine(dir, subDir, fileName);
+                        if (File.Exists(overlayPath))
                         {
-                            targetMap[keyAttr.Value] = element.Value;
+                            LoadDictionaryFile(overlayPath, targetMap);
                         }
                     }
                 }
-                catch (Exception ex)
+            }
+        }
+
+        private static void LoadDictionaryFile(string filePath, Dictionary<string, string> targetMap)
+        {
+            try
+            {
+                using var stream = File.OpenRead(filePath);
+                var doc = XDocument.Load(stream);
+                foreach (var element in doc.Descendants())
                 {
-                    AppLogger.Instance.LogError($"Failed to parse XAML dictionary from disk: {filePath}", ex);
+                    var keyAttr = element.Attributes().FirstOrDefault(a =>
+                        string.Equals(a.Name.LocalName, "Key", StringComparison.OrdinalIgnoreCase));
+                    if (keyAttr != null && !string.IsNullOrEmpty(keyAttr.Value))
+                    {
+                        targetMap[keyAttr.Value] = element.Value;
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                AppLogger.Instance.LogError($"Failed to parse XAML dictionary from disk: {filePath}", ex);
             }
         }
 

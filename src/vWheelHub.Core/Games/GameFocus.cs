@@ -1,4 +1,6 @@
+using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace SimRacingHub.Services.Games;
@@ -8,6 +10,7 @@ internal static class GameFocus
     [ThreadStatic] private static uint _lastProcessId;
     [ThreadStatic] private static string? _lastName;
     [ThreadStatic] private static long _refreshAfter;
+
     internal static bool? Matches(string[] processNames)
     {
         if (!OperatingSystem.IsWindows()) return SimRacingHub.Core.GameWindowFocus.PlatformProbe?.Invoke(processNames);

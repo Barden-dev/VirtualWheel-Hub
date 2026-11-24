@@ -10,16 +10,22 @@ namespace SimRacingHub.Services
     public partial class ProfileSession : ObservableObject
     {
         private readonly ProfileManager _profileManager;
+
         [ObservableProperty]
         private Profile _currentProfile = new();
+        
         [ObservableProperty]
         private ResolvedProfile _resolvedProfile = new();
+        
         [ObservableProperty]
         private bool _hasUnsavedChanges;
+        
         [ObservableProperty]
         private bool _isNewProfile;
+
         [ObservableProperty]
         private bool _hasSaveError;
+
         private sealed class ProfileChange
         {
             public string PropertyName { get; init; } = string.Empty;
@@ -37,9 +43,13 @@ namespace SimRacingHub.Services
         private readonly Dictionary<string, object?> _savedValues = new(StringComparer.Ordinal);
         private readonly Dictionary<string, object?> _savedResolvedValues = new(StringComparer.Ordinal);
         private readonly Dictionary<string, object?> _savedEffectiveValues = new(StringComparer.Ordinal);
-        private static readonly System.Reflection.PropertyInfo[] EditableProperties = typeof(Profile).GetProperties().Where(p => p.GetMethod?.IsPublic == true && p.SetMethod?.IsPublic == true && !Attribute.IsDefined(p, typeof(Newtonsoft.Json.JsonIgnoreAttribute))).ToArray();
+        private static readonly System.Reflection.PropertyInfo[] EditableProperties = typeof(Profile).GetProperties()
+            .Where(p => p.GetMethod?.IsPublic == true && p.SetMethod?.IsPublic == true &&
+                !Attribute.IsDefined(p, typeof(Newtonsoft.Json.JsonIgnoreAttribute))).ToArray();
         private static readonly Dictionary<string, System.Reflection.PropertyInfo> EditablePropertyMap = EditableProperties.ToDictionary(p => p.Name, StringComparer.Ordinal);
-        private static readonly Dictionary<string, System.Reflection.PropertyInfo> ResolvedPropertyMap = typeof(ResolvedProfile).GetProperties().Where(p => p.GetMethod?.IsPublic == true && p.SetMethod?.IsPublic == true).ToDictionary(p => p.Name, StringComparer.Ordinal);
+        private static readonly Dictionary<string, System.Reflection.PropertyInfo> ResolvedPropertyMap = typeof(ResolvedProfile).GetProperties()
+            .Where(p => p.GetMethod?.IsPublic == true && p.SetMethod?.IsPublic == true).ToDictionary(p => p.Name, StringComparer.Ordinal);
+
         private static string StoredSettingName(string name) => name switch
         {
             nameof(Profile.GasAttackTurboSeconds) => nameof(Profile.GasAttackTurbo),
@@ -50,9 +60,13 @@ namespace SimRacingHub.Services
             nameof(Profile.BrakeAttackFastSeconds) => nameof(Profile.BrakeAttackFast),
             nameof(Profile.BrakeAttackSlowSeconds) => nameof(Profile.BrakeAttackSlow),
             nameof(Profile.BrakeDecaySeconds) => nameof(Profile.BrakeDecay),
+            nameof(Profile.ClutchAttackFastSeconds) => nameof(Profile.ClutchAttackFast),
+            nameof(Profile.ClutchAttackSlowSeconds) => nameof(Profile.ClutchAttackSlow),
+            nameof(Profile.ClutchDecaySeconds) => nameof(Profile.ClutchDecay),
             nameof(Profile.TbDecaySeconds) => nameof(Profile.TbDecay),
             _ => name
         };
+
         private static bool SettingValuesEqual(object? left, object? right)
         {
             if (left is double a && right is double b)
@@ -115,7 +129,10 @@ namespace SimRacingHub.Services
             _savedResolvedValues.Clear(); _savedEffectiveValues.Clear();
             foreach (var property in ResolvedPropertyMap.Values)
                 _savedResolvedValues[property.Name] = _savedEffectiveValues[property.Name] = property.GetValue(ResolvedProfile);
+            CaptureExtraSavedEffectiveValues();
         }
+
+        partial void CaptureExtraSavedEffectiveValues();
 
         private double DurationFraction(string rate, bool saved)
         {
@@ -123,11 +140,12 @@ namespace SimRacingHub.Services
             {
                 nameof(Profile.GasAttackFast) or nameof(Profile.GasAttackSlow) => nameof(Profile.GasThreshold),
                 nameof(Profile.BrakeAttackFast) or nameof(Profile.BrakeAttackSlow) => nameof(Profile.BrakeThreshold),
+                nameof(Profile.ClutchAttackFast) or nameof(Profile.ClutchAttackSlow) => nameof(Profile.ClutchThreshold),
                 _ => null
             };
             if (boundary == null) return 1;
             double fraction = saved ? (double)_savedEffectiveValues[boundary]! : (double)ResolvedPropertyMap[boundary].GetValue(ResolvedProfile)!;
-            return rate is nameof(Profile.GasAttackSlow) or nameof(Profile.BrakeAttackSlow) ? 1 - fraction : fraction;
+            return rate is nameof(Profile.GasAttackSlow) or nameof(Profile.BrakeAttackSlow) or nameof(Profile.ClutchAttackSlow) ? 1 - fraction : fraction;
         }
 
         private static double? DisplayedDuration(double? rate, double fraction) =>
@@ -159,6 +177,7 @@ namespace SimRacingHub.Services
             return EditablePropertyMap.TryGetValue(propertyName, out var property) && !MatchesSavedValue(property);
         }
 
+        /// <summary>Restores a single setting without altering unrelated edits.</summary>
         public void RestoreSavedProperty(string propertyName)
         {
             if (TryGetDurations(propertyName, out _, out _) && IsPropertyModified(propertyName))
@@ -178,12 +197,12 @@ namespace SimRacingHub.Services
                 }
             }
             propertyName = StoredSettingName(propertyName);
-            if (!IsPropertyModified(propertyName))
-                return;
+            if (!IsPropertyModified(propertyName)) return;
             var property = typeof(Profile).GetProperty(propertyName);
-            if (property?.CanWrite != true)
-                return;
+            if (property?.CanWrite != true) return;
             property.SetValue(CurrentProfile, _savedValues[propertyName]);
+            // A saved null means inheritance. Restore the resolved value captured at
+            // save/load, rather than accidentally falling back to hardcoded defaults.
             if (_savedValues[propertyName] == null && !string.IsNullOrEmpty(_savedResolvedSnapshotJson))
             {
                 var savedResolved = Newtonsoft.Json.JsonConvert.DeserializeObject<ResolvedProfile>(_savedResolvedSnapshotJson);
@@ -191,22 +210,20 @@ namespace SimRacingHub.Services
                 if (savedResolved != null && resolvedProperty?.CanWrite == true)
                     resolvedProperty.SetValue(ResolvedProfile, resolvedProperty.GetValue(savedResolved));
             }
-
             UpdateDirtyState();
         }
 
+        /// <summary>Discards every unsaved edit; RevertProfile remains one-step undo.</summary>
         public void DiscardChanges()
         {
-            if (string.IsNullOrEmpty(_savedSnapshotJson) || !HasUnsavedChanges)
-                return;
+            if (string.IsNullOrEmpty(_savedSnapshotJson) || !HasUnsavedChanges) return;
             var saved = Newtonsoft.Json.JsonConvert.DeserializeObject<Profile>(_savedSnapshotJson);
             var resolved = Newtonsoft.Json.JsonConvert.DeserializeObject<ResolvedProfile>(_savedResolvedSnapshotJson);
-            if (saved == null || resolved == null)
-                return;
+            if (saved == null || resolved == null) return;
             CurrentProfile.PropertyChanging -= CurrentProfile_PropertyChanging;
             CurrentProfile.PropertyChanged -= CurrentProfile_PropertyChanged;
             CurrentProfile = saved;
-            CurrentProfile.SetInheritedPedalThresholds(_inheritedProfile.GasThreshold, _inheritedProfile.BrakeThreshold);
+            CurrentProfile.SetInheritedPedalThresholds(_inheritedProfile.GasThreshold, _inheritedProfile.BrakeThreshold, _inheritedProfile.ClutchThreshold);
             ResolvedProfile = resolved;
             CurrentProfile.SetSavedPedalRates(ResolvedProfile);
             CurrentProfile.PropertyChanging += CurrentProfile_PropertyChanging;
@@ -214,13 +231,14 @@ namespace SimRacingHub.Services
             HasSaveError = false;
             UpdateDirtyState();
         }
-
         private Stack<ProfileChange> _undoStack = new Stack<ProfileChange>();
         private bool _isUndoing = false;
         private bool _isSyncingProfile = false;
+        
         public bool CanUndo => HasUnsavedChanges && _undoStack.Count > 0;
-
+        
         public event EventHandler? UndoStateChanged;
+
         public ProfileManager ProfileManager => _profileManager;
 
         public ProfileSession(ProfileManager profileManager)
@@ -230,8 +248,7 @@ namespace SimRacingHub.Services
 
         public bool CheckIsDirty()
         {
-            if (CurrentProfile == null || string.IsNullOrEmpty(_savedSnapshotJson))
-                return false;
+            if (CurrentProfile == null || string.IsNullOrEmpty(_savedSnapshotJson)) return false;
             return EditableProperties.Any(property => !MatchesSavedValue(property));
         }
 
@@ -243,7 +260,6 @@ namespace SimRacingHub.Services
             {
                 _undoStack.Clear();
             }
-
             OnPropertyChanged(nameof(CanUndo));
             UndoStateChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -255,23 +271,25 @@ namespace SimRacingHub.Services
                 CurrentProfile.PropertyChanging -= CurrentProfile_PropertyChanging;
                 CurrentProfile.PropertyChanged -= CurrentProfile_PropertyChanged;
             }
-
+            
             HasSaveError = false;
-            var(active, resolved) = _profileManager.LoadContext(context);
+            var (active, resolved) = _profileManager.LoadContext(context);
             _loadedContext = new(context.Game, context.CarClass, context.Car);
             _inheritedProfile = _profileManager.GetComparisonBaseline(context).Resolved;
-            _pendingChange = _groupChange = null;
-            _changingProperties.Clear();
-            _editGroupDepth = 0;
+            _pendingChange = _groupChange = null; _changingProperties.Clear(); _editGroupDepth = 0;
             CurrentProfile = active;
-            CurrentProfile.SetInheritedPedalThresholds(_inheritedProfile.GasThreshold, _inheritedProfile.BrakeThreshold);
+            CurrentProfile.SetInheritedPedalThresholds(_inheritedProfile.GasThreshold, _inheritedProfile.BrakeThreshold, _inheritedProfile.ClutchThreshold);
             ResolvedProfile = resolved;
+            
             CaptureSavedState();
             HasUnsavedChanges = false;
+            
             CurrentProfile.PropertyChanging += CurrentProfile_PropertyChanging;
             CurrentProfile.PropertyChanged += CurrentProfile_PropertyChanged;
+            
             string path = _profileManager.GetProfilePath(context);
             IsNewProfile = !System.IO.File.Exists(path);
+            
             _undoStack.Clear();
             OnPropertyChanged(nameof(CanUndo));
             UndoStateChanged?.Invoke(this, EventArgs.Empty);
@@ -281,18 +299,15 @@ namespace SimRacingHub.Services
 
         public bool SaveProfile(ProfileContext context)
         {
-            if (!_profileManager.SaveContext(context, CurrentProfile))
-            {
-                HasSaveError = true;
-                return false;
-            }
-
+            if (!_profileManager.SaveContext(context, CurrentProfile)) { HasSaveError = true; return false; }
             HasSaveError = false;
             CaptureSavedState();
             HasUnsavedChanges = false;
+
             _undoStack.Clear();
             OnPropertyChanged(nameof(CanUndo));
             UndoStateChanged?.Invoke(this, EventArgs.Empty);
+
             string path = _profileManager.GetProfilePath(context);
             IsNewProfile = !System.IO.File.Exists(path);
             return true;
@@ -300,59 +315,51 @@ namespace SimRacingHub.Services
 
         public void RevertProfile()
         {
-            if (_undoStack.Count == 0)
-                return;
+            if (_undoStack.Count == 0) return;
             var change = _undoStack.Pop();
             _isUndoing = true;
             try
             {
+                // Restore the initiating setting before its dependent settings.
                 if (EditablePropertyMap.TryGetValue(change.PropertyName, out var primary))
                     primary.SetValue(CurrentProfile, change.Values[change.PropertyName]);
-                foreach (var pair in change.Values)
-                    EditablePropertyMap[pair.Key].SetValue(CurrentProfile, pair.Value);
-                foreach (var pair in change.ResolvedValues)
-                    ResolvedPropertyMap[pair.Key].SetValue(ResolvedProfile, pair.Value);
+                foreach (var pair in change.Values) EditablePropertyMap[pair.Key].SetValue(CurrentProfile, pair.Value);
+                foreach (var pair in change.ResolvedValues) ResolvedPropertyMap[pair.Key].SetValue(ResolvedProfile, pair.Value);
             }
-            finally
-            {
-                _isUndoing = false;
-            }
-
+            finally { _isUndoing = false; }
             UpdateDirtyState();
         }
 
         private ProfileChange CaptureChange(string name) => new()
         {
-            PropertyName = name,
-            Timestamp = Environment.TickCount,
+            PropertyName = name, Timestamp = Environment.TickCount,
             Values = EditableProperties.ToDictionary(p => p.Name, p => p.GetValue(CurrentProfile), StringComparer.Ordinal),
             ResolvedValues = ResolvedPropertyMap.Values.ToDictionary(p => p.Name, p => p.GetValue(ResolvedProfile), StringComparer.Ordinal)
         };
+
         private void CommitChange(ProfileChange change)
         {
-            if (!change.Values.Any(p => !SettingValuesEqual(p.Value, EditablePropertyMap[p.Key].GetValue(CurrentProfile))))
-                return;
-            if (_undoStack.TryPeek(out var last) && last.PropertyName == change.PropertyName && (uint)(Environment.TickCount - last.Timestamp) < 500)
+            if (!change.Values.Any(p => !SettingValuesEqual(p.Value, EditablePropertyMap[p.Key].GetValue(CurrentProfile)))) return;
+            if (_undoStack.TryPeek(out var last) && last.PropertyName == change.PropertyName &&
+                (uint)(Environment.TickCount - last.Timestamp) < 500)
                 last.Timestamp = change.Timestamp;
-            else
-                _undoStack.Push(change);
+            else _undoStack.Push(change);
         }
 
+        /// <summary>Keep a synchronous multi-setting user action, such as restoring defaults, in one undo step.</summary>
         public IDisposable BeginEditGroup(string actionName)
         {
-            if (_editGroupDepth++ == 0)
-                _groupChange = CaptureChange(actionName);
+            if (_editGroupDepth++ == 0) _groupChange = CaptureChange(actionName);
             return new EditGroup(this, CurrentProfile);
         }
 
+        /// <summary>Apply a complete preset without transient collisions with the old key assignments.</summary>
         public void ApplySettings(Profile settings, string actionName = "ApplyProfile")
         {
             ArgumentNullException.ThrowIfNull(settings);
-            if (ReferenceEquals(settings, CurrentProfile))
-                return;
+            if (ReferenceEquals(settings, CurrentProfile)) return;
             using var edit = BeginEditGroup(actionName);
-            foreach (string name in BindingPropertyNames)
-                EditablePropertyMap[name].SetValue(CurrentProfile, 0);
+            foreach (string name in BindingPropertyNames) EditablePropertyMap[name].SetValue(CurrentProfile, 0);
             CurrentProfile.CopyFrom(settings);
         }
 
@@ -361,59 +368,39 @@ namespace SimRacingHub.Services
             private bool _disposed;
             public void Dispose()
             {
-                if (_disposed)
-                    return;
-                _disposed = true;
-                if (!ReferenceEquals(session.CurrentProfile, profile) || session._editGroupDepth == 0)
-                    return;
-                if (--session._editGroupDepth == 0 && session._groupChange is { } change)
+                if (_disposed) return; _disposed = true;
+                if (!ReferenceEquals(session.CurrentProfile, profile) || session._editGroupDepth == 0) return;
+                if (--session._editGroupDepth == 0 && session._groupChange is {} change)
                 {
                     session._groupChange = null;
                     session.RemoveReturnedOverrides();
-                    session.CommitChange(change);
-                    session.UpdateDirtyState();
+                    session.CommitChange(change); session.UpdateDirtyState();
                 }
             }
         }
 
         private static readonly HashSet<string> BindingPropertyNames = new(StringComparer.Ordinal)
         {
-            nameof(Profile.KeySteerLeft1),
-            nameof(Profile.KeySteerLeft2),
-            nameof(Profile.KeySteerRight1),
-            nameof(Profile.KeySteerRight2),
-            nameof(Profile.KeyGas1),
-            nameof(Profile.KeyGas2),
-            nameof(Profile.KeyBrake1),
-            nameof(Profile.KeyBrake2),
-            nameof(Profile.KeyShiftUp1),
-            nameof(Profile.KeyShiftUp2),
-            nameof(Profile.KeyShiftDown1),
-            nameof(Profile.KeyShiftDown2),
-            nameof(Profile.KeyCenterSteering1),
-            nameof(Profile.KeyCenterSteering2),
-            nameof(Profile.KeyToggleHub1),
-            nameof(Profile.KeyToggleHub2),
-            nameof(Profile.KeyToggleLock1),
-            nameof(Profile.KeyToggleLock2),
-            nameof(Profile.KeyUnlockCursor1),
-            nameof(Profile.KeyUnlockCursor2)
+            nameof(Profile.KeySteerLeft1), nameof(Profile.KeySteerLeft2), nameof(Profile.KeySteerRight1), nameof(Profile.KeySteerRight2),
+            nameof(Profile.KeyGas1), nameof(Profile.KeyGas2), nameof(Profile.KeyBrake1), nameof(Profile.KeyBrake2), nameof(Profile.KeyClutch1), nameof(Profile.KeyClutch2),
+            nameof(Profile.KeyShiftUp1), nameof(Profile.KeyShiftUp2), nameof(Profile.KeyShiftDown1), nameof(Profile.KeyShiftDown2),
+            nameof(Profile.KeyCenterSteering1), nameof(Profile.KeyCenterSteering2), nameof(Profile.KeyToggleHub1), nameof(Profile.KeyToggleHub2),
+            nameof(Profile.KeyToggleLock1), nameof(Profile.KeyToggleLock2), nameof(Profile.KeyUnlockCursor1), nameof(Profile.KeyUnlockCursor2)
         };
-        public string BindingConflictMessage { get; private set; } = string.Empty;
 
+        public string BindingConflictMessage { get; private set; } = string.Empty;
         public event EventHandler? BindingConflictChanged;
+
         private void CurrentProfile_PropertyChanging(object? sender, System.ComponentModel.PropertyChangingEventArgs e)
         {
-            if (_isUndoing || _isSyncingProfile || e.PropertyName == null || !EditablePropertyMap.ContainsKey(e.PropertyName))
-                return;
+            if (_isUndoing || _isSyncingProfile || e.PropertyName == null || !EditablePropertyMap.ContainsKey(e.PropertyName)) return;
             _pendingChange ??= CaptureChange(e.PropertyName);
             _changingProperties[e.PropertyName] = _changingProperties.GetValueOrDefault(e.PropertyName) + 1;
         }
 
         private void CurrentProfile_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (_isSyncingProfile || string.IsNullOrEmpty(e.PropertyName))
-                return;
+            if (_isSyncingProfile || string.IsNullOrEmpty(e.PropertyName)) return;
             if (EditablePropertyMap.TryGetValue(e.PropertyName, out var stored) && ResolvedPropertyMap.TryGetValue(e.PropertyName, out var resolved))
             {
                 var value = stored.GetValue(CurrentProfile);
@@ -421,8 +408,10 @@ namespace SimRacingHub.Services
                 try
                 {
                     resolved.SetValue(ResolvedProfile, value ?? resolved.GetValue(_inheritedProfile));
-                    if (!_isUndoing && BindingPropertyNames.Contains(e.PropertyName) && value is int code && ResolvedProfile.TryGetKeyBindingConflict(code, GetBindingActionName(e.PropertyName), out string conflicts))
+                    if (!_isUndoing && BindingPropertyNames.Contains(e.PropertyName) && value is int code &&
+                        ResolvedProfile.TryGetKeyBindingConflict(code, GetBindingActionName(e.PropertyName), out string conflicts))
                     {
+                        // Rejected assignments must not create an empty undo step or erase prior edits.
                         stored.SetValue(CurrentProfile, _pendingChange?.Values[e.PropertyName]);
                         if (_pendingChange?.ResolvedValues.TryGetValue(e.PropertyName, out var oldResolved) == true)
                             resolved.SetValue(ResolvedProfile, oldResolved);
@@ -430,34 +419,22 @@ namespace SimRacingHub.Services
                         BindingConflictChanged?.Invoke(this, EventArgs.Empty);
                     }
                 }
-                finally
-                {
-                    _isSyncingProfile = false;
-                }
+                finally { _isSyncingProfile = false; }
             }
-
-            if (_isUndoing)
-                return;
+            if (_isUndoing) return;
             if (_changingProperties.TryGetValue(e.PropertyName, out int count))
             {
-                if (count > 1)
-                    _changingProperties[e.PropertyName] = count - 1;
-                else
-                    _changingProperties.Remove(e.PropertyName);
+                if (count > 1) _changingProperties[e.PropertyName] = count - 1;
+                else _changingProperties.Remove(e.PropertyName);
             }
-
-            if (_changingProperties.Count != 0)
-                return;
+            if (_changingProperties.Count != 0) return;
             if (_editGroupDepth == 0) RemoveReturnedOverrides();
-            if (_pendingChange is { } change)
+            if (_pendingChange is {} change)
             {
                 _pendingChange = null;
-                if (_editGroupDepth == 0)
-                    CommitChange(change);
+                if (_editGroupDepth == 0) CommitChange(change);
             }
-
-            if (_editGroupDepth == 0)
-                UpdateDirtyState();
+            if (_editGroupDepth == 0) UpdateDirtyState();
         }
 
         private static string GetBindingActionName(string propertyName)
@@ -468,6 +445,7 @@ namespace SimRacingHub.Services
                 nameof(Profile.KeySteerRight1) or nameof(Profile.KeySteerRight2) => "Steer Right",
                 nameof(Profile.KeyGas1) or nameof(Profile.KeyGas2) => "Throttle",
                 nameof(Profile.KeyBrake1) or nameof(Profile.KeyBrake2) => "Brake",
+                nameof(Profile.KeyClutch1) or nameof(Profile.KeyClutch2) => "Clutch",
                 nameof(Profile.KeyShiftUp1) or nameof(Profile.KeyShiftUp2) => "Shift Up",
                 nameof(Profile.KeyShiftDown1) or nameof(Profile.KeyShiftDown2) => "Shift Down",
                 nameof(Profile.KeyCenterSteering1) or nameof(Profile.KeyCenterSteering2) => "Center Steer",

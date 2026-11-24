@@ -86,6 +86,7 @@ internal sealed class OutputTestSession : IOutputTestSession
             if (!_isRunning() || !_output.HasFeeder) throw new InvalidOperationException("Start the hub before testing output.");
             var capabilities = _output.TestCapabilities;
             if (!Enum.IsDefined(action) ||
+                (action == OutputTestAction.Clutch && !capabilities.SupportsClutch) ||
                 (action == OutputTestAction.ShiftDown && capabilities.ButtonCount < 1) ||
                 (action == OutputTestAction.ShiftUp && capabilities.ButtonCount < 2) ||
                 (action == OutputTestAction.Button && (button < 1 || button > capabilities.ButtonCount)))
@@ -145,6 +146,7 @@ internal sealed class OutputTestSession : IOutputTestSession
     {
         bool Down(int key) => key != 0 && _inputSource.IsKeyDown(key);
         return Down(p.KeyGas1) || Down(p.KeyGas2) || Down(p.KeyBrake1) || Down(p.KeyBrake2) ||
+            Down(p.KeyClutch1) || Down(p.KeyClutch2) ||
             Down(p.KeyShiftDown1) || Down(p.KeyShiftDown2) || Down(p.KeyShiftUp1) || Down(p.KeyShiftUp2) ||
             Down(p.KeySteerLeft1) || Down(p.KeySteerLeft2) || Down(p.KeySteerRight1) || Down(p.KeySteerRight2) ||
             Down(p.KeyCenterSteering1) || Down(p.KeyCenterSteering2) || _inputSource.IsKeyDown(0x1B);

@@ -119,7 +119,7 @@ namespace SimRacingHub.Services
             }
 
             string tempPath = controlsPath + ".vwh-tmp";
-            string backupPath = controlsPath + $".vwh-backup-{DateTime.Now:yyyyMMdd-HHmmss}";
+            string backupPath = controlsPath + $".vwh-backup-{DateTime.Now:yyyyMMdd-HHmmss}-{Guid.NewGuid():N}";
 
             bool configReplaced = false;
             try
@@ -135,7 +135,7 @@ namespace SimRacingHub.Services
                     return (true, L("DiagPlatform_LmuInputFixService_14"));
                 }
 
-                using var journalChange = journal?.CaptureFile("Le Mans Ultimate", controlsPath);
+                using var journalChange = journal?.CaptureFileForMerge("Le Mans Ultimate", controlsPath, originalBytes);
                 File.Copy(controlsPath, backupPath, overwrite: false);
                 if (fallbackToken?.Parent is JProperty fallbackProperty)
                 {
@@ -285,6 +285,7 @@ namespace SimRacingHub.Services
 
         private static void SaveState(LmuInputFixState state)
         {
+            Directory.CreateDirectory(Path.GetDirectoryName(StatePath)!);
             string tempPath = StatePath + ".tmp";
             File.WriteAllText(tempPath, JsonConvert.SerializeObject(state, Formatting.Indented));
             File.Move(tempPath, StatePath, overwrite: true);

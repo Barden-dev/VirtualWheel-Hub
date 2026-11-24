@@ -1,0 +1,15 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:SimRacingHub.Avalonia.Controls"
+             x:Class="SimRacingHub.Avalonia.Views.Steering.SteeringExtraPanel">
+    <controls:FeaturePreview Name="SteeringOffer" Heading="{DynamicResource Offer_Speed}" Summary="{DynamicResource Offer_SpeedInfo}">
+        <controls:FeaturePreview.Sample>
+            <StackPanel Spacing="10">
+                <ToggleSwitch Content="{DynamicResource Offer_Enable}" IsChecked="False"/>
+                <Grid ColumnDefinitions="*,150" ColumnSpacing="12"><TextBlock Text="{DynamicResource Offer_Minimum}" VerticalAlignment="Center" TextWrapping="Wrap"/><NumericUpDown Grid.Column="1" Value="30" Minimum="0" Maximum="1000"/></Grid>
+                <Grid ColumnDefinitions="*,150" ColumnSpacing="12"><TextBlock Text="{DynamicResource Offer_Maximum}" VerticalAlignment="Center" TextWrapping="Wrap"/><NumericUpDown Grid.Column="1" Value="200" Minimum="0" Maximum="1000"/></Grid>
+                <Grid ColumnDefinitions="*,150" ColumnSpacing="12"><TextBlock Text="{DynamicResource Offer_Intensity}" VerticalAlignment="Center" TextWrapping="Wrap"/><NumericUpDown Grid.Column="1" Value="50" Minimum="0" Maximum="1000"/></Grid>
+            </StackPanel>
+        </controls:FeaturePreview.Sample>
+    </controls:FeaturePreview>
+</UserControl>

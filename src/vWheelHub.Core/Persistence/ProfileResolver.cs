@@ -130,6 +130,7 @@ internal sealed class ProfileResolver
             if (profile.OutSteerMin < 0) profile.OutSteerMin = 0;
             if (profile.OutGasMin < 0) profile.OutGasMin = 0;
             if (profile.OutBrakeMin < 0) profile.OutBrakeMin = 0;
+            if (profile.OutClutchMin < 0) profile.OutClutchMin = 0;
             return profile;
         }
         var parent = new ProfileContext(game);

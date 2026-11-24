@@ -11,17 +11,48 @@ using SimRacingHub.Core;
 
 namespace SimRacingHub.Avalonia.Adapters
 {
+    /// <summary>
+    /// Avalonia implementation of <see cref="IUserDialogService"/> providing asynchronous
+    /// notice and confirmation dialogs on <see cref="Window"/> without blocking real-time input threads.
+    /// </summary>
     public class AvaloniaUserDialogService : IUserDialogService
     {
         private readonly IUiDispatcher _dispatcher;
         private readonly Func<Window?>? _windowProvider;
+
         private readonly List<DialogNoticeRequest> _recordedNotices = new();
         private readonly List<DialogConfirmRequest> _recordedConfirms = new();
+
         public IReadOnlyList<DialogNoticeRequest> RecordedNotices => _recordedNotices;
         public IReadOnlyList<DialogConfirmRequest> RecordedConfirms => _recordedConfirms;
+
+        public async Task<bool> RunProgressAsync(DialogProgressRequest request,
+            Func<CancellationToken, Task<bool>> operation, CancellationToken ct = default)
+        {
+            ArgumentNullException.ThrowIfNull(request);
+            ArgumentNullException.ThrowIfNull(operation);
+            if (NoticeHandler != null || AsyncConfirmHandler != null) return await operation(ct).ConfigureAwait(false);
+            var task = await _dispatcher.InvokeAsync(() =>
+            {
+                var owner = ResolveOwnerWindow();
+                return owner != null ? OperationProgressDialog.RunAsync(owner, request, operation, ct) : operation(ct);
+            }, ct).ConfigureAwait(false);
+            return await task.ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Optional delegate to intercept notice displays for headless tests.
+        /// </summary>
         public Func<DialogNoticeRequest, Task>? NoticeHandler { get; set; }
+
+        /// <summary>
+        /// Optional delegate to intercept confirmation dialogs for headless tests.
+        /// </summary>
         public Func<DialogConfirmRequest, Task<DialogResult>>? AsyncConfirmHandler { get; set; }
 
+        /// <summary>
+        /// Synchronous confirmation handler for backward compatibility with existing tests.
+        /// </summary>
         public Func<DialogConfirmRequest, DialogResult>? ConfirmHandler
         {
             get => null;
@@ -38,7 +69,9 @@ namespace SimRacingHub.Avalonia.Adapters
             }
         }
 
-        public AvaloniaUserDialogService(IUiDispatcher? dispatcher = null, Func<Window?>? windowProvider = null)
+        public AvaloniaUserDialogService(
+            IUiDispatcher? dispatcher = null,
+            Func<Window?>? windowProvider = null)
         {
             _dispatcher = dispatcher ?? new AvaloniaUiDispatcher();
             _windowProvider = windowProvider;
@@ -48,8 +81,10 @@ namespace SimRacingHub.Avalonia.Adapters
         {
             ArgumentNullException.ThrowIfNull(request);
             ct.ThrowIfCancellationRequested();
+
             _recordedNotices.Add(request);
             AppLogger.Instance.LogInfo($"[Dialog Notice] [{request.Severity}] {request.Title}: {request.Message}");
+
             if (NoticeHandler != null)
             {
                 await NoticeHandler(request).ConfigureAwait(false);
@@ -69,7 +104,9 @@ namespace SimRacingHub.Avalonia.Adapters
                 var task = await _dispatcher.InvokeAsync(() =>
                 {
                     var owner = ResolveOwnerWindow();
-                    return owner != null ? MessageDialog.ShowNoticeAsync(owner, request, ct) : Task.CompletedTask;
+                    return owner != null
+                        ? MessageDialog.ShowNoticeAsync(owner, request, ct)
+                        : Task.CompletedTask;
                 }, ct).ConfigureAwait(false);
                 await task.ConfigureAwait(false);
             }
@@ -79,8 +116,10 @@ namespace SimRacingHub.Avalonia.Adapters
         {
             ArgumentNullException.ThrowIfNull(request);
             ct.ThrowIfCancellationRequested();
+
             _recordedConfirms.Add(request);
             AppLogger.Instance.LogInfo($"[Dialog Confirm] [{request.Severity}] {request.Title}: {request.Message}");
+
             if (AsyncConfirmHandler != null)
             {
                 return await AsyncConfirmHandler(request).ConfigureAwait(false);
@@ -94,14 +133,16 @@ namespace SimRacingHub.Avalonia.Adapters
                     return await MessageDialog.ShowConfirmAsync(owner, request, ct).ConfigureAwait(true);
                 }
 
-                return DialogResult.Confirmed;
+                return DialogResult.Cancelled;
             }
             else
             {
                 var task = await _dispatcher.InvokeAsync(() =>
                 {
                     var owner = ResolveOwnerWindow();
-                    return owner != null ? MessageDialog.ShowConfirmAsync(owner, request, ct) : Task.FromResult(DialogResult.Confirmed);
+                    return owner != null
+                        ? MessageDialog.ShowConfirmAsync(owner, request, ct)
+                        : Task.FromResult(DialogResult.Cancelled);
                 }, ct).ConfigureAwait(false);
                 return await task.ConfigureAwait(false);
             }
@@ -130,8 +171,7 @@ namespace SimRacingHub.Avalonia.Adapters
                 if (_windowProvider != null)
                 {
                     var custom = _windowProvider();
-                    if (custom != null)
-                        return custom;
+                    if (custom != null) return custom;
                 }
 
                 if (global::Avalonia.Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)

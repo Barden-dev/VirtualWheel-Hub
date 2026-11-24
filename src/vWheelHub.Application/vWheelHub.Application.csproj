@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Version>2.0.3</Version>
+    <Version>2.1.0</Version>
     <AssemblyVersion>$(Version).0</AssemblyVersion>
     <FileVersion>$(Version).0</FileVersion>
     <InformationalVersion>$(Version)</InformationalVersion>
@@ -28,6 +28,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Using Include="SimRacingHub.Services.Games" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\vWheelHub.Core\vWheelHub.Core.csproj" />
   </ItemGroup>
 
@@ -39,7 +43,7 @@
 
   <ItemGroup>
     <None Include="..\..\supporters.json" Link="Resources\supporters.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
-    <None Include="..\..\Resources\Localization\*.xaml" Link="Resources\Localization\%(Filename)%(Extension)">
+    <None Include="..\..\Resources\Localization\**\*.xaml" Link="Resources\Localization\%(RecursiveDir)%(Filename)%(Extension)">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

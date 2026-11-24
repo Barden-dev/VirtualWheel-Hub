@@ -9,6 +9,7 @@ namespace SimRacingHub.Application.Runtime
         public int Steering => Steer;
         public int Gas { get; }
         public int Brake { get; }
+        public int Clutch { get; }
         public bool ShiftDown { get; }
         public bool ShiftUp { get; }
         public bool IsControlSuspended { get; }
@@ -23,11 +24,13 @@ namespace SimRacingHub.Application.Runtime
             bool shiftUp,
             bool isControlSuspended,
             bool hubToggleTriggered = false,
-            bool lockToggleTriggered = false)
+            bool lockToggleTriggered = false,
+            int clutch = 0)
         {
             Steer = steer;
             Gas = gas;
             Brake = brake;
+            Clutch = clutch;
             ShiftDown = shiftDown;
             ShiftUp = shiftUp;
             IsControlSuspended = isControlSuspended;

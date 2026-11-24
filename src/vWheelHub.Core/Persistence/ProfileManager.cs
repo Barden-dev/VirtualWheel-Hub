@@ -9,7 +9,7 @@ using SimRacingHub.Models;
 namespace SimRacingHub.Services;
 
 /// <summary>Public entry point coordinating profile persistence and inheritance.</summary>
-public class ProfileManager
+public partial class ProfileManager
 {
     private readonly ProfileFileStore _store;
     private readonly ProfileResolver _resolver;
@@ -19,8 +19,13 @@ public class ProfileManager
     public ProfileManager(string profileDirectory)
     {
         _store = new ProfileFileStore(profileDirectory);
-        _resolver = new ProfileResolver(_store, materializeMissingValues: false);
+        bool materializeMissingValues = false;
+        var preserved = new List<string>();
+        ConfigureResolver(ref materializeMissingValues, preserved);
+        _resolver = new ProfileResolver(_store, materializeMissingValues: materializeMissingValues, preserveInheritedNull: preserved.ToArray());
     }
+
+    partial void ConfigureResolver(ref bool materializeMissingValues, List<string> preserveInheritedNull);
     public static string SanitizeName(string? input) => ProfileFileStore.SanitizeName(input);
     internal static string ResolveExistingDirectory(string parent, string? input) => ProfileFileStore.ResolveExistingDirectory(parent, input);
     public string GetProfilePath(ProfileContext? context) => _store.GetProfilePath(context);

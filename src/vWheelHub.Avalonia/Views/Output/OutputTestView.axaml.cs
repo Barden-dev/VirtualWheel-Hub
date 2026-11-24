@@ -184,7 +184,8 @@ public partial class OutputTestView : UserControl
         }
         foreach (var action in Enum.GetValues<OutputTestAction>())
         {
-            if (action == OutputTestAction.Button && caps.ButtonCount < 3 ||
+            if (action == OutputTestAction.Clutch && !caps.SupportsClutch ||
+                action == OutputTestAction.Button && caps.ButtonCount < 3 ||
                 action == OutputTestAction.ShiftDown && caps.ButtonCount < 1 ||
                 action == OutputTestAction.ShiftUp && caps.ButtonCount < 2) continue;
             _actions.Add(action);

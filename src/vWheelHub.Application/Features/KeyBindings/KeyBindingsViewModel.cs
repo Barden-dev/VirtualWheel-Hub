@@ -5,6 +5,7 @@ using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SimRacingHub.Application.Common;
+using SimRacingHub.Application.Contracts;
 using SimRacingHub.Application.Localization;
 using SimRacingHub.Core;
 using SimRacingHub.Models;
@@ -22,10 +23,71 @@ public partial class KeyBindingsViewModel : ViewModelBase, IDisposable
     public KeyActionId? CapturingActionId { get => Capture.CapturingActionId; set => Capture.CapturingActionId = value; }
     public bool? CapturingIsSecondary { get => Capture.CapturingIsSecondary; set => Capture.CapturingIsSecondary = value; }
     public KeyBindingSlotViewModel? CapturingSlot { get => Capture.CapturingSlot; set => Capture.CapturingSlot = value; }
-    private void CaptureChanged(object? sender, PropertyChangedEventArgs e) => OnPropertyChanged(e);
+    private void CaptureChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(IsCapturing) && !IsCapturing) StopPhysicalCapture();
+        OnPropertyChanged(e);
+    }
     private void CaptureChanging(object? sender, PropertyChangingEventArgs e) => OnPropertyChanging(e);
-    private void OnCaptureStarted(object? sender, EventArgs e) => CaptureStarted?.Invoke(this, e);
-    private void OnCaptureCancelled(object? sender, EventArgs e) => CaptureCancelled?.Invoke(this, e);
+    private IDisposable? _physicalCapture;
+    private int _captureGeneration;
+    private int _physicalMouseKey, _uiMouseKey;
+    private readonly IKeyCaptureSource? _inputCapture;
+    private readonly IUiDispatcher? _dispatcher;
+    public bool UsesPhysicalCapture => _physicalCapture != null;
+    [ObservableProperty]
+    private string? _captureInputError;
+    public bool HasCaptureInputError => !string.IsNullOrEmpty(CaptureInputError);
+    partial void OnCaptureInputErrorChanged(string? value) => OnPropertyChanged(nameof(HasCaptureInputError));
+
+    private void StopPhysicalCapture()
+    {
+        _captureGeneration++;
+        _physicalMouseKey = _uiMouseKey = 0;
+        _physicalCapture?.Dispose();
+        _physicalCapture = null;
+        OnPropertyChanged(nameof(UsesPhysicalCapture));
+    }
+
+    private void OnCaptureStarted(object? sender, EventArgs e)
+    {
+        StopPhysicalCapture();
+        CaptureInputError = null;
+        int generation = _captureGeneration;
+        try
+        {
+            var listener = _inputCapture?.Listen(key =>
+            {
+                void Apply()
+                {
+                    if (generation != _captureGeneration || !IsCapturing) return;
+                    if (CanonicalKeyMapper.IsMouseButton(key))
+                    {
+                        _physicalMouseKey = key;
+                        if (_uiMouseKey == key) Capture.ApplyKey(key);
+                    }
+                    else Capture.ApplyKey(key);
+                }
+                if (_dispatcher != null) _dispatcher.Post(Apply); else Apply();
+            });
+            if (generation != _captureGeneration || !IsCapturing) listener?.Dispose();
+            else _physicalCapture = listener;
+            OnPropertyChanged(nameof(UsesPhysicalCapture));
+        }
+        catch (Exception ex)
+        {
+            Capture.CancelCapture();
+            CaptureInputError = _localizationManager.GetString("KeyBind_SelectedInputUnavailable", "Select connected devices or enable automatic input in Controls → Input devices.");
+            AppLogger.Instance.LogWarning($"Key capture unavailable: {ex.Message}");
+            return;
+        }
+        CaptureStarted?.Invoke(this, e);
+    }
+    private void OnCaptureCancelled(object? sender, EventArgs e)
+    {
+        ClearConflict();
+        CaptureCancelled?.Invoke(this, e);
+    }
     private readonly ProfileSession _profileSession;
 
     private readonly ILocalizationManager _localizationManager;
@@ -43,6 +105,9 @@ public partial class KeyBindingsViewModel : ViewModelBase, IDisposable
 
     [ObservableProperty]
     private string? _conflictMessage;
+
+    private (KeyActionId Action, bool Secondary, int Key, Profile Profile)? _pendingConflict;
+    public bool CanReplaceConflict => _pendingConflict is { } pending && ReferenceEquals(pending.Profile, CurrentProfile);
 
     private readonly List<KeyBindingRowViewModel> _rows;
 
@@ -79,10 +144,14 @@ public partial class KeyBindingsViewModel : ViewModelBase, IDisposable
 
     public KeyBindingsViewModel(
         ProfileSession profileSession,
-        ILocalizationManager localizationManager)
+        ILocalizationManager localizationManager,
+        IKeyCaptureSource? inputCapture = null,
+        IUiDispatcher? dispatcher = null)
     {
         _profileSession = profileSession ?? throw new ArgumentNullException(nameof(profileSession));
         _localizationManager = localizationManager ?? throw new ArgumentNullException(nameof(localizationManager));
+        _inputCapture = inputCapture;
+        _dispatcher = dispatcher;
 
         Capture = new KeyCaptureSession(ClearConflict, TryAssignKey);
         Capture.PropertyChanged += CaptureChanged;
@@ -195,6 +264,27 @@ public partial class KeyBindingsViewModel : ViewModelBase, IDisposable
     public string KeyBrake1Text => CanonicalKeyMapper.Format(EffectiveKeyBrake1);
 
     public string KeyBrake2Text => CanonicalKeyMapper.Format(EffectiveKeyBrake2);
+
+    // Clutch
+    public int? KeyClutch1
+    {
+        get => CurrentProfile?.KeyClutch1;
+        set => TryAssignKey(KeyActionId.Clutch, isSecondary: false, value ?? 0);
+    }
+
+    public int? KeyClutch2
+    {
+        get => CurrentProfile?.KeyClutch2;
+        set => TryAssignKey(KeyActionId.Clutch, isSecondary: true, value ?? 0);
+    }
+
+    public int EffectiveKeyClutch1 => CurrentProfile?.KeyClutch1 ?? ResolvedProfile?.KeyClutch1 ?? 0;
+
+    public int EffectiveKeyClutch2 => CurrentProfile?.KeyClutch2 ?? ResolvedProfile?.KeyClutch2 ?? 0;
+
+    public string KeyClutch1Text => CanonicalKeyMapper.Format(EffectiveKeyClutch1);
+
+    public string KeyClutch2Text => CanonicalKeyMapper.Format(EffectiveKeyClutch2);
 
     // Shift Up
     public int? KeyShiftUp1
@@ -353,13 +443,15 @@ public partial class KeyBindingsViewModel : ViewModelBase, IDisposable
 
         if (keyCode != 0 && CheckConflict(keyCode, actionName, out string? conflicting))
         {
+            _pendingConflict = (actionId, isSecondary, keyCode, CurrentProfile);
+            OnPropertyChanged(nameof(CanReplaceConflict));
             string message = string.Format(ConflictFormat, CanonicalKeyMapper.Format(keyCode), conflicting);
             SetConflictState(actionId, isSecondary, message);
             return false;
         }
 
         SetActionKey(actionId, isSecondary, keyCode);
-        ClearConflictState(actionId, isSecondary);
+        ClearConflict();
         NotifyActionProperties(actionId);
         row?.Refresh();
         BindingAssigned?.Invoke(this, EventArgs.Empty);
@@ -394,9 +486,25 @@ public partial class KeyBindingsViewModel : ViewModelBase, IDisposable
 
     public void ClearConflict()
     {
+        _pendingConflict = null;
+        OnPropertyChanged(nameof(CanReplaceConflict));
         HasConflict = false;
         ConflictMessage = null;
         ClearAllRowConflicts();
+    }
+
+    [RelayCommand]
+    public void ReplaceConflictingBinding()
+    {
+        if (_pendingConflict is not { } pending || !CanReplaceConflict) return;
+        using var edit = _profileSession.BeginEditGroup("ReassignKey");
+        foreach (var action in KeyBindingCatalog.Actions.Where(a => a.Id != pending.Action))
+        {
+            foreach (var slot in new[] { action.Primary, action.Secondary })
+                if (slot.Read(CurrentProfile, ResolvedProfile) == pending.Key) slot.Write(CurrentProfile, 0);
+        }
+        TryAssignKey(pending.Action, pending.Secondary, pending.Key);
+        Capture.CancelCapture();
     }
 
     private void ClearAllRowConflicts()
@@ -446,11 +554,27 @@ public partial class KeyBindingsViewModel : ViewModelBase, IDisposable
     }
 
     [RelayCommand]
-    public void CancelCapture() => Capture.CancelCapture();
+    public void CancelCapture()
+    {
+        Capture.CancelCapture();
+        CaptureInputError = null;
+        ClearConflict();
+    }
 
     public void OnLostFocus() => Capture.OnLostFocus();
 
-    public bool ApplyKey(int virtualKeyCode) => Capture.ApplyKey(virtualKeyCode);
+    public bool ApplyKey(int virtualKeyCode)
+    {
+        if (virtualKeyCode == CanonicalKeyMapper.Escape) { CancelCapture(); return false; }
+        if (!UsesPhysicalCapture) return Capture.ApplyKey(virtualKeyCode);
+        if (CanonicalKeyMapper.IsMouseButton(virtualKeyCode))
+        {
+            // UI capture clicks and selected physical mouse presses must agree.
+            _uiMouseKey = virtualKeyCode;
+            if (_physicalMouseKey == virtualKeyCode) return Capture.ApplyKey(virtualKeyCode);
+        }
+        return false;
+    }
 
     public bool ApplyMouseButton(AppMouseButton mouseButton)
     {
@@ -599,6 +723,7 @@ public partial class KeyBindingsViewModel : ViewModelBase, IDisposable
 
     private void OnProfileSessionPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
+        if (e.PropertyName == nameof(ProfileSession.CurrentProfile)) CancelCapture();
         if (e.PropertyName == nameof(ProfileSession.CurrentProfile) ||
             e.PropertyName == nameof(ProfileSession.ResolvedProfile))
         {
@@ -705,6 +830,8 @@ public partial class KeyBindingsViewModel : ViewModelBase, IDisposable
     public void Dispose()
     {
         if (_isDisposed) return;
+        CancelCapture();
+        StopPhysicalCapture();
         UnsubscribeEvents();
         Capture.PropertyChanged -= CaptureChanged;
         Capture.PropertyChanging -= CaptureChanging;

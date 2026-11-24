@@ -1,15 +1,8 @@
-using System.Collections.Generic;
+namespace SimRacingHub.Services.Games;
 
-namespace SimRacingHub.Services.Games
+public partial interface IGameIntegration
 {
-    public interface IGameIntegration
-    {
-        string GameId { get; }
-
-        string DisplayName { get; }
-
-        IGameDetector Detector { get; }
-
-    }
-
+    string GameId { get; }
+    string DisplayName { get; }
+    IGameDetector Detector { get; }
 }

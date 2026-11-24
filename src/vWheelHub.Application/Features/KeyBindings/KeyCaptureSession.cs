@@ -57,18 +57,22 @@ public partial class KeyCaptureSession : ObservableObject
     {
         if (!IsCapturing) return;
 
+        EndCapture();
+        CaptureCancelled?.Invoke(this, EventArgs.Empty);
+    }
+
+    private void EndCapture()
+    {
         if (CapturingSlot != null)
         {
             CapturingSlot.IsListening = false;
             CapturingSlot.Refresh();
         }
 
-        IsCapturing = false;
         CapturingActionId = null;
         CapturingIsSecondary = null;
         CapturingSlot = null;
-
-        CaptureCancelled?.Invoke(this, EventArgs.Empty);
+        IsCapturing = false;
     }
 
     public void OnLostFocus()
@@ -94,17 +98,7 @@ public partial class KeyCaptureSession : ObservableObject
 
         var slot = CapturingSlot;
         bool success = _assign(slot.ActionId, slot.IsSecondary, virtualKeyCode);
-        if (success)
-        {
-            slot.IsListening = false;
-            slot.Refresh();
-
-            IsCapturing = false;
-            CapturingActionId = null;
-            CapturingIsSecondary = null;
-            CapturingSlot = null;
-        }
-
+        if (success) EndCapture();
         return success;
     }
 

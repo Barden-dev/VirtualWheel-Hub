@@ -1,0 +1,47 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+  <sys:String x:Key="Ui_897c55421a11" xml:space="preserve">Throttle and brake response and press timing.</sys:String>
+  <sys:String x:Key="InputFix_Title" xml:space="preserve">LMU — input compatibility</sys:String>
+  <sys:String x:Key="InputFix_Description" xml:space="preserve">Enable DirectInput Fallback for input rates up to 1000 Hz. Close the game before applying. The original settings file is backed up.</sys:String>
+  <sys:String x:Key="InputFix_NotChecked" xml:space="preserve">Input settings have not been checked.</sys:String>
+  <sys:String x:Key="InputFix_NotFound" xml:space="preserve">LMU controls file was not found.</sys:String>
+  <sys:String x:Key="InputFix_Applied" xml:space="preserve">Input compatibility is enabled.</sys:String>
+  <sys:String x:Key="InputFix_Ready" xml:space="preserve">Input compatibility can be enabled.</sys:String>
+  <sys:String x:Key="InputFix_Failed" xml:space="preserve">The operation failed. Close the game and check access to its files.</sys:String>
+  <sys:String x:Key="InputFix_Check" xml:space="preserve">Check</sys:String>
+  <sys:String x:Key="InputFix_Apply" xml:space="preserve">Enable</sys:String>
+  <sys:String x:Key="Edition_Description">FREE edition — open source</sys:String>
+  <sys:String x:Key="Tour_AssignmentBody">Choose steering, throttle, brake or a gear shift. Use Once for a single assignment so repeated presses cannot switch menus afterwards. Click Start, switch to the game and open the desired binding: the signal begins after 5 seconds.</sys:String>
+  <sys:String x:Key="Tour_AxesTip">Use the assignment tool when you need a known output signal. This tour never starts a signal or changes your bindings.</sys:String>
+  <sys:String x:Key="Tour_ReadyTip">If something does not respond: check physical device activity → hub bindings → virtual output → game bindings. Reopen this guide anytime from Getting started. Finishing returns you to your previous page.</sys:String>
+  <sys:String x:Key="Offer_Enable">Enable</sys:String>
+  <sys:String x:Key="Offer_Abs">ABS helper</sys:String>
+  <sys:String x:Key="Offer_AbsInfo">Reduces brake output when wheels lock.</sys:String>
+  <sys:String x:Key="Offer_Tc">TC helper</sys:String>
+  <sys:String x:Key="Offer_TcInfo">Reduces throttle output when wheels spin.</sys:String>
+  <sys:String x:Key="Offer_Speed">Speed-aware steering</sys:String>
+  <sys:String x:Key="Offer_SpeedInfo">Adjusts steering response using the current game speed.</sys:String>
+  <sys:String x:Key="Offer_Slip">Slip threshold</sys:String>
+  <sys:String x:Key="Offer_Drop">Maximum reduction (%)</sys:String>
+  <sys:String x:Key="Offer_Recover">Recovery rate</sys:String>
+  <sys:String x:Key="Offer_Minimum">Minimum speed (km/h)</sys:String>
+  <sys:String x:Key="Offer_Maximum">Maximum speed (km/h)</sys:String>
+  <sys:String x:Key="Offer_Intensity">Intensity (%)</sys:String>
+  <sys:String x:Key="Offer_Sound">Audio feedback</sys:String>
+  <sys:String x:Key="Offer_SoundTab">Audio · PRO</sys:String>
+  <sys:String x:Key="Offer_SoundInfo">Hear grip changes and assistance activity while driving.</sys:String>
+  <sys:String x:Key="Offer_Volume">Volume (%)</sys:String>
+  <sys:String x:Key="Offer_Pitch">Pitch (Hz)</sys:String>
+  <sys:String x:Key="Offer_Front">Front axle</sys:String>
+  <sys:String x:Key="Offer_Rear">Rear axle</sys:String>
+  <sys:String x:Key="Offer_Data">Live game data</sys:String>
+  <sys:String x:Key="Offer_DataTab">Game connection · PRO</sys:String>
+  <sys:String x:Key="Offer_DataInfo">Game data enables automatic car selection and supported driving assistants.</sys:String>
+  <sys:String x:Key="Offer_Prepare">Prepare game</sys:String>
+  <sys:String x:Key="Offer_Menu">Game menus</sys:String>
+  <sys:String x:Key="Offer_MenuInfo">Use known game menu state to pause controls and release the cursor.</sys:String>
+  <sys:String x:Key="Offer_Pause">Suspend controls in game menus</sys:String>
+  <sys:String x:Key="Offer_Cursor">Release the cursor in game menus</sys:String>
+  <sys:String x:Key="Offer_Count">Live game data &amp; {0} PRO features</sys:String>
+  <sys:String x:Key="Offer_TireSound">Tire sound feedback</sys:String>
+  <sys:String x:Key="Offer_TcSound">TC sound feedback</sys:String>
+</ResourceDictionary>

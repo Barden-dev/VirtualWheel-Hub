@@ -165,6 +165,7 @@ internal sealed class ProfileFileStore
             if (profile.OutSteerMin.HasValue && profile.OutSteerMin.Value < 0) profile.OutSteerMin = 0;
             if (profile.OutGasMin.HasValue && profile.OutGasMin.Value < 0) profile.OutGasMin = 0;
             if (profile.OutBrakeMin.HasValue && profile.OutBrakeMin.Value < 0) profile.OutBrakeMin = 0;
+            if (profile.OutClutchMin.HasValue && profile.OutClutchMin.Value < 0) profile.OutClutchMin = 0;
 
             return (profile, false, false);
         }

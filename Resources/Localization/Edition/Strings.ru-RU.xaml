@@ -1,0 +1,47 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+  <sys:String x:Key="Ui_897c55421a11" xml:space="preserve">Отклик газа и тормоза и время нажатия.</sys:String>
+  <sys:String x:Key="InputFix_Title" xml:space="preserve">LMU — совместимость ввода</sys:String>
+  <sys:String x:Key="InputFix_Description" xml:space="preserve">Режим DirectInput Fallback для ввода с частотой до 1000 Гц. Перед изменением закройте игру. Исходный файл настроек сохраняется.</sys:String>
+  <sys:String x:Key="InputFix_NotChecked" xml:space="preserve">Настройки ввода ещё не проверены.</sys:String>
+  <sys:String x:Key="InputFix_NotFound" xml:space="preserve">Файл управления LMU не найден.</sys:String>
+  <sys:String x:Key="InputFix_Applied" xml:space="preserve">Режим совместимости включён.</sys:String>
+  <sys:String x:Key="InputFix_Ready" xml:space="preserve">Можно включить режим совместимости.</sys:String>
+  <sys:String x:Key="InputFix_Failed" xml:space="preserve">Не удалось изменить настройки. Закройте игру и проверьте доступ к её файлам.</sys:String>
+  <sys:String x:Key="InputFix_Check" xml:space="preserve">Проверить</sys:String>
+  <sys:String x:Key="InputFix_Apply" xml:space="preserve">Включить</sys:String>
+  <sys:String x:Key="Edition_Description">Редакция FREE — открытый исходный код</sys:String>
+  <sys:String x:Key="Tour_AssignmentBody">Выберите руль, газ, тормоз или переключение передачи. Для одного назначения используйте «Один раз», чтобы повторные нажатия потом не листали меню. Нажмите запуск, перейдите в игру и откройте нужное назначение: сигнал начнётся через 5 секунд.</sys:String>
+  <sys:String x:Key="Tour_AxesTip">Используйте инструмент назначения, когда нужен известный сигнал на выходе. Сам гайд не запускает сигналы и не меняет ваши назначения.</sys:String>
+  <sys:String x:Key="Tour_ReadyTip">Если нет реакции: проверьте активность физических устройств → назначения в хабе → виртуальный вывод → назначения в игре. Гайд всегда доступен через «Как начать». После завершения вы вернётесь на прежнюю страницу.</sys:String>
+  <sys:String x:Key="Offer_Enable">Включить</sys:String>
+  <sys:String x:Key="Offer_Abs">Помощник ABS</sys:String>
+  <sys:String x:Key="Offer_AbsInfo">Снижает торможение при блокировке колёс.</sys:String>
+  <sys:String x:Key="Offer_Tc">Помощник TC</sys:String>
+  <sys:String x:Key="Offer_TcInfo">Снижает газ при пробуксовке колёс.</sys:String>
+  <sys:String x:Key="Offer_Speed">Руление с учётом скорости</sys:String>
+  <sys:String x:Key="Offer_SpeedInfo">Изменяет отклик руля с учётом скорости машины в игре.</sys:String>
+  <sys:String x:Key="Offer_Slip">Порог проскальзывания</sys:String>
+  <sys:String x:Key="Offer_Drop">Максимальное снижение (%)</sys:String>
+  <sys:String x:Key="Offer_Recover">Скорость восстановления</sys:String>
+  <sys:String x:Key="Offer_Minimum">Минимальная скорость (км/ч)</sys:String>
+  <sys:String x:Key="Offer_Maximum">Максимальная скорость (км/ч)</sys:String>
+  <sys:String x:Key="Offer_Intensity">Интенсивность (%)</sys:String>
+  <sys:String x:Key="Offer_Sound">Звуковой отклик</sys:String>
+  <sys:String x:Key="Offer_SoundTab">Звук · PRO</sys:String>
+  <sys:String x:Key="Offer_SoundInfo">Звуковая обратная связь о сцеплении и работе помощников.</sys:String>
+  <sys:String x:Key="Offer_Volume">Громкость (%)</sys:String>
+  <sys:String x:Key="Offer_Pitch">Частота (Гц)</sys:String>
+  <sys:String x:Key="Offer_Front">Передняя ось</sys:String>
+  <sys:String x:Key="Offer_Rear">Задняя ось</sys:String>
+  <sys:String x:Key="Offer_Data">Данные игры</sys:String>
+  <sys:String x:Key="Offer_DataTab">Подключение игр · PRO</sys:String>
+  <sys:String x:Key="Offer_DataInfo">Данные игры позволяют автоматически выбирать машину и использовать доступные помощники.</sys:String>
+  <sys:String x:Key="Offer_Prepare">Подготовить игру</sys:String>
+  <sys:String x:Key="Offer_Menu">Меню игры</sys:String>
+  <sys:String x:Key="Offer_MenuInfo">Приостанавливает управление и освобождает курсор по данным меню игры.</sys:String>
+  <sys:String x:Key="Offer_Pause">Приостанавливать управление в меню игры</sys:String>
+  <sys:String x:Key="Offer_Cursor">Освобождать курсор в меню игры</sys:String>
+  <sys:String x:Key="Offer_Count">Данные игры и {0} PRO-функций</sys:String>
+  <sys:String x:Key="Offer_TireSound">Звуковая обратная связь шин</sys:String>
+  <sys:String x:Key="Offer_TcSound">Звук TC</sys:String>
+</ResourceDictionary>

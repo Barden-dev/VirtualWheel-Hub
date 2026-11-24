@@ -1,13 +1,13 @@
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
 using SimRacingHub.Application.Features.Steering;
+using SimRacingHub.Avalonia.Controls;
 
 namespace SimRacingHub.Avalonia.Views.Steering
 {
     /// <summary>
     /// UserControl view for steering configuration (sensitivity, response curve gamma, deadzone offset,
-    /// steering locks and speed-sensitive steering scaling).
+    /// and steering locks).
     /// Bound to SteeringViewModel.
     /// </summary>
     public partial class SteeringView : UserControl
@@ -19,6 +19,7 @@ namespace SimRacingHub.Avalonia.Views.Steering
         public SteeringView()
         {
             InitializeComponent();
+            EditionSlotNames.Attach(this, SteeringExtraSlot);
             SizeChanged += (_, _) => global::Avalonia.Threading.Dispatcher.UIThread.Post(UpdateResponsiveLayout);
         }
 

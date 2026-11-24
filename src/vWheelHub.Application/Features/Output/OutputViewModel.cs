@@ -267,6 +267,56 @@ namespace SimRacingHub.Application.Features.Output
 
         #endregion
 
+        #region Clutch Axis Calibration
+
+        public int? OutClutchMin
+        {
+            get => CurrentProfile?.OutClutchMin;
+            set
+            {
+                if (CurrentProfile != null && CurrentProfile.OutClutchMin != value)
+                {
+                    CurrentProfile.OutClutchMin = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(EffectiveOutClutchMin));
+                }
+            }
+        }
+
+        public int? OutClutchMax
+        {
+            get => CurrentProfile?.OutClutchMax;
+            set
+            {
+                if (CurrentProfile != null && CurrentProfile.OutClutchMax != value)
+                {
+                    CurrentProfile.OutClutchMax = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(EffectiveOutClutchMax));
+                }
+            }
+        }
+
+        public bool? InvertClutch
+        {
+            get => CurrentProfile?.InvertClutch;
+            set
+            {
+                if (CurrentProfile != null && CurrentProfile.InvertClutch != value)
+                {
+                    CurrentProfile.InvertClutch = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(EffectiveInvertClutch));
+                }
+            }
+        }
+
+        public int EffectiveOutClutchMin { get => CurrentProfile?.OutClutchMin ?? ResolvedProfile?.OutClutchMin ?? 0; set { if (value != EffectiveOutClutchMin) OutClutchMin = value; } }
+        public int EffectiveOutClutchMax { get => CurrentProfile?.OutClutchMax ?? ResolvedProfile?.OutClutchMax ?? 32768; set { if (value != EffectiveOutClutchMax) OutClutchMax = value; } }
+        public bool EffectiveInvertClutch { get => CurrentProfile?.InvertClutch ?? ResolvedProfile?.InvertClutch ?? false; set => InvertClutch = value; }
+
+        #endregion
+
         public OutputViewModel(
             ProfileSession profileSession,
             IOutputDiagnostics outputDiagnostics,
@@ -445,6 +495,18 @@ namespace SimRacingHub.Application.Features.Output
                         OnPropertyChanged(nameof(InvertBrake));
                         OnPropertyChanged(nameof(EffectiveInvertBrake));
                         break;
+                    case nameof(Profile.OutClutchMin):
+                        OnPropertyChanged(nameof(OutClutchMin));
+                        OnPropertyChanged(nameof(EffectiveOutClutchMin));
+                        break;
+                    case nameof(Profile.OutClutchMax):
+                        OnPropertyChanged(nameof(OutClutchMax));
+                        OnPropertyChanged(nameof(EffectiveOutClutchMax));
+                        break;
+                    case nameof(Profile.InvertClutch):
+                        OnPropertyChanged(nameof(InvertClutch));
+                        OnPropertyChanged(nameof(EffectiveInvertClutch));
+                        break;
                 }
             });
         }
@@ -481,6 +543,13 @@ namespace SimRacingHub.Application.Features.Output
             OnPropertyChanged(nameof(EffectiveOutBrakeMin));
             OnPropertyChanged(nameof(EffectiveOutBrakeMax));
             OnPropertyChanged(nameof(EffectiveInvertBrake));
+
+            OnPropertyChanged(nameof(OutClutchMin));
+            OnPropertyChanged(nameof(OutClutchMax));
+            OnPropertyChanged(nameof(InvertClutch));
+            OnPropertyChanged(nameof(EffectiveOutClutchMin));
+            OnPropertyChanged(nameof(EffectiveOutClutchMax));
+            OnPropertyChanged(nameof(EffectiveInvertClutch));
         }
 
         [RelayCommand]
@@ -634,6 +703,10 @@ namespace SimRacingHub.Application.Features.Output
             CurrentProfile.OutBrakeMin = 0;
             CurrentProfile.OutBrakeMax = 32768;
             CurrentProfile.InvertBrake = false;
+
+            CurrentProfile.OutClutchMin = 0;
+            CurrentProfile.OutClutchMax = 32768;
+            CurrentProfile.InvertClutch = false;
 
             NotifyAllCalibrationProperties();
         }

@@ -4,7 +4,7 @@ using Avalonia;
 
 namespace SimRacingHub.Avalonia
 {
-    public static class Program
+    public static partial class Program
     {
         // Initialization code. Don't use any Avalonia, third-party APIs or any
         // SynchronizationContext-reliant code before AppMain is called.
@@ -41,7 +41,9 @@ namespace SimRacingHub.Avalonia
                 { Console.Error.WriteLine("vJoy recovery is only available on Windows."); return 1; }
                 return SimRacingHub.Core.VJoyRecoveryCommand.Run(args[1], Console.Out);
             }
-            if (args.Any(a => string.Equals(a, "--help", StringComparison.OrdinalIgnoreCase) || string.Equals(a, "-h", StringComparison.OrdinalIgnoreCase) || string.Equals(a, "/?", StringComparison.OrdinalIgnoreCase)))
+            if (args.Any(a => string.Equals(a, "--help", StringComparison.OrdinalIgnoreCase) ||
+                              string.Equals(a, "-h", StringComparison.OrdinalIgnoreCase) ||
+                              string.Equals(a, "/?", StringComparison.OrdinalIgnoreCase)))
             {
                 Console.WriteLine("vWheel Hub - Cross-Platform Virtual Racing Wheel Manager (Avalonia UI)");
                 Console.WriteLine();
@@ -64,11 +66,7 @@ namespace SimRacingHub.Avalonia
             if (platformIndex >= 0)
             {
                 if (!isPreview || platformIndex + 1 >= args.Length)
-                {
-                    Console.Error.WriteLine("--preview-platform requires --preview and windows or linux.");
-                    return 1;
-                }
-
+                { Console.Error.WriteLine("--preview-platform requires --preview and windows or linux."); return 1; }
                 App.PreviewPlatformCapabilities = args[platformIndex + 1].ToLowerInvariant() switch
                 {
                     "windows" => SimRacingHub.Application.Fakes.FakePlatformCapabilities.Windows(),
@@ -76,10 +74,7 @@ namespace SimRacingHub.Avalonia
                     _ => null
                 };
                 if (App.PreviewPlatformCapabilities == null)
-                {
-                    Console.Error.WriteLine("Unknown preview platform. Use windows or linux.");
-                    return 1;
-                }
+                { Console.Error.WriteLine("Unknown preview platform. Use windows or linux."); return 1; }
             }
 
             if (args.Any(a => string.Equals(a, "--smoke", StringComparison.OrdinalIgnoreCase)))
@@ -100,9 +95,10 @@ namespace SimRacingHub.Avalonia
 
             try
             {
-                return BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+                return BuildAvaloniaApp()
+                    .StartWithClassicDesktopLifetime(args);
             }
-            catch (Exception ex)when (ex.Message.Contains("XOpenDisplay") || ex.Message.Contains("DISPLAY"))
+            catch (Exception ex) when (ex.Message.Contains("XOpenDisplay") || ex.Message.Contains("DISPLAY"))
             {
                 Console.Error.WriteLine($"[vWheelHub] Display server unavailable ({ex.Message}). Set DISPLAY or WAYLAND_DISPLAY to run GUI.");
                 return 1;
@@ -112,6 +108,10 @@ namespace SimRacingHub.Avalonia
 
         private static int RunSmokeValidation(bool isPreview)
         {
+            int? customResult = null;
+            RunCustomSmokeValidation(isPreview, ref customResult);
+            if (customResult.HasValue) return customResult.Value;
+
             try
             {
                 using var host = SimRacingHub.Avalonia.Composition.AvaloniaCompositionRoot.Create(
@@ -132,6 +132,13 @@ namespace SimRacingHub.Avalonia
             catch (Exception ex) { Console.Error.WriteLine(ex); return 1; }
         }
 
-        public static AppBuilder BuildAvaloniaApp() => AppBuilder.Configure<App>().UsePlatformDetect().WithInterFont().LogToTrace();
+        static partial void RunCustomSmokeValidation(bool isPreview, ref int? exitCode);
+
+        // Avalonia configuration, don't remove; also used by visual designer.
+        public static AppBuilder BuildAvaloniaApp()
+            => AppBuilder.Configure<App>()
+                .UsePlatformDetect()
+                .WithInterFont()
+                .LogToTrace();
     }
 }
